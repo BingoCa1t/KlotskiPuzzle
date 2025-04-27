@@ -9,38 +9,47 @@ import com.klotski.logic.Pos;
 
 /**
  * 棋子类，继承自Actor
+ *
  * @author BingoCAT
  */
 public class Chess extends Actor
 {
+    /*自定义里面的宽度、高度、坐标都是如（3,3）这样的，Actor基类本身的才是像素绘制的坐标*/
 
-    //自定义里面的宽度、高度、坐标都是如（3,3）这样的，Actor基类本身的才是像素绘制的坐标
-    private TextureRegion region;//绘制区域
-    private Pos position;//棋子实时XY坐标，如(0,0))
-    private String chessName;//棋子名字，暂时无用，以后也许做个性化的时候会用到
-    private final int chessWidth;//棋子宽度，初始化之后不可改变
-    private final int chessHeight;//棋子高度，初始化之后不可改变
+    //绘制区域
+    private TextureRegion region;
+    //棋子实时XY坐标，如(0,0))
+    private Pos position;
+    //棋子名字，暂时无用，以后也许做个性化的时候会用到
+    private String chessName;
+    //棋子宽度，初始化之后不可改变
+    private final int chessWidth;
+    //棋子高度，初始化之后不可改变
+    private final int chessHeight;
+    //棋子默认宽度
     private final int DEFAULT_CHESS_WIDTH = 1;
+    //棋子默认高度
     private final int DEFAULT_CHESS_HEIGHT = 1;
-    //private ChessBoard chessBoard;
-    //暂时保留X和Y坐标，之后将使用Pos类的position表示坐标
-    private int chessX;//棋子左下角相对于棋盘左下角的X坐标
-    private int chessY;//棋子左下角相对于棋盘左下角的Y坐标
-    private final float squareHW = 160f;//棋盘一格为160像素，在这里统一管理大小，方便以后修改
+    //棋盘一格为160像素，在这里统一管理大小，方便以后修改
+    private final float squareHW = 160f;
+    //棋子是否被选中
     private boolean isSelected = false;
 
     public void setSelected(boolean isSelected)
     {
         this.isSelected = isSelected;
     }
+
     public boolean getSelected()
     {
         return isSelected;
     }
+
     public TextureRegion getRegion()
     {
         return region;
     }
+
     public int getChessWidth()
     {
         return chessWidth;
@@ -51,40 +60,48 @@ public class Chess extends Actor
         return chessHeight;
     }
 
-    public void setChessX(int chessX)
-    {
-        this.chessX = chessX;
-    }
-
-    public int getChessX()
-    {
-        return chessX;
-    }
-
-    public void setChessY(int chessY)
-    {
-        this.chessY = chessY;
-    }
-
-    public int getChessY()
-    {
-        return chessY;
-    }
-
     public Pos getPosition()
     {
         return position;
     }
 
+    /**
+     * 修改自定义Pos坐标的同时修改组件状态
+     *
+     * @param position 自定义Pos位置
+     */
     public void setXY(Pos position)
     {
         this.position = position;
-        this.setPosition(position.getX() * squareHW,position.getY() * squareHW);
-        this.setOrigin(0,0);
+        this.setPosition(position.getX() * squareHW, position.getY() * squareHW);
+    }
+
+    /**
+     * 只修改自定义的Pos坐标，不修改组件状态
+     *
+     * @param position 自定义的Pos坐标
+     */
+    public void setXYWithoutChangingState(Pos position)
+    {
+        this.position = position;
+    }
+
+    /**
+     * 重写父类方法，x、y为像素坐标，同时也会修改自定义的Pos坐标
+     *
+     * @param x 像素x坐标
+     * @param y 像素y坐标
+     */
+    @Override
+    public void setPosition(float x, float y)
+    {
+        super.setPosition(x, y);
+        this.position = new Pos((int) (x / 160), (int) (y / 160));
     }
 
     /**
      * 初始化棋子
+     *
      * @param chessName   棋子名称，例如：“曹操”
      * @param chessHeight 棋子高度，例如：棋子“曹操”高度是2
      * @param chessWidth  棋子宽度，例如：棋子“曹操”宽度是2
@@ -103,6 +120,12 @@ public class Chess extends Actor
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
+
+    /**
+     * 创建chess的副本
+     *
+     * @param chess 新的副本
+     */
     public Chess(Chess chess)
     {
         super();
@@ -113,8 +136,10 @@ public class Chess extends Actor
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
+
     /**
      * 修改棋子贴图
+     *
      * @param region 贴图
      */
     public void setRegion(TextureRegion region)
@@ -127,33 +152,39 @@ public class Chess extends Actor
 
     }
 
+    /**
+     * 棋子被选中
+     */
     public void select()
     {
         this.setRegion(new TextureRegion(new Texture("CaocSelected.png")));
-        isSelected=true;
+        isSelected = true;
     }
+
+    /**
+     * 棋子被取消选中
+     */
     public void disSelect()
     {
         this.setRegion(new TextureRegion(new Texture("Caoc.png")));
-        isSelected=false;
+        isSelected = false;
     }
+
     @Override
     public void act(float delta)
     {
         super.act(delta);
     }
-    ShapeRenderer shapeRenderer = new ShapeRenderer();
+
     @Override
     public void draw(Batch batch, float parentAlpha)
     {
-      //  super.draw(batch, parentAlpha);
-
         // 如果 region 为 null 或者 演员不可见, 则直接不绘制
         if (region == null || !isVisible())
         {
             return;
         }
-
+        super.draw(batch, parentAlpha);
         /*
         if(isSelected)
         {
@@ -182,7 +213,7 @@ public class Chess extends Actor
          * 将演员中的 位置(position, 即 X, Y 坐标), 缩放和旋转支点(origin), 宽高尺寸, 缩放比, 旋转角度 应用到绘制中,
          * 最终 batch 会将综合结果绘制到屏幕上
          */
-
+        batch.setColor(1.0f, 1.0f, 1.0f, 1f);
         batch.draw(
             region,
             getX(), getY(),
@@ -193,4 +224,25 @@ public class Chess extends Actor
         );
     }
 
+    /**
+     * Chess类的toString方法
+     *
+     * @return 返回格式"Chess [chessName= ,chessWidth= ,chessHeight= ,chessPosition= ,]"
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Chess [");
+        builder.append("chessName=");
+        builder.append(chessName);
+        builder.append(", chessWidth=");
+        builder.append(chessWidth);
+        builder.append(", chessHeight=");
+        builder.append(chessHeight);
+        builder.append(", chessPosition=");
+        builder.append(getPosition().toString());
+        builder.append("]");
+        return builder.toString();
+    }
 }

@@ -3,19 +3,37 @@ package com.klotski.logic;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.klotski.polygon.Chess;
 import com.klotski.polygon.ChessBoard;
 
+/**
+ * 控制器，负责控制前后端
+ *
+ * @author BingoCAT
+ */
 public class ChessBoardControl
 {
+    //前端
     private ChessBoard chessBoard;
+    //后端
     private ChessBoardArray chessBoardArray;
+    //当前棋盘上选中的棋子
     private Chess selectingChess;
+    //获取棋盘
     public ChessBoard getChessBoard()
     {
         return chessBoard;
     }
-    //private Stage stage;
+    //获取选中的棋子
+    public Chess getSelectingChess()
+    {
+        return selectingChess;
+    }
+
+    /**
+     * 测试时候使用的。默认构造棋盘
+     */
     private void loadDefault()
     {
         chessBoard = new ChessBoard();
@@ -28,6 +46,11 @@ public class ChessBoardControl
         t4= new Sprite(new Texture("Caoc.png"));
         t1.setOrigin(0, 0);
         //t1.setSize(160f,160f);
+        Image background;
+        background=new Image(new Sprite(new Texture("background.png")));
+        background.setPosition(-10,-10);
+        background.setHeight(5*160f+20);
+        background.setWidth(4*160f+20);
 
         c1 = new Chess(t1, "曹操", 2, 2);
         c1.setXY(new Pos(1,2));
@@ -37,7 +60,7 @@ public class ChessBoardControl
         c3.setXY(new Pos(3, 0));
         c4 = new Chess(t4, "赵云", 1, 2);
         c4.setXY(new Pos(0, 2));
-        c5=new Chess(t1,"黄总",1,2);
+        c5=new Chess(t1,"黄忠",1,2);
         c5.setXY(new Pos(3, 2));
         c6=new Chess(t2,"马超",1,2);
         c6.setXY(new Pos(0, 0));
@@ -45,13 +68,12 @@ public class ChessBoardControl
         c7.setXY(new Pos(0, 4));
         c8=new Chess(t3,"卒",1,1);
         c8.setXY(new Pos(1, 1));
-
         c9=new Chess(t3,"卒",1,1);
         c9.setXY(new Pos(3, 4));
         c10=new Chess(t3,"卒",1,1);
         c10.setXY(new Pos(2, 1));
-        //c1.setPosition(20, 20);
         chessBoard = new ChessBoard();
+        chessBoard.addActor(background);
         chessBoard.addChess(c1);
         chessBoard.addChess(c2);
         chessBoard.addChess(c3);
@@ -63,19 +85,31 @@ public class ChessBoardControl
         chessBoard.addChess(c9);
         chessBoard.addChess(c10);
         chessBoard.setPosition(100,100);
-       // chessBoard.setOrigin(0, 0);
     }
+
+    /**
+     * 加载棋盘
+     * @param board 前端
+     * @param boardArray 后端
+     */
     public void load(ChessBoard board, ChessBoardArray boardArray)
     {
         this.chessBoard = board;
         this.chessBoardArray = boardArray;
         loadDefault();
     }
+    //移动棋子
     public void move(Chess chess, Pos p)
     {
+
         chessBoard.move(chess, p);
     }
-    //public void
+
+    /**
+     * 获取指定坐标的棋子
+     * @param p 给定坐标
+     * @return 位置上的棋子
+     */
     public Chess getChess(Pos p)
     {
         for(Actor c:chessBoard.getChesses())
@@ -88,12 +122,14 @@ public class ChessBoardControl
         }
         return null;
     }
+
+    /**
+     * 选中棋子
+     * @param chess 被选中的棋子
+     */
     public void select(Chess chess)
     {
-        if (chess == null)
-        {
-            return;
-        }
+        if (chess == null) return;
         chessBoard.select(chess);
         selectingChess = chess;
     }

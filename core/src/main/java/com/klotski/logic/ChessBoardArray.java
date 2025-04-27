@@ -39,9 +39,13 @@ public class ChessBoardArray
         this.chessBoard = chessBoard;
     }
 
-    public void delete(Chess chess)
+    public void deleteChess(Chess chess)
     {
 
+    }
+    public boolean isPosEmpty(Pos p)
+    {
+        return true;
     }
 }
 

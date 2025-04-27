@@ -143,7 +143,15 @@ public class Main extends ApplicationAdapter
             if (c == null)
             {
                 Logger.debug("Selected chess is null: "+xx+" "+yy);
+                if(cbc.getSelectingChess()!=null)
+                {
+                    cbc.move(cbc.getSelectingChess(),new Pos(xx,yy));
+                }
                 return true;
+            }
+            if(c==cbc.getSelectingChess())
+            {
+
             }
             cbc.select(c);
             Logger.debug("Selected chess: "+c.getPosition().getX()+" "+c.getPosition().getY());
@@ -153,7 +161,7 @@ public class Main extends ApplicationAdapter
         @Override
         public boolean mouseMoved (InputEvent event, float x, float y)
         {
-            cbc.mouseMoved(new Pos((int)(x/160f),(int)(y/160f)));
+            //cbc.mouseMoved(new Pos((int)(x/160f),(int)(y/160f)));
             return true;
         }
 

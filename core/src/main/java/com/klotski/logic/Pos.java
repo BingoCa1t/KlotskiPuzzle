@@ -47,15 +47,34 @@ public class Pos
     {
         this.x = x;
         this.y = y;
+        this.z = 0;
     }
+
+    /**
+     * 坐标加法
+     * @param p1 两个坐标相加
+     * @return 结果
+     */
     public Pos add(Pos p1)
     {
         return new Pos(this.x + p1.x, this.y + p1.y, this.z + p1.z);
     }
+
+    /**
+     * 坐标减法
+     * @param p1 减数
+     * @return 当前坐标减去p1的结果
+     */
     public Pos sub(Pos p1)
     {
         return new Pos(this.x - p1.x, this.y - p1.y, this.z - p1.z);
     }
+
+    /**
+     * 判断两个坐标是否相等
+     * @param obj 提供的对象
+     * @return 是否相等
+     */
     @Override
     public boolean equals(Object obj) {
         // 如果 obj 类型确实为 Pos 类
@@ -74,7 +93,18 @@ public class Pos
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(x, y, z);
+    }
+
+    /**
+     * toString()
+     * @return 返回坐标形式(x,y)
+     */
+    @Override
+    public String toString()
+    {
+        return "(" + x + ", " + y +  ")";
     }
 }

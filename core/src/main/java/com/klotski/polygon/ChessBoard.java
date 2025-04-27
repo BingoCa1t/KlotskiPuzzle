@@ -2,34 +2,40 @@ package com.klotski.polygon;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.klotski.logger.Logger;
 import com.klotski.logic.ChessBoardArray;
 import com.klotski.logic.Pos;
 
 import java.util.ArrayList;
 
+/**
+ * 前端，负责绘制棋盘和棋子
+ *
+ * @author BingoCAT
+ */
 public class ChessBoard extends Group
 {
-    // private HashMap<Chess,String> chessBoardImagePath;
-
-    //前后端分离（？
-    //此为前端，只负责绘制UI
     //ChessBoardArray为后端，负责维护数组
-    //先不写逻辑，把图画出来先
-    //先写一个draw()方法，把图画出来
     //Chess只有X和Y坐标（整数），由ChessBoard负责转换成像素坐标
-    //控制器？
-    //private int[][] chessBoardArray;
+
+    //棋盘默认宽度
     private final int DEFAULT_WIDTH = 4;
+    //棋盘默认高度
     private final int DEFAULT_HEIGHT = 5;
+    //后端
     private ChessBoardArray boardArray;
+    //暂时无用，以后可能会用到
     private Chess virtualChess;
-    private Image background = new Image(new Texture("background.png"));
+    private Chess selectedChess;
+    //chess数组
     private ArrayList<Chess> chesses = new ArrayList<>();
 
     public ArrayList<Chess> getChesses()
@@ -52,11 +58,6 @@ public class ChessBoard extends Group
     public ChessBoard()
     {
         super();
-        //将图片素材按照棋子大小缩放
-        background.setScale(DEFAULT_WIDTH * 160f / background.getImageWidth(), DEFAULT_HEIGHT * 160f / background.getImageHeight());
-        addActor(background);
-        //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
-        //setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
 
     @Override
@@ -65,14 +66,29 @@ public class ChessBoard extends Group
         super.addActor(actor);
     }
 
+    /**
+     * 添加棋子，addActor的同时把棋子加入Arraylist
+     *
+     * @param chess 添加的棋子
+     */
     public void addChess(Chess chess)
     {
         addActor(chess);
         chesses.add(chess);
     }
 
+    /**
+     * 删除棋子
+     *
+     * @param chess 要删除的棋子
+     */
     public void deleteChess(Chess chess)
     {
+        if (!chesses.contains(chess))
+        {
+            Logger.warning("Chess does not exist:" + chess.toString());
+            return;
+        }
         chesses.remove(chess);
         removeActor(chess);
     }
@@ -86,10 +102,10 @@ public class ChessBoard extends Group
     public void move(Chess chess, Pos p)
     {
         // 获取一个 MoveTo 动作, 0.8秒内移动到目标位置
-        MoveToAction action = Actions.moveTo(p.getX() * 160, p.getY() * 160, 0.8F, Interpolation.smooth);
-
+        MoveToAction action = Actions.moveTo(p.getX() * 160, p.getY() * 160, 0.5F, Interpolation.smoother);
         // 将动作附加在演员身上, 执行动作
         chess.addAction(action);
+        chess.setXYWithoutChangingState(p);
     }
 
     /**
@@ -99,12 +115,17 @@ public class ChessBoard extends Group
      */
     public void select(Chess chess)
     {
+        if(selectedChess != null&&selectedChess.equals(chess))
+        {
+            chess.disSelect();
+            selectedChess = null;
+            return;
+        }
         //单击触发
         if (!chesses.contains(chess))
         {
             return;
         }
-
         for (Chess chess2 : chesses)
         {
             chess2.disSelect();
@@ -134,7 +155,7 @@ public class ChessBoard extends Group
         this.virtualChess = new Chess(virtualChess);
 
         this.virtualChess.setXY(p);
-        this.virtualChess.getColor().a=0.3f;
+        this.virtualChess.getColor().a = 0.3f;
         this.addActor(this.virtualChess);
 
 
@@ -151,14 +172,12 @@ public class ChessBoard extends Group
 
         super.draw(batch, parentAlpha);
         //super.draw(batch, parentAlpha);
-        //画每一个棋子
-        //****这里以后加上要先画棋盘
         //不能像底下那样手动处理，Group父类的draw会按照Group的Position来作为绘制Actor原点
         /*
         for(Chess chess : chesses)
         {
             //chess.setPosition(chess.getX()*60, chess.getY()*60);
-            chess.draw(batch, parentAlpha);
+            chess.draw(batch, parentAlpha)
         }
 
          */
