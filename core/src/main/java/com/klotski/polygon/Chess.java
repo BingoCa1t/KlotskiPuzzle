@@ -15,8 +15,11 @@ import com.klotski.logic.Pos;
 public class Chess extends Actor
 {
     /*自定义里面的宽度、高度、坐标都是如（3,3）这样的，Actor基类本身的才是像素绘制的坐标*/
-
-    //绘制区域
+    private int ID;
+    private String imagePath;
+    /**
+     * 绘制区域
+     */
     private TextureRegion region;
     //棋子实时XY坐标，如(0,0))
     private Pos position;
@@ -31,7 +34,7 @@ public class Chess extends Actor
     //棋子默认高度
     private final int DEFAULT_CHESS_HEIGHT = 1;
     //棋盘一格为160像素，在这里统一管理大小，方便以后修改
-    private final float squareHW = 160f;
+    public static final float squareHW = 170f;
     //棋子是否被选中
     private boolean isSelected = false;
 
@@ -63,6 +66,30 @@ public class Chess extends Actor
     public Pos getPosition()
     {
         return position;
+    }
+    public String getChessName()
+    {
+        return chessName;
+    }
+
+    public String getImagePath()
+    {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath)
+    {
+        this.imagePath = imagePath;
+    }
+
+    public int getID()
+    {
+        return ID;
+    }
+
+    public void setID(int ID)
+    {
+        this.ID = ID;
     }
 
     /**
@@ -96,7 +123,7 @@ public class Chess extends Actor
     public void setPosition(float x, float y)
     {
         super.setPosition(x, y);
-        this.position = new Pos((int) (x / 160), (int) (y / 160));
+        this.position = new Pos((int) (x / squareHW), (int) (y / squareHW));
     }
 
     /**

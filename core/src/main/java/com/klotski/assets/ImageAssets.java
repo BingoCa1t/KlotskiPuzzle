@@ -5,8 +5,11 @@ package com.klotski.assets;
  */
 public enum ImageAssets
 {
-    AboutButton("img/button/about.png");
-
+    AboutButton("img/button/about.png"),
+    Caocao("Caoc.png|CaocSelected.png"),
+    Guanyu("Guanyu.png|GuanyuSelected.png"),
+    HuangZong("HuangZong.png|HuangZongSelected.png"),
+    ZhaoYun("ZhaoYun.png|ZhaoYunSelected.png");
     private final String alias;
 
     ImageAssets(String alias)
@@ -18,4 +21,4 @@ public enum ImageAssets
     {
         return alias;
     }
-}
+    }

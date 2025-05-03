@@ -10,10 +10,14 @@ buildscript {
   }
   dependencies {
 
-
   }
 }
-
+dependencies {
+  //implementation("com.fasterxml.jackson.core:jackson-core:2.13.1");
+  // 添加Jackson核心依赖
+  //implementation ''
+ // implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1");
+}
 allprojects {
   apply plugin: 'eclipse'
   apply plugin: 'idea'

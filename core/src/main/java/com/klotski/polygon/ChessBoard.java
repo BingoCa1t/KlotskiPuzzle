@@ -1,16 +1,12 @@
 package com.klotski.polygon;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.klotski.logger.Logger;
+import com.klotski.utils.logger.Logger;
 import com.klotski.logic.ChessBoardArray;
 import com.klotski.logic.Pos;
 
@@ -76,7 +72,11 @@ public class ChessBoard extends Group
         addActor(chess);
         chesses.add(chess);
     }
-
+    public void addChessArray(ArrayList<Chess> chesses)
+    {
+        for(Chess chess : chesses)
+            addChess(chess);
+    }
     /**
      * 删除棋子
      *
@@ -102,7 +102,7 @@ public class ChessBoard extends Group
     public void move(Chess chess, Pos p)
     {
         // 获取一个 MoveTo 动作, 0.8秒内移动到目标位置
-        MoveToAction action = Actions.moveTo(p.getX() * 160, p.getY() * 160, 0.5F, Interpolation.smoother);
+        MoveToAction action = Actions.moveTo(p.getX() * Chess.squareHW, p.getY() * Chess.squareHW, 0.5F, Interpolation.smoother);
         // 将动作附加在演员身上, 执行动作
         chess.addAction(action);
         chess.setXYWithoutChangingState(p);

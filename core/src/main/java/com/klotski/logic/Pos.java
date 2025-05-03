@@ -91,7 +91,11 @@ public class Pos
             return false;
         }
     }
-
+    public boolean isInLine(final Pos pos)
+    {
+        if(pos.getX() == this.x || pos.getY() == this.y ) return true;
+        return false;
+    }
     @Override
     public int hashCode()
     {

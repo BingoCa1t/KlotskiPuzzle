@@ -9,7 +9,7 @@ import com.esotericsoftware.spine.*;
 import com.esotericsoftware.spine.AnimationState.TrackEntry;
 import com.klotski.Main;
 import com.klotski.assets.SpineAssets;
-import com.klotski.logger.Logger;
+import com.klotski.utils.logger.Logger;
 
 /**
  * Spine 对象类，支持移动缩放与动画切换、错误处理、性能优化、功能扩展

@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.klotski.Main;
-import com.klotski.logger.Logger;
+import com.klotski.utils.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
