@@ -10,12 +10,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
 import com.klotski.logic.ChessBoardControl;
@@ -26,7 +25,6 @@ import com.klotski.polygon.TimerW;
 import com.klotski.utils.logger.Logger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.TimerTask;
 
 /**
  * 游戏核心界面
@@ -65,26 +63,27 @@ public class GameMainScene extends KlotskiScene
         //t1.setSize(160f,160f);
 
         ArrayList<Chess> chesses = new ArrayList<>();
-        c1 = new Chess(t1, "曹操", 2, 2);
+        c1 = new Chess("Caoc.png", "曹操", 2, 2);
         c1.setXY(new Pos(1, 2));
-        c2 = new Chess(t2, "关羽", 2, 1);
+        c2 = new Chess("Caoc.png", "关羽", 2, 1);
         c2.setXY(new Pos(1, 4));
-        c3 = new Chess(t3, "张飞", 1, 2);
+        c3 = new Chess("Caoc.png", "张飞", 1, 2);
         c3.setXY(new Pos(3, 0));
-        c4 = new Chess(t4, "赵云", 1, 2);
+        c4 = new Chess("Caoc.png", "赵云", 1, 2);
         c4.setXY(new Pos(0, 2));
-        c5 = new Chess(t1, "黄忠", 1, 2);
+        c5 = new Chess("Caoc.png", "黄忠", 1, 2);
         c5.setXY(new Pos(3, 2));
-        c6 = new Chess(t2, "马超", 1, 2);
+        c6 = new Chess("Caoc.png", "马超", 1, 2);
         c6.setXY(new Pos(0, 0));
-        c7 = new Chess(t3, "卒", 1, 1);
+        c7 = new Chess("Caoc.png", "卒", 1, 1);
         c7.setXY(new Pos(0, 4));
-        c8 = new Chess(t3, "卒", 1, 1);
+        c8 = new Chess("Caoc.png", "卒", 1, 1);
         c8.setXY(new Pos(1, 1));
-        c9 = new Chess(t3, "卒", 1, 1);
+        c9 = new Chess("Caoc.png", "卒", 1, 1);
         c9.setXY(new Pos(3, 4));
-        c10 = new Chess(t3, "卒", 1, 1);
+        c10 = new Chess("Caoc.png", "卒", 1, 1);
         c10.setXY(new Pos(2, 1));
+
         chesses.add(c1);
         chesses.add(c2);
         chesses.add(c3);
@@ -112,7 +111,7 @@ public class GameMainScene extends KlotskiScene
     @Override
     public void init()
     {
-        //super.init();
+        super.init();
         cbc = new ChessBoardControl();
         mapData = Default();
         cbc.load(mapData);
@@ -183,8 +182,9 @@ public class GameMainScene extends KlotskiScene
      */
     public GameMainScene(Main gameMain)
     {
+
         super(gameMain);
-        stage = new Stage();
+
     }
 
     @Override
@@ -196,7 +196,7 @@ public class GameMainScene extends KlotskiScene
     @Override
     public void draw(float delta)
     {
-
+       stage.draw();
     }
 
     @Override
@@ -208,8 +208,8 @@ public class GameMainScene extends KlotskiScene
     @Override
     public void render(float delta)
     {
-        stage.act(delta);
-        stage.draw();
+        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        super.render(delta);
     }
 
 
@@ -296,7 +296,7 @@ public class GameMainScene extends KlotskiScene
             {
                 case Input.Keys.UP:
                 {
-                    Logger.info("Steps: " + cbc.getSteps());
+
                     //Gdx.app.log(TAG, "被按下的按键: 方向上键");
                     // cb2.move(cb2.getChess10(),new Pos(2,0));
                     // System.out.println("移动棋子");

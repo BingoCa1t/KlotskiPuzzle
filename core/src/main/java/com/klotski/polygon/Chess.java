@@ -147,6 +147,19 @@ public class Chess extends Actor
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
+    public Chess(String imagePath, String chessName, int chessWidth, int chessHeight)
+    {
+        super();
+        this.imagePath = imagePath;
+        this.region=new TextureRegion(new Texture(imagePath));
+        this.chessName = chessName;
+        this.chessWidth = chessWidth;
+        this.chessHeight = chessHeight;
+        //将图片素材按照棋子大小缩放
+        setScale(squareHW * chessWidth / region.getRegionWidth(), squareHW * chessHeight / this.region.getRegionHeight());
+        //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
+        setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
+    }
 
     /**
      * 创建chess的副本

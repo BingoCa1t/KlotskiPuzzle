@@ -1,19 +1,16 @@
 package com.klotski.polygon;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.klotski.SmartBitmapFont;
+import com.klotski.utils.SmartBitmapFont;
 
 public class TimerW extends Group
 {
     private int minutes=0;
     private int seconds=0;
-private Label label1;
+    private Label label1;
     private Label label2;
     public TimerW()
     {
@@ -24,19 +21,19 @@ private Label label1;
     {
         Label.LabelStyle ls=new Label.LabelStyle();
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("furore.ttf"));
-        ls.font = new SmartBitmapFont(generator,100);
-        label1 = new Label("00", ls);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("DS-DIGI-1.ttf"));
+        ls.font = new SmartBitmapFont(generator,160);
+        label1 = new Label("0", ls);
         Label.LabelStyle ls2=new Label.LabelStyle();
-        ls2.font = new BitmapFont(Gdx.files.internal("huawenzhongsong.fnt"));
+        ls2.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("DS-DIGI-1.ttf")),80);
 
 
-        label2 = new Label("00", ls2);
+        label2 = new Label(":00", ls2);
         addActor(label1);
         addActor(label2);
         label1.setPosition(0,0);
         label1.setFontScale(1f);
-        label2.setPosition(50,0);
+        label2.setPosition(90,20);
         label2.setFontScale(1f);
     }
     public void addSecond()
@@ -44,14 +41,14 @@ private Label label1;
         if(seconds!=59)
         {
             seconds++;
-            label2.setText(String.valueOf(seconds));
+            label2.setText(String.format(": %02d",seconds));
         }
         else
         {
             seconds=0;
             minutes++;
-            label2.setText(String.valueOf(seconds));
-            label1.setText(String.valueOf(minutes));
+            label2.setText(String.format(": %02d",seconds));
+            label1.setText(minutes);
         }
     }
 }

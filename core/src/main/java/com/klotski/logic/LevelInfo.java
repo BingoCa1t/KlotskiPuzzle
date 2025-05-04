@@ -6,9 +6,12 @@ public class LevelInfo
 {
     private int levelID;
     private MapData mapData;
-    private boolean solved=false;
+    private int maxStars=-1;
+    private int minSolveTime=-1;
+    private LevelStatus levelStatus;
     private int solveTime;
     private int stars;
+
 
     public int getLevelID()
     {
@@ -40,9 +43,19 @@ public class LevelInfo
         this.mapData = mapData;
     }
 
-    public void setSolved(boolean solved)
+    public void setLevelStatus(LevelStatus levelStatus)
     {
-        this.solved = solved;
+        this.levelStatus = levelStatus;
+    }
+
+    public void setMaxStars(int maxStars)
+    {
+        this.maxStars = maxStars;
+    }
+
+    public void setMinSolveTime(int minSolveTime)
+    {
+        this.minSolveTime = minSolveTime;
     }
 
     public void setSolveTime(int solveTime)

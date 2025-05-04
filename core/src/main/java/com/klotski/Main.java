@@ -1,36 +1,79 @@
 package com.klotski;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.klotski.Scene.GameMainScene;
+import com.klotski.Scene.LoginScene;
+import com.klotski.Scene.ScreenManager;
 import com.klotski.assets.AssetsPathManager;
+import com.klotski.logic.LevelInfo;
+import com.klotski.map.MapData;
+import com.klotski.map.MapDataManager;
+import com.klotski.network.NetManager;
+import com.klotski.Scene.StartScene;
+import com.klotski.user.UserManager;
+import com.klotski.utils.json.JsonManager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game
 {
+    private UserManager userManager;
+    private NetManager netManager;
+    private ScreenManager screenManager;
+    private JsonManager jsonManager;
+    private MapDataManager mapDataManager;
+
     private SpriteBatch batch;
     private Texture image;
-    private Stage stage;
+   // private Stage stage;
     private GameMainScene gms;
+    private LoginScene loginScene;
+
+    private HashMap<Integer, LevelInfo> levelInfos;
+    /*
+    先在主程序里加载所有MapData
+    然后再初始化levelInfo
+    MapData分三种：闯关，倒计时，自定义
+    levelInfo用来存档
+    levelInfo里的MapData仅用于选择关卡界面
+    于是可以把SaveArchive写进levelInfo（？
+    那levelInfo的初始化有两个部分
+    MapData和LevelArchive
+    在用户登录（or guest）之后初始化LevelInfo
+     */
     @Override
     public void create() {
+        netManager=new NetManager("127.0.0.1",6666);
+        jsonManager=new JsonManager();
+        screenManager=new ScreenManager(this);
+        userManager=new UserManager(netManager,screenManager);
+        mapDataManager=new MapDataManager(this);
+        mapDataManager.load();
         batch = new SpriteBatch();
         image = new Texture("libgdx.png");
-
+        loginScene=new LoginScene(this);
         gms = new GameMainScene(this);
-        gms.show();
-        setScreen(gms);
+        //ObjectMapper mapper = new ObjectMapper();
+        //String s=mapper.writeValueAsString(gms.getMapData())
+        gms.init();
+       // MapData m=jsonManager.parseJsonToObject(jsonManager.getJsonString(gms.getMapData()),MapData.class);
+        jsonManager.saveJsonToFile("D:\\Map\\1.map",gms.getMapData());
+        //loginScene.show();
+        screenManager.setScreen(new StartScene(this));
+        //setScreen(loginScene);
 
     }
 
     @Override
-    public void render() {
+    public void render()
+    {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         super.render();
     }
@@ -50,5 +93,20 @@ public class Main extends Game
     public AssetsPathManager getAssetsPathManager()
     {
         return null;
+    }
+
+    public UserManager getUserManager()
+    {
+        return userManager;
+    }
+
+    public ScreenManager getScreenManager()
+    {
+        return screenManager;
+    }
+
+    public JsonManager getJsonManager()
+    {
+        return jsonManager;
     }
 }

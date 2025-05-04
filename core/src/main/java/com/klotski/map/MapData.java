@@ -1,7 +1,6 @@
 package com.klotski.map;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.MapSerializer;
 import com.klotski.logic.Pos;
 import com.klotski.map.serialize.MapDataSerializer;
 import com.klotski.polygon.Chess;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 @JsonSerialize(using= MapDataSerializer.class)
 public class MapData
 {
-
+    private int mapType;
     //关卡名字
     private String mapName;
     //关卡得分，比如10步以内3颗星，15步以内两颗星，20步以内一颗星，则数组应为[10,15,20]
@@ -83,6 +82,16 @@ public class MapData
     public void setWidth(int width)
     {
         this.width = width;
+    }
+
+    public int getMapType()
+    {
+        return mapType;
+    }
+
+    public void setMapType(int mapType)
+    {
+        this.mapType = mapType;
     }
 }
 

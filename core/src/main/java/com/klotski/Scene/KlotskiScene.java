@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.klotski.Main;
 //import com.klotski.polygon.combine.SokobanCombineObject;
@@ -77,8 +76,8 @@ public abstract class KlotskiScene extends ApplicationAdapter implements Screen 
      * 注意，<b>调用 super.init() 确保超类初始化</b>
      */
     protected void init() {
-        viewport = new FitViewport(16, 9); // 初始化视口
-        stage = new Stage(viewport);       // 初始化舞台
+        //viewport = new FitViewport(16, 9); // 初始化视口
+        stage = new Stage();       // 初始化舞台
     }
 
     /**
