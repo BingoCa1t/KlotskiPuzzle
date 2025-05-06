@@ -85,4 +85,13 @@ public class LoginGroup extends Group
         return texture;
     }
 
+    public TextField getPasswordTextField()
+    {
+        return passwordTextField;
+    }
+
+    public TextField getUsernameTextField()
+    {
+        return usernameTextField;
+    }
 }

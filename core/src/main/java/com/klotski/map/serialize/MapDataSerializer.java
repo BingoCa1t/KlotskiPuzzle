@@ -18,7 +18,10 @@ public class MapDataSerializer extends JsonSerializer<MapData>
         gen.writeStartObject();
         gen.writeStringField("type", "mapData");
         gen.writeStringField("mapType",String.valueOf(value.getMapType()));
+        gen.writeStringField("height",String.valueOf(value.getHeight()));
+        gen.writeStringField("width",String.valueOf(value.getWidth()));
         gen.writeStringField("name",value.getMapName());
+        gen.writeStringField("mainIndex",String.valueOf(value.getMainIndex()));
         gen.writeArrayFieldStart("grades");
         for(int i : value.getGrades())
         {

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 @JsonSerialize(using= MapDataSerializer.class)
 public class MapData
 {
+    private int mapID;
     private int mapType;
     //关卡名字
     private String mapName;
@@ -23,6 +24,8 @@ public class MapData
     private ArrayList<Chess> chesses;
     //棋盘出口
     private ArrayList<Pos> exit;
+    //主棋子（曹操）
+    private int mainIndex;
 
     public ArrayList<Chess> getChesses()
     {
@@ -92,6 +95,26 @@ public class MapData
     public void setMapType(int mapType)
     {
         this.mapType = mapType;
+    }
+
+    public int getMapID()
+    {
+        return mapID;
+    }
+
+    public void setMapID(int mapID)
+    {
+        this.mapID = mapID;
+    }
+
+    public int getMainIndex()
+    {
+        return mainIndex;
+    }
+
+    public void setMainIndex(int mainIndex)
+    {
+        this.mainIndex = mainIndex;
     }
 }
 

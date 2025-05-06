@@ -1,5 +1,6 @@
 package com.klotski.user;
 
+import com.klotski.archive.LevelArchive;
 import com.klotski.logic.LevelInfo;
 
 import java.util.ArrayList;
@@ -13,13 +14,13 @@ public class UserInfo
     private String userName;
     private String passwordMD5;
     private String email;
-    private ArrayList<LevelInfo> levels;
+    private ArrayList<LevelArchive> levels;
     //id-levelInfo
     //id为Map文件名
     private HashMap<Integer,LevelInfo> levelInfo1;
     private HashMap<Integer,LevelInfo> levelInfo2;
     private HashMap<Integer,LevelInfo> levelInfo3;
-    public ArrayList<LevelInfo> getLevels()
+    public ArrayList<LevelArchive> getLevels()
     {
         return levels;
     }
@@ -59,7 +60,7 @@ public class UserInfo
         this.email = email;
     }
 
-    public void setLevels(ArrayList<LevelInfo> levels)
+    public void setLevels(ArrayList<LevelArchive> levels)
     {
         this.levels = levels;
     }

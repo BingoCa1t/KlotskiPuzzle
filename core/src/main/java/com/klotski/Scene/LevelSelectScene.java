@@ -2,16 +2,27 @@ package com.klotski.Scene;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
 import com.klotski.logic.LevelInfo;
+import com.klotski.polygon.LevelActor;
 import com.klotski.polygon.LevelGroup;
+import com.klotski.utils.logger.Logger;
 
 public class LevelSelectScene extends KlotskiScene
 {
     private String title="";
     private LevelInfo li;
+    private LevelGroup lg;
+    private Image background;
+    private Image selectLevelText;
     /**
      * 基类初始化，需要传入 gameMain
      *
@@ -28,22 +39,48 @@ public class LevelSelectScene extends KlotskiScene
     @Override
     public void init()
     {
-        LevelGroup lg=new LevelGroup();
+        background=new Image(new TextureRegion(new Texture(Gdx.files.internal("selectLevelBackground.png"))));
+        background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        selectLevelText=new Image(new TextureRegion(new Texture(Gdx.files.internal("selectLevelText.png"))));
+        selectLevelText.setScale(0.6f);
+        selectLevelText.setPosition(550,900);
+        lg = new LevelGroup(gameMain);
         li=new LevelInfo();
-        li.setMapData(null);
+        li.setMapID(0);
+        lg.addLevel(li,true);
+        LevelInfo li2=new LevelInfo();
+        li2.setMapID(1);
+        lg.addLevel(li2,true);
         lg.addLevel(li,true);
         lg.addLevel(li,true);
         lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
+        lg.addLevel(li,false);
+        lg.addLevel(li,false);
+        lg.addLevel(li,false);
+        lg.addLevel(li,false);
+        lg.addLevel(li,false);
+        lg.addLevel(li,false);
+        lg.addLevel(li,false);
+        lg.addLevel(li,false);
+        /*
+        lg.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+               //Logger.debug("Clicked:"+event.getListenerActor());
+                Actor actor = event.getListenerActor();
+                if(actor instanceof LevelActor la)
+                {
+                    int levelID=la.getLevelID();
+                    gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,la.getLevelInfo()));
+                }
+
+            }
+        });
+         */
+        stage.addActor(background);
+        stage.addActor(selectLevelText);
         stage.addActor(lg);
     }
     @Override
@@ -65,4 +102,5 @@ public class LevelSelectScene extends KlotskiScene
     {
 
     }
+
 }

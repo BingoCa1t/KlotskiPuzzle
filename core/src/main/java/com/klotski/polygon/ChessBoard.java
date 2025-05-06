@@ -106,6 +106,7 @@ public class ChessBoard extends Group
         // 将动作附加在演员身上, 执行动作
         chess.addAction(action);
         chess.setXYWithoutChangingState(p);
+
     }
 
     /**

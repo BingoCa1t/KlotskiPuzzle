@@ -5,7 +5,7 @@ import com.klotski.map.MapData;
 public class LevelInfo
 {
     private int levelID;
-    private MapData mapData;
+    private int mapID;
     private int maxStars=-1;
     private int minSolveTime=-1;
     private LevelStatus levelStatus;
@@ -28,9 +28,9 @@ public class LevelInfo
         return stars;
     }
 
-    public MapData getMapData()
+    public int getMapID()
     {
-        return mapData;
+        return mapID;
     }
 
     public void setLevelID(int levelID)
@@ -38,9 +38,9 @@ public class LevelInfo
         this.levelID = levelID;
     }
 
-    public void setMapData(MapData mapData)
+    public void setMapID(int mapID)
     {
-        this.mapData = mapData;
+        this.mapID = mapID;
     }
 
     public void setLevelStatus(LevelStatus levelStatus)

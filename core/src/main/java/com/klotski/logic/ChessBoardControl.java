@@ -28,7 +28,7 @@ public class ChessBoardControl
     //当前棋盘上选中的棋子
     private Chess selectingChess;
     private Chess mainChess;
-    private ArrayList<Pos> exit;
+    private ArrayList<Pos> exits;
     //获取棋盘
     public ChessBoard getChessBoard()
     {
@@ -94,7 +94,7 @@ public class ChessBoardControl
         chessBoard.addChess(c8);
         chessBoard.addChess(c9);
         chessBoard.addChess(c10);
-        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), 4, 5);
+        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), 4, 5,null,0);
         chessBoard.setPosition(100, 100);
     }
 
@@ -113,7 +113,8 @@ public class ChessBoardControl
         chessBoard.addActor(background);
         chessBoard.addChessArray(mapData.getChesses());
         chessBoard.setPosition(100, 100);
-        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight());
+        exits=mapData.getExit();
+        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(),exits, mapData.getMainIndex());
 
 
         //loadDefault();
@@ -134,7 +135,10 @@ public class ChessBoardControl
             moveSteps.push(new MoveStep(chess.getPosition(), pp, chess));
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             chessBoard.move(chess, pp);
-
+            if(isWin())
+            {
+                Logger.debug("Win");
+            }
         }
         else
         {
@@ -200,8 +204,8 @@ public class ChessBoardControl
     }
     public boolean isWin()
     {
+        return chessBoardArray.isWin();
 
-        return false;
     }
     public void restart()
     {
@@ -210,4 +214,5 @@ public class ChessBoardControl
             moveBack();
         }
     }
+
 }

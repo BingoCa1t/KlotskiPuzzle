@@ -27,22 +27,53 @@ public class LevelActor extends Actor
     private int stars=0;
     private boolean isOpen;
     //private Button button;
-    public LevelActor(LevelInfo levelInfo,boolean isOpen,int order)
+    private int order;
+    public int getLevelID()
+    {
+        return levelID;
+    }
+
+    public void setLevelID(int levelID)
+    {
+        this.levelID = levelID;
+    }
+
+    public LevelInfo getLevelInfo()
+    {
+        return levelInfo;
+    }
+
+    public LevelActor(LevelInfo levelInfo, boolean isOpen, int order)
     {
         super();
         Button.ButtonStyle style = new Button.ButtonStyle();
-        style.up=new TextureRegionDrawable(new Texture(Gdx.files.internal("levelclosed.png")));
-
-        Pixmap pixmap = new Pixmap(Gdx.files.internal("levelclosed.png"));
-        Pixmap p1=createPressedPixmap(pixmap);
-        style.down=new TextureRegionDrawable(new Texture(p1));
+        if(isOpen)
+        {
+            style.up=new TextureRegionDrawable(new Texture(Gdx.files.internal("level"+String.valueOf(order)+".png")));
+            Pixmap pixmap = new Pixmap(Gdx.files.internal("level1.png"));
+            Pixmap p1=createPressedPixmap(pixmap);
+            style.down=new TextureRegionDrawable(new Texture(p1));
+        }
+        else{
+            style.up=new TextureRegionDrawable(new Texture(Gdx.files.internal("levelclosed.png")));
+            Pixmap pixmap = new Pixmap(Gdx.files.internal("levelclosed.png"));
+            Pixmap p1=createPressedPixmap(pixmap);
+            style.down=new TextureRegionDrawable(new Texture(p1));
+        }
+        this.order=order;
 
         //this.button=new Button(style);
         this.levelInfo = levelInfo;
         this.levelID=levelInfo.getLevelID();
         this.stars=levelInfo.getStars();
         this.isOpen=isOpen;
-        region=new TextureRegion(new Texture(Gdx.files.internal("levelclosed.png")));
+        if(!isOpen)
+        {
+            region = new TextureRegion(new Texture(Gdx.files.internal("levelclosed.png")));
+        }
+        else {
+            region = new TextureRegion(new Texture(Gdx.files.internal("level"+String.valueOf(order)+".png")));
+        }
         //将图片素材按照棋子大小缩放
         setScale(140f / region.getRegionWidth(), 140f / this.region.getRegionHeight());
 

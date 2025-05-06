@@ -26,7 +26,9 @@ public class MapDataDeserializer extends JsonDeserializer<MapData>
 
         mapData.setMapType(node.get("mapType").asInt());
         mapData.setMapName(node.get("name").asText());
-
+        mapData.setHeight(node.get("height").asInt());
+        mapData.setWidth(node.get("width").asInt());
+        mapData.setMainIndex(node.get("mainIndex").asInt());
         // 反序列化 grades 数组
         ArrayList<Integer> grades = new ArrayList<>();
         JsonNode gradesNode = node.get("grades");

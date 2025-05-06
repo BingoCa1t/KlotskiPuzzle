@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -18,6 +19,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
 import com.klotski.logic.ChessBoardControl;
+import com.klotski.logic.LevelInfo;
 import com.klotski.logic.Pos;
 import com.klotski.map.MapData;
 import com.klotski.polygon.Chess;
@@ -44,6 +46,8 @@ public class GameMainScene extends KlotskiScene
     private Label timeLabel;
     private Label stepLabel;
     private BitmapFont font;
+    private LevelInfo levelInfo;
+    private Image background;
     /**
      * 测试时候的默认MapData
      *
@@ -112,11 +116,13 @@ public class GameMainScene extends KlotskiScene
     public void init()
     {
         super.init();
+        background = new Image(new Texture("selectLevelBackground.png"));
+        background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        stage.addActor(background);
         cbc = new ChessBoardControl();
-        mapData = Default();
+        mapData = gameMain.getMapDataManager().getMapDataList1().get(levelInfo.getMapID());
         cbc.load(mapData);
         stage.addActor(cbc.getChessBoard());
-        Gdx.input.setInputProcessor(stage);
         cbc.getChessBoard().addListener(new MyInputListener());
         font=new BitmapFont(Gdx.files.internal("huawenzhongsong.fnt"));
         Label.LabelStyle ls=new Label.LabelStyle();
@@ -180,11 +186,11 @@ public class GameMainScene extends KlotskiScene
      *
      * @param gameMain 全局句柄Q
      */
-    public GameMainScene(Main gameMain)
+    public GameMainScene(Main gameMain,LevelInfo levelInfo)
     {
 
         super(gameMain);
-
+        this.levelInfo = levelInfo;
     }
 
     @Override

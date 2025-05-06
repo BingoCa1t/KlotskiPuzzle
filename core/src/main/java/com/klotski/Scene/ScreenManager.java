@@ -1,5 +1,6 @@
 package com.klotski.Scene;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -69,6 +70,7 @@ public class ScreenManager
         currentScreen = screen;
         currentScreen.show();
         gameMain.setScreen(currentScreen);
+        Gdx.input.setInputProcessor(currentScreen.getStage());
         for(Actor a : currentScreen.getStage().getActors())
         {
             a.getColor().set(a.getColor(),0);

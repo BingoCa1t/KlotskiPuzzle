@@ -38,8 +38,8 @@ public class StartScene extends KlotskiScene
     {
         super.init();
 
-        upTexture = new Texture(Gdx.files.internal("Caoc.png"));
-        downTexture = new Texture(Gdx.files.internal("Caoc.png"));
+        upTexture = new Texture(Gdx.files.internal("login.png"));
+        downTexture = new Texture(Gdx.files.internal("login.png"));
         Button.ButtonStyle style = new Button.ButtonStyle();
 
         // 设置 style 的 弹起 和 按下 状态的纹理区域

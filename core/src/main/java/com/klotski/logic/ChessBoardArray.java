@@ -1,6 +1,7 @@
 package com.klotski.logic;
 
 import com.klotski.polygon.Chess;
+import com.klotski.utils.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,17 +19,21 @@ public class ChessBoardArray
     //牢记：左下角是（0,0）
     private int[][] chessBoard;
     private ArrayList<Chess> chessPositions;
+    private Chess mainChess;
+    private ArrayList<Pos> exits;
 
     public ChessBoardArray(int[][] array)
     {
         this.chessBoard = array;
     }
 
-    public ChessBoardArray(ArrayList<Chess> chessPositions, int width, int height)
+    public ChessBoardArray(ArrayList<Chess> chessPositions, int width, int height,ArrayList<Pos> exits,int mainIndex)
     {
         this.chessPositions = chessPositions;
         this.width = width;
         this.height = height;
+        this.exits = exits;
+        this.mainChess = chessPositions.get(mainIndex);
         init();
     }
 
@@ -48,6 +53,7 @@ public class ChessBoardArray
         }
         for (Chess c : chessPositions)
         {
+
             Pos p = c.getPosition();
             for (int x = 1; x < c.getChessWidth() + 1; x++)
             {
@@ -179,6 +185,20 @@ public class ChessBoardArray
     public boolean isPosEmpty(Pos p)
     {
         return true;
+    }
+    public boolean isWin()
+    {
+        //假设exit都是按照顺序排列的，且至少有两个格子长度
+        if(exits.getFirst().getX()==0&&exits.get(1).getX()==0)
+        {
+            if(mainChess.getPosition().equals(exits.get(0))) return true;
+        }
+        if(exits.getFirst().getY()==0&&exits.get(1).getY()==0)
+        {
+            if(mainChess.getPosition().equals(exits.get(0))) return true;
+        }
+        //Logger.debug("Win");
+        return false;
     }
 }
 

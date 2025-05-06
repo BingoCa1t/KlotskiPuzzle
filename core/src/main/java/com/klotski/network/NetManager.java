@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -16,13 +17,16 @@ public class NetManager implements Runnable
     private PrintWriter out;
     private final Queue<String> messageQueue = new LinkedList<>();
     private boolean isRunning = true;
-
+    private ArrayList<NetworkMessageObserver> observers = new ArrayList<>();
     public NetManager(String serverAddress, int port)
     {
         this.serverAddress = serverAddress;
         this.port = port;
     }
-
+    public void addObserver(NetworkMessageObserver observer)
+    {
+        observers.add(observer);
+    }
     @Override
     public void run()
     {
@@ -47,6 +51,11 @@ public class NetManager implements Runnable
                     while ((response = in.readLine()) != null)
                     {
                         System.out.println("服务器响应：" + response);
+                        for(NetworkMessageObserver observer : observers)
+                        {
+                            observer.update(MessageCode.UserLogin,"200");
+                        }
+
                     }
                 } catch (IOException e)
                 {

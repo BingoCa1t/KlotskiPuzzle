@@ -5,22 +5,32 @@ import com.badlogic.gdx.files.FileHandle;
 import com.klotski.Scene.KlotskiScene;
 import com.klotski.Scene.LoginScene;
 import com.klotski.Scene.ScreenManager;
+import com.klotski.archive.LevelArchive;
+import com.klotski.logic.LevelInfo;
+import com.klotski.logic.LevelStatus;
 import com.klotski.network.MessageCode;
 import com.klotski.network.NetManager;
 import com.klotski.network.NetworkMessageObserver;
 import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
 
+import java.util.ArrayList;
+import java.util.Stack;
+
 public class UserManager implements NetworkMessageObserver
 {
+
     private NetManager netManager;
+    private JsonManager jsonManager;
     private ScreenManager screenManager;
     private String userInfosRootPath = "D:\\UserInfo\\";
+    private UserInfo activeUser;
 
     public UserManager(NetManager netManager, ScreenManager screenManager)
     {
         this.netManager = netManager;
         this.screenManager = screenManager;
+        this.jsonManager = new JsonManager();
     }
 
     public String getCode(String email)
@@ -42,9 +52,26 @@ public class UserManager implements NetworkMessageObserver
 
     public boolean updateUserInfo(UserInfo userInfo)
     {
-        return false;
+        return jsonManager.saveJsonToFile(userInfosRootPath+userInfo.getUserID()+"\\info.usr", userInfo);
     }
+    public UserInfo DEFAULT()
+    {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserID(0);
+        userInfo.setUserName("TEST");
+        userInfo.setEmail("TEST@TEST.com");
+        LevelArchive levelInfo = new LevelArchive();
+        ArrayList<LevelArchive> l=new ArrayList<>();
+        levelInfo.setLevelStatus(LevelStatus.UpComing);
+        levelInfo.setLevelID(0);
+        levelInfo.setMoveSteps(new Stack<>());
 
+        l.add(levelInfo);
+        userInfo.setLevels(l);
+        userInfo.setPasswordMD5("123456");
+        userInfo.setRememberPassword(false);
+        return userInfo;
+    }
     /**
      * 根据userID读取已有用户
      * @param userID
@@ -93,7 +120,7 @@ public class UserManager implements NetworkMessageObserver
                     userInfo.getPasswordMD5() == null
         ) return false;
 
-        if (userInfo.getPasswordMD5().equals("")) return false;
+        if (userInfo.getPasswordMD5().isEmpty()) return false;
 
         return true;
     }
@@ -103,9 +130,8 @@ public class UserManager implements NetworkMessageObserver
         if (code == MessageCode.UserLogin && message.equals("200"))
         {
             KlotskiScene cs = screenManager.getCurrentScreen();
-            if (cs instanceof LoginScene)
+            if (cs instanceof LoginScene loginScene)
             {
-                LoginScene loginScene = (LoginScene) cs;
                 loginScene.loginSucceed();
             }
         }
@@ -133,5 +159,14 @@ public class UserManager implements NetworkMessageObserver
             Logger.error("UserManager", String.format("Cannot create user infos directory %s because %s", userInfosRootPath, e.getMessage()));
             return false;
         }
+    }
+    public void save()
+    {
+
+    }
+
+    public UserInfo getActiveUser()
+    {
+        return activeUser;
     }
 }

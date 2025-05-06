@@ -1,10 +1,17 @@
 package com.klotski.Scene;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.klotski.Main;
 import com.klotski.polygon.LoginGroup;
+import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
+import com.klotski.utils.logger.Logger;
 
 public class LoginScene extends KlotskiScene
 {
@@ -21,13 +28,16 @@ public class LoginScene extends KlotskiScene
         this.userManager=gameMain.getUserManager();
 
     }
-    public void login()
+
+    public void login(String email, String password)
     {
-        userManager.login(null,null);
+        userManager.login(email, password);
     }
     public void loginSucceed()
     {
-
+        //UserInfo userInfo=userManager.getActiveUser();
+        //gameMain.getScreenManager().setScreen(new StartScene(gameMain));
+        Logger.debug("Login Succeed");
     }
     public void loginFail()
     {
@@ -41,7 +51,30 @@ public class LoginScene extends KlotskiScene
         loginGroup=new LoginGroup();
         loginGroup.setPosition(700,300);
         stage.addActor(loginGroup);
-        Gdx.input.setInputProcessor(stage);
+
+        Button.ButtonStyle buttonStyle=new Button.ButtonStyle();
+        buttonStyle.up=new TextureRegionDrawable(new Texture("login.png"));
+        buttonStyle.down=new TextureRegionDrawable(new Texture("login.png"));
+
+        Button loginButton=new Button(buttonStyle);
+        loginButton.setPosition(850,300);
+        loginButton.setTransform(true);
+        loginButton.setScale(0.3f);
+        loginButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                if(!(loginGroup.getPasswordTextField().getText().isEmpty() || loginGroup.getUsernameTextField().getText().isEmpty()))
+                {
+                    login(loginGroup.getUsernameTextField().getText(),loginGroup.getPasswordTextField().getText());
+                    Logger.debug("Login"+loginGroup.getUsernameTextField().getText()+loginGroup.getPasswordTextField().getText());
+                }
+            }
+        });
+        stage.addActor(loginButton);
+
+        //Gdx.input.setInputProcessor(stage);
     }
     @Override
     public void input()
