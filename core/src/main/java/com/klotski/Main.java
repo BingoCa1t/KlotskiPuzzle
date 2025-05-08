@@ -97,6 +97,7 @@ public class Main extends Game
         //loginScene.show();
         //screenManager.setScreen(new StartScene(this));
         screenManager.setScreen(loginScene);
+        screenManager.setScreen(new StartScene(this));
 
     }
 

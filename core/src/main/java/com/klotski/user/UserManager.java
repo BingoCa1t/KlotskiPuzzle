@@ -33,10 +33,10 @@ public class UserManager implements NetworkMessageObserver
         this.jsonManager = new JsonManager();
     }
 
-    public String getCode(String email)
+    public void getCode(String email)
     {
-        netManager.sendMessage(email);
-        return null;
+        netManager.sendMessage(MessageCode.UserGetRegisterCode,email);
+
     }
 
     public int register(String username, String passwordMD5, String email, String code)
@@ -46,7 +46,7 @@ public class UserManager implements NetworkMessageObserver
 
     public void login(String email, String passwordMD5)
     {
-        netManager.sendMessage(MessageCode.UserLogin + email + "|" + passwordMD5);
+        netManager.sendMessage(MessageCode.UserLogin.getCode() + email + "|" + passwordMD5);
     }
 
 
@@ -71,6 +71,10 @@ public class UserManager implements NetworkMessageObserver
         userInfo.setPasswordMD5("123456");
         userInfo.setRememberPassword(false);
         return userInfo;
+    }
+    public void UpdateActiveUserInfoFromServer()
+    {
+
     }
     /**
      * 根据userID读取已有用户
@@ -132,9 +136,32 @@ public class UserManager implements NetworkMessageObserver
             KlotskiScene cs = screenManager.getCurrentScreen();
             if (cs instanceof LoginScene loginScene)
             {
+                //此时应该显示：“登录成功，正在同步用户数据..."
                 loginScene.loginSucceed();
             }
         }
+        if(code == MessageCode.UserLogin&&message.equals("404"))
+        {
+            KlotskiScene cs = screenManager.getCurrentScreen();
+            if (cs instanceof LoginScene loginScene)
+            {
+                loginScene.loginFail();
+            }
+        }
+        if(code == MessageCode.UserGetRegisterCode)
+        {
+            registerCode=message;
+        }
+        if(code == MessageCode.UserGetUserInfo)
+        {
+            activeUser=jsonManager.parseJsonToObject(message, UserInfo.class);
+        }
+    }
+    private String registerCode="-1";
+
+    public String getRegisterCode()
+    {
+        return registerCode;
     }
 
     /**

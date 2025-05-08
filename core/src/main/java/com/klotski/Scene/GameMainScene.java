@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -23,7 +25,9 @@ import com.klotski.logic.LevelInfo;
 import com.klotski.logic.Pos;
 import com.klotski.map.MapData;
 import com.klotski.polygon.Chess;
+import com.klotski.polygon.StarProgress;
 import com.klotski.polygon.TimerW;
+import com.klotski.utils.SmartBitmapFont;
 import com.klotski.utils.logger.Logger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,6 +39,14 @@ import java.util.ArrayList;
  */
 public class GameMainScene extends KlotskiScene
 {
+    private ShapeRenderer shapeRenderer;
+    //private OrthographicCamera camera;
+    private StarProgress starProgress;
+    // 长方形的宽度和高度变量
+    private float rectangleWidth = 200;
+    private float rectangleHeight = 100;
+    // 圆角的半径
+    private float cornerRadius = 20;
     private SpriteBatch batch;
    // private Stage stage;
     private ChessBoardControl cbc;
@@ -48,6 +60,7 @@ public class GameMainScene extends KlotskiScene
     private BitmapFont font;
     private LevelInfo levelInfo;
     private Image background;
+    private Label titleLabel;
     /**
      * 测试时候的默认MapData
      *
@@ -116,31 +129,44 @@ public class GameMainScene extends KlotskiScene
     public void init()
     {
         super.init();
-        background = new Image(new Texture("selectLevelBackground.png"));
-        background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        stage.addActor(background);
+
+        //棋盘控制器ChessBoardControl
         cbc = new ChessBoardControl();
         mapData = gameMain.getMapDataManager().getMapDataList1().get(levelInfo.getMapID());
         cbc.load(mapData);
-        stage.addActor(cbc.getChessBoard());
+        cbc.getChessBoard().setPosition(100,50);
         cbc.getChessBoard().addListener(new MyInputListener());
-        font=new BitmapFont(Gdx.files.internal("huawenzhongsong.fnt"));
+
+        //星星进度条
+        starProgress = new StarProgress(mapData.getGrades()[0], mapData.getGrades()[1], mapData.getGrades()[2]);
+        starProgress.setPosition(830,650);
+
+        //背景
+        background = new Image(new Texture("selectLevelBackground.png"));
+        background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+
+        //标题Label
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("furore.ttf")),80);
+        labelStyle.fontColor = Color.WHITE;
+        titleLabel=new Label(mapData.getMapName(),labelStyle);
+        titleLabel.setPosition(700,970);
+
+        font=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),75);
         Label.LabelStyle ls=new Label.LabelStyle();
         ls.font = font;
         ls.fontColor = Color.WHITE;
-        timeLabel=new Label("00:00", ls);
-        timeLabel.setPosition(850,800);
-        timeLabel.setFontScale(0.7f);
         stepLabel=new Label("00", ls);
         stepLabel.setPosition(1200,800);
-        stepLabel.setFontScale(0.7f);
         startTime = LocalDateTime.now();
         //stage.addActor(timeLabel);
-        stage.addActor(stepLabel);
+
         stage.addListener(new ChessBoardListener());
+        //计时器
         tw=new TimerW();
-        tw.setPosition(850,800);
-        stage.addActor(tw);
+        tw.setPosition(850,750);
+
         Timer.schedule(new Timer.Task()
         {
             @Override
@@ -148,15 +174,14 @@ public class GameMainScene extends KlotskiScene
             {
                 tw.addSecond();
             }
-        },0f,1f);
+        },1f,1f);
+
+        //重置按钮 Restart Button
         Button.ButtonStyle rbs = new Button.ButtonStyle();
         rbs.up=new TextureRegionDrawable(new TextureRegion(new Texture("restart.png")));
         rbs.down=new TextureRegionDrawable(new TextureRegion(new Texture("restart.png")));
-        Button.ButtonStyle ubs = new Button.ButtonStyle();
-        ubs.up=new TextureRegionDrawable(new TextureRegion(new Texture("undo.png")));
         Button restartButton =new Button(rbs);
-        Button undoButton =new Button(ubs);
-        restartButton.setPosition(850,400);
+        restartButton.setPosition(830,500);
         restartButton.setSize(200,100);
         restartButton.addListener(new ClickListener(){
             @Override
@@ -164,23 +189,126 @@ public class GameMainScene extends KlotskiScene
             {
                 cbc.restart();
                 stepLabel.setText("00");
+                tw.reset();
+                startTime = LocalDateTime.now();
+                starProgress.setStep(cbc.getSteps());
             }
         });
-        undoButton.setPosition(1200,400);
-        undoButton.setSize(200,100);
 
-        stage.addActor(restartButton);
-        stage.addActor(undoButton);
+        //撤销按钮 Undo Button
+        Button.ButtonStyle ubs = new Button.ButtonStyle();
+        ubs.up=new TextureRegionDrawable(new TextureRegion(new Texture("undo.png")));
+        Button undoButton =new Button(ubs);
+        undoButton.setPosition(1100,500);
+        undoButton.setSize(200,100);
         undoButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
                 cbc.moveBack();
-                stepLabel.setText(cbc.getSteps());
+                starProgress.setStep(cbc.getSteps());
+                stepLabel.setText(String.format("%02d",cbc.getSteps()));
             }
         });
+
+        //提示按钮 Hint Button
+        Button.ButtonStyle hbs = new Button.ButtonStyle();
+        hbs.up=new TextureRegionDrawable(new TextureRegion(new Texture("hint.png")));
+        Button hintButton =new Button(hbs);
+        hintButton.setPosition(830,350);
+        hintButton.setSize(200,100);
+        hintButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                //还没搞
+            }
+        });
+
+        //上移按钮 Up Button
+        Button.ButtonStyle upbs = new Button.ButtonStyle();
+        upbs.up=new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\upButton.png")));
+        Button upButton =new Button(upbs);
+        upButton.setPosition(1000,200);
+        upButton.setSize(120,120);
+        upButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                move(new Pos(0,1));
+            }
+        });
+
+        //下移按钮 Down Button
+        Button.ButtonStyle downbs = new Button.ButtonStyle();
+        downbs.up=new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\downButton.png")));
+        Button downButton =new Button(downbs);
+        downButton.setPosition(1000,60);
+        downButton.setSize(120,120);
+        downButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                move(new Pos(0,-1));
+            }
+        });
+
+        //左移按钮 Left Button
+        Button.ButtonStyle leftbs = new Button.ButtonStyle();
+        leftbs.up=new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\leftButton.png")));
+        Button leftButton =new Button(leftbs);
+        leftButton.setPosition(860,60);
+        leftButton.setSize(120,120);
+        leftButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                move(new Pos(-1,0));
+            }
+        });
+
+        //右移按钮 Right Button
+        Button.ButtonStyle rightbs = new Button.ButtonStyle();
+        rightbs.up=new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\rightButton.png")));
+        Button rightButton =new Button(rightbs);
+        rightButton.setPosition(1140,60);
+        rightButton.setSize(120,120);
+        rightButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                move(new Pos(1,0));
+            }
+        });
+        //stage.addActor(background);
+        stage.addActor(tw);
+        stage.addActor(starProgress);
+        stage.addActor(titleLabel);
+        stage.addActor(cbc.getChessBoard());
+        stage.addActor(stepLabel);
+        stage.addActor(restartButton);
+        stage.addActor(undoButton);
+        stage.addActor(hintButton);
+        stage.addActor(upButton);
+        stage.addActor(downButton);
+        stage.addActor(leftButton);
+        stage.addActor(rightButton);
+
     }
 
+    /**
+     * 提供给四个按钮的方法，向指定方向移动
+     * @param pos 单位方向的向量坐标
+     */
+    public void move(Pos pos)
+    {
+        if(cbc.getSelectingChess()!=null)
+        {
+            cbc.move(cbc.getSelectingChess(), cbc.getSelectingChess().getPosition().add(pos));
+            starProgress.setStep(cbc.getSteps());
+            stepLabel.setText(String.format("%02d", cbc.getSteps()));
+        }
+    }
     /**
      * 基类初始化，需要传入 gameMain
      *
@@ -204,6 +332,7 @@ public class GameMainScene extends KlotskiScene
     {
        stage.draw();
     }
+
 
     @Override
     public void logic(float delta)
@@ -247,12 +376,12 @@ public class GameMainScene extends KlotskiScene
                     Pos pp = new Pos(xx, yy);
                     if (cbc.getSelectingChess().getChessWidth() > 1 || cbc.getSelectingChess().getChessHeight() > 1)
                     {
-
                         pp.setX((pp.getX() - cbc.getSelectingChess().getPosition().getX() > 0) ? pp.getX() - cbc.getSelectingChess().getChessWidth() + 1 : pp.getX());
                         pp.setY((pp.getY() - cbc.getSelectingChess().getPosition().getY() > 0) ? pp.getY() - cbc.getSelectingChess().getChessHeight() + 1 : pp.getY());
                     }
                     cbc.move(cbc.getSelectingChess(), pp);
                     stepLabel.setText(String.format("%02d", cbc.getSteps()));
+                    starProgress.setStep(cbc.getSteps());
                 }
                 return true;
             }
@@ -283,13 +412,11 @@ public class GameMainScene extends KlotskiScene
             int yy=(int)(y/160f);
             cbc.dragged(new Pos(xx,yy));
         }
-
          */
         /**
          * 当有键盘按键被按下时调用, 参数 keycode 是被按下的按键的键值,
          * 所有键盘按键的键值常量定义在 com.badlogic.gdx.Input.Keys 类中
          */
-
     }
 
     private class ChessBoardListener extends InputListener

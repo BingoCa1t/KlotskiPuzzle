@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 /**
@@ -279,10 +280,31 @@ public class JsonManager
      * @return SHA-256 摘要
      * @throws Exception
      */
-    public String generateSHA256Hash(String data) throws Exception
+    public static String generateSHA256Hash(String data) throws Exception
     {
         MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
         byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(hash);
+    }
+    public static String generateMd5(String input) {
+        try {
+            // 获取 MD5 摘要实例
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // 将输入字符串转换为字节数组并进行摘要计算
+            byte[] messageDigest = md.digest(input.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : messageDigest) {
+                // 将字节转换为十六进制字符串
+                String hex = Integer.toHexString(0xFF & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // 若不支持 MD5 算法，抛出运行时异常
+            throw new RuntimeException(e);
+        }
     }
 }

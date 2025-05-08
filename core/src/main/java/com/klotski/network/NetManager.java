@@ -1,5 +1,7 @@
 package com.klotski.network;
 
+import com.klotski.utils.logger.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -61,7 +63,7 @@ public class NetManager implements Runnable
                 {
                     if (isRunning)
                     {
-                        e.printStackTrace();
+                        Logger.error("NetworkManager",e.getMessage());
                     }
                 }
             });
@@ -81,7 +83,7 @@ public class NetManager implements Runnable
         {
             if (isRunning)
             {
-                e.printStackTrace();
+                Logger.error("NetworkManager",e.getMessage());
             }
         }
     }
@@ -92,6 +94,22 @@ public class NetManager implements Runnable
         messageQueue.add(message);
     }
 
+    public synchronized void sendMessage(MessageCode code, String message)
+    {
+        messageQueue.add(code.getCode()+message);
+    }
+    public synchronized void sendMessage(MessageCode code,String... messages)
+    {
+        StringBuilder message = new StringBuilder();
+        message.append(code.getCode());
+        for(String m : messages)
+        {
+            message.append(m);
+            message.append("|");
+        }
+        message.deleteCharAt(message.length()-1);
+        messageQueue.add(message.toString());
+    }
     // 停止线程
     public synchronized void stopThread()
     {

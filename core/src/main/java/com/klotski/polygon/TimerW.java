@@ -51,4 +51,9 @@ public class TimerW extends Group
             label1.setText(minutes);
         }
     }
+    public void reset()
+    {
+        minutes=0;
+        seconds=0;
+    }
 }
