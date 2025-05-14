@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+/**
+ * 存储用户信息
+ * @author BingoCAT
+ */
 public class UserInfo
 {
     private Boolean rememberPassword;

@@ -71,12 +71,14 @@ public class StartScene extends KlotskiScene
         style.up = new TextureRegionDrawable(new TextureRegion(upTexture));
         style.down = new TextureRegionDrawable(new TextureRegion(downTexture));
 
+
         tempentry=new Button(style);
         tempentry.setPosition(500,500);
         tempentry.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
+
                 ArrayList<Integer> tem=new ArrayList<>();
                 tem.add(1);
                 tem.add(2);

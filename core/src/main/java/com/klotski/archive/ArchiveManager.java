@@ -15,9 +15,11 @@ import java.util.Stack;
 /**
  * 大存档，每个用户有三个存档
  * 取得用户信息后，负责读取小存档，并生成HashMap<MapID,levelArchive>
+ * @author BingoCAT
  */
 public class ArchiveManager
 {
+
     //存档内容：过关情况+当前关存档
     private UserInfo userInfo;
     private String eMail;
@@ -29,6 +31,12 @@ public class ArchiveManager
     private String userInfoPath;
     private NetManager netManager;
     private int activeN=1;
+
+    /**
+     * 初始化存档管理器
+     * @param userInfo 用户信息
+     * @param netManager Main里的网络管理器
+     */
     public ArchiveManager(UserInfo userInfo,NetManager netManager)
     {
         this.userInfo = userInfo;
@@ -41,6 +49,11 @@ public class ArchiveManager
         //userInfoPath = "D:\\UserInfo\\"+userInfo.getUserID()+"\\";
         activeArchive = archive1;
     }
+
+    /**
+     * 设置当前存档（1-3）
+     * @param n 存档编号，超出则默认是1
+     */
     public void setActiveArchive(int n)
     {
         switch (n)
@@ -63,6 +76,10 @@ public class ArchiveManager
                             break;
         }
     }
+
+    /**
+     * 从本地文件加载（已弃用）
+     */
     public void load()
     {
         /*
@@ -83,10 +100,12 @@ public class ArchiveManager
 
     /**
      * 从服务器加载用户存档（默认）
-     * @param json1
-     * @param json2
-     * @param json3
-     * @param active
+     * 每次登录时，服务端会向客户端发送存档数据
+     * 而后每进行一次移动，都会向服务器更新存档
+     * @param json1 存档1
+     * @param json2 存档2
+     * @param json3 存档3
+     * @param active 当前存档编号
      */
     public void loadByNetwork(String json1,String json2,String json3,int active)
     {
@@ -114,6 +133,10 @@ public class ArchiveManager
                             break;
         }
     }
+
+    /**
+     * 向服务器存档
+     */
     public void saveByNetwork()
     {
         //String json0=jsonManager.getJsonString(userInfo);
@@ -151,6 +174,10 @@ public class ArchiveManager
     }
 
      */
+
+    /**
+     * 向本地存档（暂时弃用）
+     */
     public void save()
     {
         jsonManager.saveJsonToFile(userInfoPath+"\\archive\\1.ar", archive1);
@@ -166,6 +193,10 @@ public class ArchiveManager
 
      */
 
+    /**
+     * 返回当前存档
+     * @return 当前存档
+     */
     public HashMap<Integer, LevelArchive> getActiveArchive()
     {
         return activeArchive;

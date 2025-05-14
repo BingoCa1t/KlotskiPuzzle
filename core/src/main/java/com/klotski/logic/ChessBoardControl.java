@@ -115,14 +115,15 @@ public class ChessBoardControl
     }
 
     /**
-     * 加载棋盘
+     * 加载棋盘（更新了加载存档）
      * @param mapData 地图数据
      */
     public void load(MapData mapData)
     {
+        //创建MapData的副本，不要更改MapDataManager里的数据
         this.mapData=new MapData(mapData);
         levelArchive=archiveManager.getActiveArchive().get(mapData.getMapID());
-        //后补
+        //后补（算了其实不需要）
         /*if(levelArchive==null)
         {
             levelArchive=new LevelArchive();
@@ -146,25 +147,29 @@ public class ChessBoardControl
         chessBoard.setPosition(100, 100);
         exits=mapData.getExit();
         chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(),exits, mapData.getMainIndex());
+        //如果存档是null或empty，则将存档的moveSteps设置为当前的moveSteps
         if(levelArchive.getMoveSteps()==null||levelArchive.getMoveSteps().isEmpty())
         {
             levelArchive.setMoveSteps(moveSteps);
         }
+        //如果存在存档，且用户选择载入存档<br>（逻辑后补）</br>，则载入存档
         else
         {
+            //存档里的移动记录栈
             Stack<MoveStep> s = levelArchive.getMoveSteps();
+            //栈后进先出，所以使用新栈，将顺序反转后再弹出
             Stack<MoveStep> s2 = new Stack<>();
             while (!s.isEmpty())
             {
-                s2.push(s.pop()); // 将栈中的元素弹出并添加到队列中
+                s2.push(s.pop()); // 将栈中的元素弹出并添加到新栈中
             }
-            // 现在从队列中取出元素，可以实现从头遍历的效果
             while (!s2.isEmpty())
             {
                 MoveStep moveStep = s2.pop();
+                //移动棋子
                 moveInArchive(getChessByPosition(moveStep.origin),moveStep.destination);
+                //不要重复添加
                 //moveSteps.push(moveStep);
-                // 队列的poll方法用于移除并返回队列头部的元素
             }
             levelArchive.setMoveSteps(moveSteps);
 
@@ -222,10 +227,19 @@ public class ChessBoardControl
             Logger.debug(chess.toString() + " Illegal Movement" + pp.toString());
         }
     }
+
+    /**
+     * 返回步数
+     * @return 返回步数记录栈的长度
+     */
     public int getSteps()
     {
         return moveSteps.size();
     }
+
+    /**
+     * 回退，弹出移动记录栈最顶层的元素并反向移动
+     */
     public void moveBack()
     {
         if (!moveSteps.isEmpty())
@@ -237,8 +251,8 @@ public class ChessBoardControl
     }
 
     /**
-     * 获取指定坐标的棋子
-     *
+     * 获取指定坐标的棋子（判断点击某个棋子用）
+     *包括棋子覆盖的位置
      * @param p 给定坐标
      * @return 位置上的棋子
      */
@@ -279,11 +293,20 @@ public class ChessBoardControl
         if (selectingChess == null) return;
         chessBoard.mouseMoved(selectingChess, p);
     }
+
+    /**
+     * 判断当前是否胜利
+     * @return true为胜利
+     */
     public boolean isWin()
     {
         return chessBoardArray.isWin();
 
     }
+
+    /**
+     * 重置棋局（将记录栈全部弹出）
+     */
     public void restart()
     {
         while(!moveSteps.isEmpty())
@@ -300,6 +323,12 @@ public class ChessBoardControl
         return chessBoardArray.getBoradHeight();
     }
 
+    /**
+     * 读取存档用，因不能直接序列化Chess，则只记录MoveSteps中的origin和destination
+     * 只匹配棋子左下角坐标
+     * @param p 棋子的左下角坐标
+     * @return Chess，如找不到则返回null
+     */
     public Chess getChessByPosition(Pos p)
     {
         for(Chess c : chessBoard.getChesses())
@@ -312,6 +341,10 @@ public class ChessBoardControl
         return null;
     }
 
+    /**
+     * 获取棋局进行时间
+     * @return 已进行时间
+     */
     public int getSecond()
     {
         return second;
@@ -321,6 +354,10 @@ public class ChessBoardControl
     {
         this.second = second;
     }
+
+    /**
+     * 每秒时间+1
+     */
     public void addSecond()
     {
         second++;
