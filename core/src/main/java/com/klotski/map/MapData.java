@@ -116,5 +116,32 @@ public class MapData
     {
         this.mainIndex = mainIndex;
     }
+    public MapData()
+    {
+
+    }
+    public MapData(MapData mapData)
+    {
+
+        this.mapID=mapData.mapID;
+        this.mapType=mapData.mapType;
+        this.mapName=new String(mapData.mapName);
+        this.grades=mapData.grades.clone();
+        this.width=mapData.width;
+        this.height=mapData.height;
+        this.exit=new ArrayList<>();
+        for(Pos p:mapData.exit)
+        {
+            this.exit.add(new Pos(p.getX(),p.getY()));
+        }
+        this.mainIndex=mapData.mainIndex;
+        this.chesses=new ArrayList<>();
+        for(Chess c:mapData.chesses)
+        {
+            Chess copy=new Chess(c,true);
+            this.chesses.add(copy);
+        }
+
+    }
 }
 

@@ -1,8 +1,11 @@
 package com.klotski.polygon;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
@@ -17,7 +20,7 @@ public class LevelGroup extends Group
      * 最大15个
      */
     public Main gameMain;
-    ArrayList<LevelInfo> levelInfos = new ArrayList<>();
+    ArrayList<Integer> levels=new ArrayList<>();
     private final float levelHW = 140f;
     private final float Y1 = 550f;
     private final float Y2 = 300f;
@@ -36,61 +39,93 @@ public class LevelGroup extends Group
         //this.setSize(800, 1600);
     }
 
-    public void addLevel(LevelInfo levelInfo, boolean isOpen)
+    public void addLevel(int mapID, boolean isOpen)
     {
-        LevelActor la = new LevelActor(levelInfo, isOpen,levelInfos.size()+1);
+        //LevelActor la = new LevelActor(levelInfo, isOpen,levelInfos.size()+1);
+        LevelActor la=new LevelActor(mapID,levels.size(),isOpen);
+        int star=0;
+        Image starImage;
+        if(gameMain.getArchiveManager()!=null)
+        {
+            star=gameMain.getArchiveManager().getActiveArchive().get(mapID).getStars();
+        }
+        switch(star)
+        {
+            case 0:
+                starImage=new Image(new TextureRegion(new Texture("levelSelect\\1star.png")));
+                starImage.setVisible(false);
+                break;
+                case 1:
+                    starImage=new Image(new TextureRegion(new Texture("levelSelect\\1star.png")));
+                    break;
+                    case 2:
+                        starImage=new Image(new TextureRegion(new Texture("levelSelect\\2star.png")));
+                        break;
+                        case 3:
+                            starImage=new Image(new TextureRegion(new Texture("levelSelect\\3star.png")));
+                            break;
+                            default:
+                                starImage=new Image(new TextureRegion(new Texture("levelSelect\\1star.png")));
+                                starImage.setVisible(false);
+                                break;
 
+        }
+        starImage.setSize(80,30);
         /*图片140f，左下角为坐标原点，第三排y=50，第二排y=300，第一排y=550*/
-        switch (levelInfos.size() / 5)
+        switch (levels.size() / 5)
         {
             case 0:
                 la.setY(Y1);
+                starImage.setY(Y1+50);
                 break;
             case 1:
                 la.setY(Y2);
+                starImage.setY(Y2+50);
                 break;
             case 2:
                 la.setY(Y3);
+                starImage.setY(Y3+50);
                 break;
             default:
                 la.setY(-10000f);
+                starImage.setY(-10000f);
                 break;
         }
-        switch (levelInfos.size() % 5)
+        switch (levels.size() % 5)
         {
             case 0:
                 la.setX(X1);
+                starImage.setX(X1);
                 break;
             case 1:
                 la.setX(X2);
+                starImage.setX(X2);
                 break;
             case 2:
                 la.setX(X3);
+                starImage.setX(X3);
                 break;
             case 3:
                 la.setX(X4);
+                starImage.setX(X4);
                 break;
             case 4:
                 la.setX(X5);
+                starImage.setX(X5);
                 break;
             default:
                 la.setX(-10000f);
+                starImage.setX(-10000f);
                 break;
         }
-        levelInfos.add(levelInfo);
+        //levelInfos.add(levelInfo);
+        levels.add(mapID);
         la.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                Logger.debug("Clicked:"+event.getListenerActor());
-                Actor actor = event.getListenerActor();
-                if(actor instanceof LevelActor la)
-                {
-                    int levelID=la.getLevelID();
-                    gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,la.getLevelInfo()));
-                }
-
+                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,la.getMapID()));
             }
         });
         this.addActor(la);

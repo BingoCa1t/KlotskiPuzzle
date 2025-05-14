@@ -22,27 +22,62 @@ import java.nio.ByteBuffer;
 public class LevelActor extends Actor
 {
     private TextureRegion region;
-    private int levelID;
-    private LevelInfo levelInfo;
+    private int mapID;
+
     private int stars=0;
     private boolean isOpen;
     //private Button button;
     private int order;
-    public int getLevelID()
+    public int getMapID()
     {
-        return levelID;
+        return mapID;
     }
 
-    public void setLevelID(int levelID)
+    public void setMapID(int mapID)
     {
-        this.levelID = levelID;
+        this.mapID = mapID;
     }
 
-    public LevelInfo getLevelInfo()
-    {
-        return levelInfo;
-    }
 
+    public LevelActor(int mapID,int order,boolean isOpen)
+    {
+        super();
+        this.mapID=mapID;
+        Button.ButtonStyle style = new Button.ButtonStyle();
+        if(isOpen)
+        {
+            style.up=new TextureRegionDrawable(new Texture(Gdx.files.internal("level"+String.valueOf(order+1)+".png")));
+            Pixmap pixmap = new Pixmap(Gdx.files.internal("level1.png"));
+            Pixmap p1=createPressedPixmap(pixmap);
+            style.down=new TextureRegionDrawable(new Texture(p1));
+        }
+        else{
+            style.up=new TextureRegionDrawable(new Texture(Gdx.files.internal("levelclosed.png")));
+            Pixmap pixmap = new Pixmap(Gdx.files.internal("levelclosed.png"));
+            Pixmap p1=createPressedPixmap(pixmap);
+            style.down=new TextureRegionDrawable(new Texture(p1));
+        }
+        this.order=order;
+
+        //this.button=new Button(style);
+        //this.levelInfo = levelInfo;
+        //this.levelID=levelInfo.getLevelID();
+        //this.stars=levelInfo.getStars();
+        this.isOpen=isOpen;
+        if(!isOpen)
+        {
+            region = new TextureRegion(new Texture(Gdx.files.internal("levelclosed.png")));
+        }
+        else {
+            region = new TextureRegion(new Texture(Gdx.files.internal("level"+String.valueOf(order+1)+".png")));
+        }
+        //将图片素材按照棋子大小缩放
+        setScale(140f / region.getRegionWidth(), 140f / this.region.getRegionHeight());
+
+        //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
+        setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
+    }
+    /*
     public LevelActor(LevelInfo levelInfo, boolean isOpen, int order)
     {
         super();
@@ -63,8 +98,6 @@ public class LevelActor extends Actor
         this.order=order;
 
         //this.button=new Button(style);
-        this.levelInfo = levelInfo;
-        this.levelID=levelInfo.getLevelID();
         this.stars=levelInfo.getStars();
         this.isOpen=isOpen;
         if(!isOpen)
@@ -80,6 +113,8 @@ public class LevelActor extends Actor
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
+
+     */
     public void enter()
     {
 

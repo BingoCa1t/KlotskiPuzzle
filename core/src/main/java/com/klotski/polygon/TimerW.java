@@ -56,4 +56,9 @@ public class TimerW extends Group
         minutes=0;
         seconds=0;
     }
+    public void setTime(int seconds)
+    {
+        this.minutes=seconds/60;
+        this.seconds=seconds%60;
+    }
 }

@@ -2,11 +2,13 @@ package com.klotski.user;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.klotski.Main;
 import com.klotski.Scene.KlotskiScene;
 import com.klotski.Scene.LoginScene;
 import com.klotski.Scene.ScreenManager;
+import com.klotski.Scene.StartScene;
+import com.klotski.archive.ArchiveManager;
 import com.klotski.archive.LevelArchive;
-import com.klotski.logic.LevelInfo;
 import com.klotski.logic.LevelStatus;
 import com.klotski.network.MessageCode;
 import com.klotski.network.NetManager;
@@ -16,21 +18,25 @@ import com.klotski.utils.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 public class UserManager implements NetworkMessageObserver
 {
-
+    private Main gameMain;
     private NetManager netManager;
     private JsonManager jsonManager;
     private ScreenManager screenManager;
     private String userInfosRootPath = "D:\\UserInfo\\";
     private UserInfo activeUser;
+    private ArchiveManager archiveManager;
+    private boolean loggedIn=false;
 
-    public UserManager(NetManager netManager, ScreenManager screenManager)
+    public UserManager(Main gameMain ,NetManager netManager, ScreenManager screenManager)
     {
         this.netManager = netManager;
         this.screenManager = screenManager;
         this.jsonManager = new JsonManager();
+        this.gameMain = gameMain;
     }
 
     public void getCode(String email)
@@ -52,23 +58,27 @@ public class UserManager implements NetworkMessageObserver
 
     public boolean updateUserInfo(UserInfo userInfo)
     {
-        return jsonManager.saveJsonToFile(userInfosRootPath+userInfo.getUserID()+"\\info.usr", userInfo);
+        //return jsonManager.saveJsonToFile(userInfosRootPath+userInfo.getUserID()+"\\info.usr", userInfo);
+        return false;
     }
     public UserInfo DEFAULT()
     {
         UserInfo userInfo = new UserInfo();
-        userInfo.setUserID(0);
+        //userInfo.setUserID(0);
         userInfo.setUserName("TEST");
-        userInfo.setEmail("TEST@TEST.com");
+        userInfo.setEmail("wanght2024@mail.sustech.edu.cn");
         LevelArchive levelInfo = new LevelArchive();
         ArrayList<LevelArchive> l=new ArrayList<>();
         levelInfo.setLevelStatus(LevelStatus.UpComing);
-        levelInfo.setLevelID(0);
-        levelInfo.setMoveSteps(new Stack<>());
+        levelInfo.setMapID(1);
+        LevelArchive levelInfo2 = new LevelArchive();
+        levelInfo2.setLevelStatus(LevelStatus.Closed);
+        levelInfo2.setMapID(2);
+        l.add(levelInfo2);
 
         l.add(levelInfo);
-        userInfo.setLevels(l);
-        userInfo.setPasswordMD5("123456");
+        //userInfo.setLevels(l);
+        //userInfo.setPasswordMD5("123456");
         userInfo.setRememberPassword(false);
         return userInfo;
     }
@@ -116,21 +126,26 @@ public class UserManager implements NetworkMessageObserver
      * @param userInfo 用户信息文件
      * @return 合法性
      */
-    public boolean isValidUserInfo(UserInfo userInfo) {
+    public boolean isValidUserInfo(UserInfo userInfo)
+    {
         if (
-            userInfo.isRememberPassword() == null ||
-                userInfo.getUserID() == -1 ||
+            userInfo.isRememberPassword() == null
+               // userInfo.getUserID() == -1 ||
                 //userInfo.getSaveArchives() == null ||
-                    userInfo.getPasswordMD5() == null
+                    //userInfo.getPasswordMD5() == null
         ) return false;
 
-        if (userInfo.getPasswordMD5().isEmpty()) return false;
+        //if (userInfo.getPasswordMD5().isEmpty()) return false;
 
         return true;
     }
+    //定时向服务端发送UserInfo（？如何
     @Override
     public void update(MessageCode code, String message)
     {
+        //写完优化成switch case结构
+
+        //登录成功 Login Succeed
         if (code == MessageCode.UserLogin && message.equals("200"))
         {
             KlotskiScene cs = screenManager.getCurrentScreen();
@@ -138,23 +153,52 @@ public class UserManager implements NetworkMessageObserver
             {
                 //此时应该显示：“登录成功，正在同步用户数据..."
                 loginScene.loginSucceed();
+                //接下来是服务端发送用户数据UserInfo，
             }
         }
-        if(code == MessageCode.UserLogin&&message.equals("404"))
+        //登录失败 Login Fail
+        else if(code == MessageCode.UserLogin&&message.equals("404"))
         {
+
             KlotskiScene cs = screenManager.getCurrentScreen();
             if (cs instanceof LoginScene loginScene)
             {
                 loginScene.loginFail();
             }
         }
-        if(code == MessageCode.UserGetRegisterCode)
+        //注册时获取验证码
+        else if(code == MessageCode.UserGetRegisterCode)
         {
             registerCode=message;
         }
-        if(code == MessageCode.UserGetUserInfo)
+        //登录成功，请求用户信息和存档信息（{userInfo}|||{us
+        else if(code == MessageCode.UserGetUserInfo)
         {
+            String[] m=message.split(Pattern.quote("|"));
+            //activeUser=jsonManager.parseJsonToObject(m[0], UserInfo.class);
+            //activeUser=new UserInfo();
+            //activeUser.setUserName("");
+            //activeUser.setEmail();
             activeUser=jsonManager.parseJsonToObject(message, UserInfo.class);
+
+        }
+        else if(code == MessageCode.SendArchive)
+        {
+            KlotskiScene cs = screenManager.getCurrentScreen();
+
+            if (cs instanceof LoginScene loginScene)
+            {
+                //获取到了UserInfo
+                if(activeUser!=null)
+                {
+                    String[] m=message.split(Pattern.quote("|"));
+                    archiveManager=new ArchiveManager(activeUser,netManager);
+                    archiveManager.loadByNetwork(m[0],m[1],m[2],Integer.parseInt(m[3]));
+                    Gdx.app.postRunnable(()-> screenManager.setScreen(new StartScene(gameMain,archiveManager)));
+                    loggedIn=true;
+                }
+            }
+
         }
     }
     private String registerCode="-1";
@@ -195,5 +239,10 @@ public class UserManager implements NetworkMessageObserver
     public UserInfo getActiveUser()
     {
         return activeUser;
+    }
+
+    public ArchiveManager getArchiveManager()
+    {
+         return archiveManager;
     }
 }

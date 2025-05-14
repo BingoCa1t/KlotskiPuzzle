@@ -49,6 +49,14 @@ public class Pos
         this.y = y;
         this.z = 0;
     }
+    //序列化、反序列化需要
+    public Pos()
+    {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+    }
+
 
     /**
      * 坐标加法

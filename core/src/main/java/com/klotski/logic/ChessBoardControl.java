@@ -4,12 +4,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.klotski.archive.ArchiveManager;
+import com.klotski.archive.LevelArchive;
 import com.klotski.map.MapData;
 import com.klotski.polygon.Chess;
 import com.klotski.polygon.ChessBoard;
 import com.klotski.utils.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 /**
@@ -19,8 +23,11 @@ import java.util.Stack;
  */
 public class ChessBoardControl
 {
-
+    ArchiveManager archiveManager;
+    LevelArchive levelArchive=new LevelArchive();
     Stack<MoveStep> moveSteps = new Stack<>();
+    private int second=0;
+    private MapData mapData;
     /**前端*/
     private ChessBoard chessBoard;
     /**后端*/
@@ -29,6 +36,11 @@ public class ChessBoardControl
     private Chess selectingChess;
     private Chess mainChess;
     private ArrayList<Pos> exits;
+
+    public ChessBoardControl(ArchiveManager archiveManager)
+    {
+        this.archiveManager = archiveManager;
+    }
     //获取棋盘
     public ChessBoard getChessBoard()
     {
@@ -42,8 +54,9 @@ public class ChessBoardControl
     }
 
     /**
-     * 测试时候使用的。默认构造棋盘
+     * 测试时候使用的。默认构造棋盘（已弃用）
      */
+
     private void loadDefault()
     {
         chessBoard = new ChessBoard();
@@ -57,10 +70,12 @@ public class ChessBoardControl
         t1.setOrigin(0, 0);
         //t1.setSize(160f,160f);
         Image background;
+
         background = new Image(new Sprite(new Texture("background.png")));
         background.setPosition(-10, -10);
         background.setHeight(5 * Chess.squareHW + 20);
         background.setWidth(4 * Chess.squareHW + 20);
+
 
         c1 = new Chess(t1, "曹操", 2, 2);
         c1.setXY(new Pos(1, 2));
@@ -84,6 +99,7 @@ public class ChessBoardControl
         c10.setXY(new Pos(2, 1));
         chessBoard = new ChessBoard();
         chessBoard.addActor(background);
+
         chessBoard.addChess(c1);
         chessBoard.addChess(c2);
         chessBoard.addChess(c3);
@@ -100,22 +116,59 @@ public class ChessBoardControl
 
     /**
      * 加载棋盘
-     *
+     * @param mapData 地图数据
      */
     public void load(MapData mapData)
     {
+        this.mapData=new MapData(mapData);
+        levelArchive=archiveManager.getActiveArchive().get(mapData.getMapID());
+        //后补
+        /*if(levelArchive==null)
+        {
+            levelArchive=new LevelArchive();
+        }
+         */
+
+
+        //archiveManager.getActiveArchive().replace(mapData.getMapID(),levelArchive);
         chessBoard=new ChessBoard();
         Image background;
+        Image chessBoardImage;
+        chessBoardImage = new Image(new Sprite(new Texture("chessBoard.png")));
+        chessBoardImage.setPosition(-16, -16);
         background = new Image(new Sprite(new Texture("background.png")));
         background.setPosition(-10, -10);
         background.setHeight(5 * Chess.squareHW + 20);
         background.setWidth(4 * Chess.squareHW + 20);
         chessBoard.addActor(background);
-        chessBoard.addChessArray(mapData.getChesses());
+        chessBoard.addActor(chessBoardImage);
+        chessBoard.addChessArray(this.mapData.getChesses());
         chessBoard.setPosition(100, 100);
         exits=mapData.getExit();
         chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(),exits, mapData.getMainIndex());
+        if(levelArchive.getMoveSteps()==null||levelArchive.getMoveSteps().isEmpty())
+        {
+            levelArchive.setMoveSteps(moveSteps);
+        }
+        else
+        {
+            Stack<MoveStep> s = levelArchive.getMoveSteps();
+            Stack<MoveStep> s2 = new Stack<>();
+            while (!s.isEmpty())
+            {
+                s2.push(s.pop()); // 将栈中的元素弹出并添加到队列中
+            }
+            // 现在从队列中取出元素，可以实现从头遍历的效果
+            while (!s2.isEmpty())
+            {
+                MoveStep moveStep = s2.pop();
+                moveInArchive(getChessByPosition(moveStep.origin),moveStep.destination);
+                //moveSteps.push(moveStep);
+                // 队列的poll方法用于移除并返回队列头部的元素
+            }
+            levelArchive.setMoveSteps(moveSteps);
 
+        }
 
         //loadDefault();
     }
@@ -132,7 +185,31 @@ public class ChessBoardControl
 
         if (chessBoardArray.isChessCanMove(chess, pp))
         {
-            moveSteps.push(new MoveStep(chess.getPosition(), pp, chess));
+            moveSteps.push(new MoveStep(chess.getPosition(), pp));
+
+
+            Logger.debug(chess.toString() + " Move to" + pp.toString());
+            levelArchive.setSeconds(second);
+            archiveManager.saveByNetwork();
+            chessBoard.move(chess, pp);
+
+            if(isWin())
+            {
+                Logger.debug("Win");
+            }
+        }
+        else
+        {
+            Logger.debug(chess.toString() + " Illegal Movement" + pp.toString());
+        }
+    }
+    public void moveInArchive(Chess chess, Pos p)
+    {
+        Pos pp=new Pos(p.getX(),p.getY());
+
+        if (chessBoardArray.isChessCanMove(chess, pp))
+        {
+            moveSteps.push(new MoveStep(chess.getPosition(), pp));
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             chessBoard.move(chess, pp);
             if(isWin())
@@ -154,7 +231,7 @@ public class ChessBoardControl
         if (!moveSteps.isEmpty())
         {
             MoveStep ms = moveSteps.pop();
-            move(ms.chess, ms.origin);
+            move(getChessByPosition(ms.destination), ms.origin);
             moveSteps.pop();
         }
     }
@@ -214,5 +291,38 @@ public class ChessBoardControl
             moveBack();
         }
     }
+    public int getBoardWidth()
+    {
+        return chessBoardArray.getBoardWidth();
+    }
+    public int getBoardHeight()
+    {
+        return chessBoardArray.getBoradHeight();
+    }
 
+    public Chess getChessByPosition(Pos p)
+    {
+        for(Chess c : chessBoard.getChesses())
+        {
+            if(c.getPosition().getX() == p.getX() && c.getPosition().getY() == p.getY())
+            {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public int getSecond()
+    {
+        return second;
+    }
+
+    public void setSecond(int second)
+    {
+        this.second = second;
+    }
+    public void addSecond()
+    {
+        second++;
+    }
 }

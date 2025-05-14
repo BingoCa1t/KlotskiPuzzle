@@ -4,22 +4,23 @@ import com.klotski.Main;
 import com.klotski.utils.json.JsonManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MapDataManager
 {
     private Main gameMain;
     private JsonManager jsonManager;
-    private ArrayList<MapData> mapDataList1;
-    //测试需要，先只用Map1
+    private HashMap<Integer,MapData> mapDataList;
 
-    public ArrayList<MapData> getMapDataList1()
+
+    public HashMap<Integer,MapData> getMapDataList()
     {
-        return mapDataList1;
+        return mapDataList;
     }
 
     public MapDataManager(Main gameMain)
     {
-        mapDataList1 = new ArrayList<>();
+        mapDataList = new HashMap<>();
         this.gameMain = gameMain;
         this.jsonManager = new JsonManager();
     }
@@ -27,7 +28,10 @@ public class MapDataManager
     {
         for(int i = 1; i < 15; i++)
         {
-            mapDataList1.add(jsonManager.loadJsonfromFile("D:\\Map\\"+i+".map", MapData.class));
+            MapData mapData = jsonManager.loadJsonfromFile("D:\\Map\\"+i+".map", MapData.class);
+            if(mapData != null)
+                mapData.setMapID(i);
+            mapDataList.put(i,mapData);
         }
     }
 }

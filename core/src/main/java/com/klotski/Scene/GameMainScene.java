@@ -10,8 +10,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -25,6 +27,7 @@ import com.klotski.logic.LevelInfo;
 import com.klotski.logic.Pos;
 import com.klotski.map.MapData;
 import com.klotski.polygon.Chess;
+import com.klotski.polygon.SettleGroup;
 import com.klotski.polygon.StarProgress;
 import com.klotski.polygon.TimerW;
 import com.klotski.utils.SmartBitmapFont;
@@ -39,8 +42,8 @@ import java.util.ArrayList;
  */
 public class GameMainScene extends KlotskiScene
 {
+    private int mapID;
     private ShapeRenderer shapeRenderer;
-    //private OrthographicCamera camera;
     private StarProgress starProgress;
     // 长方形的宽度和高度变量
     private float rectangleWidth = 200;
@@ -55,10 +58,10 @@ public class GameMainScene extends KlotskiScene
     private MapData mapData;
     private boolean isInAI = false;
     //private Main game;
-    private Label timeLabel;
+    //private Label timeLabel;
     private Label stepLabel;
     private BitmapFont font;
-    private LevelInfo levelInfo;
+    //private LevelInfo levelInfo;
     private Image background;
     private Label titleLabel;
     /**
@@ -123,7 +126,7 @@ public class GameMainScene extends KlotskiScene
         mapData.setMapName("Default");
         return mapData;
     }
-    private int seconds;
+    private int second=0;
     private TimerW tw;
     @Override
     public void init()
@@ -131,8 +134,8 @@ public class GameMainScene extends KlotskiScene
         super.init();
 
         //棋盘控制器ChessBoardControl
-        cbc = new ChessBoardControl();
-        mapData = gameMain.getMapDataManager().getMapDataList1().get(levelInfo.getMapID());
+        cbc = new ChessBoardControl(gameMain.getUserManager().getArchiveManager());
+        mapData = gameMain.getMapDataManager().getMapDataList().get(mapID);
         cbc.load(mapData);
         cbc.getChessBoard().setPosition(100,50);
         cbc.getChessBoard().addListener(new MyInputListener());
@@ -159,7 +162,7 @@ public class GameMainScene extends KlotskiScene
         ls.fontColor = Color.WHITE;
         stepLabel=new Label("00", ls);
         stepLabel.setPosition(1200,800);
-        startTime = LocalDateTime.now();
+        //startTime = LocalDateTime.now();
         //stage.addActor(timeLabel);
 
         stage.addListener(new ChessBoardListener());
@@ -172,7 +175,9 @@ public class GameMainScene extends KlotskiScene
             @Override
             public void run()
             {
-                tw.addSecond();
+
+                cbc.addSecond();
+                tw.setTime(cbc.getSecond());
             }
         },1f,1f);
 
@@ -190,7 +195,7 @@ public class GameMainScene extends KlotskiScene
                 cbc.restart();
                 stepLabel.setText("00");
                 tw.reset();
-                startTime = LocalDateTime.now();
+
                 starProgress.setStep(cbc.getSteps());
             }
         });
@@ -280,6 +285,22 @@ public class GameMainScene extends KlotskiScene
                 move(new Pos(1,0));
             }
         });
+
+        //返回按钮 Back Button
+        Button.ButtonStyle backbs = new Button.ButtonStyle();
+        backbs.up=new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\backButton.png")));
+        Button backButton =new Button(backbs);
+        backButton.setPosition(50,950);
+        backButton.setSize(100,100);
+        backButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().returnPreviousScreen();
+            }
+        });
+
+
         //stage.addActor(background);
         stage.addActor(tw);
         stage.addActor(starProgress);
@@ -293,7 +314,8 @@ public class GameMainScene extends KlotskiScene
         stage.addActor(downButton);
         stage.addActor(leftButton);
         stage.addActor(rightButton);
-
+        stage.addActor(backButton);
+        //
     }
 
     /**
@@ -304,6 +326,11 @@ public class GameMainScene extends KlotskiScene
     {
         if(cbc.getSelectingChess()!=null)
         {
+            Pos p=cbc.getSelectingChess().getPosition().add(pos);
+            if(p.getX()<0||p.getY()<0||p.getX()>cbc.getBoardWidth()-1||p.getY()>cbc.getBoardHeight()-1)
+            {
+                return;
+            }
             cbc.move(cbc.getSelectingChess(), cbc.getSelectingChess().getPosition().add(pos));
             starProgress.setStep(cbc.getSteps());
             stepLabel.setText(String.format("%02d", cbc.getSteps()));
@@ -314,11 +341,11 @@ public class GameMainScene extends KlotskiScene
      *
      * @param gameMain 全局句柄Q
      */
-    public GameMainScene(Main gameMain,LevelInfo levelInfo)
+    public GameMainScene(Main gameMain,int mapID)
     {
 
         super(gameMain);
-        this.levelInfo = levelInfo;
+        this.mapID=mapID;
     }
 
     @Override
@@ -357,6 +384,8 @@ public class GameMainScene extends KlotskiScene
     {
         return mapData;
     }
+
+
 
     private class MyInputListener extends InputListener
     {
@@ -455,5 +484,11 @@ public class GameMainScene extends KlotskiScene
             }
             return false;
         }
+    }
+    public void refreshWidget()
+    {
+        starProgress.setStep(cbc.getSteps());
+        stepLabel.setText(String.format("%02d", cbc.getSteps()));
+        tw.setTime(cbc.getSecond());
     }
 }

@@ -37,11 +37,11 @@ public class LoginScene extends KlotskiScene
     {
         //UserInfo userInfo=userManager.getActiveUser();
         //gameMain.getScreenManager().setScreen(new StartScene(gameMain));
-        Logger.debug("Login Succeed");
+        Logger.info("Login Succeed");
     }
     public void loginFail()
     {
-
+        Logger.info("Login Fail");
     }
     @Override
     public void init()

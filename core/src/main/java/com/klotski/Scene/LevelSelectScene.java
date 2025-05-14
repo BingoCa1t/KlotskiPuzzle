@@ -11,40 +11,52 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
+import com.klotski.archive.ArchiveManager;
 import com.klotski.logic.LevelInfo;
 import com.klotski.polygon.LevelActor;
 import com.klotski.polygon.LevelGroup;
 import com.klotski.utils.logger.Logger;
 
+import java.util.ArrayList;
+
 public class LevelSelectScene extends KlotskiScene
 {
     private String title="";
-    private LevelInfo li;
     private LevelGroup lg;
     private Image background;
     private Image selectLevelText;
+    private ArchiveManager archiveManager;
+    private ArrayList<Integer> mapIDs;
     /**
      * 基类初始化，需要传入 gameMain
      *
      * @param gameMain 全局句柄Q
      */
-    public LevelSelectScene(Main gameMain)
+    public LevelSelectScene(Main gameMain,ArrayList<Integer> mapIDs)
     {
         super(gameMain);
-
+        this.mapIDs = mapIDs;
         stage=new Stage();
-
-
     }
     @Override
     public void init()
     {
+        //背景图片 Background
         background=new Image(new TextureRegion(new Texture(Gdx.files.internal("selectLevelBackground.png"))));
         background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        //上方文字 "Select Level"
         selectLevelText=new Image(new TextureRegion(new Texture(Gdx.files.internal("selectLevelText.png"))));
         selectLevelText.setScale(0.6f);
         selectLevelText.setPosition(550,900);
+
+        //关卡选择组
         lg = new LevelGroup(gameMain);
+        for(int i : mapIDs)
+        {
+            lg.addLevel(i,true);
+        }
+        /*
         li=new LevelInfo();
         li.setMapID(0);
         lg.addLevel(li,true);
@@ -62,6 +74,8 @@ public class LevelSelectScene extends KlotskiScene
         lg.addLevel(li,false);
         lg.addLevel(li,false);
         lg.addLevel(li,false);
+
+         */
         /*
         lg.addListener(new ClickListener()
         {
@@ -72,7 +86,7 @@ public class LevelSelectScene extends KlotskiScene
                 Actor actor = event.getListenerActor();
                 if(actor instanceof LevelActor la)
                 {
-                    int levelID=la.getLevelID();
+                    int levelID=la.getMapID();
                     gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,la.getLevelInfo()));
                 }
 

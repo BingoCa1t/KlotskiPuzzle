@@ -53,9 +53,18 @@ public class NetManager implements Runnable
                     while ((response = in.readLine()) != null)
                     {
                         System.out.println("服务器响应：" + response);
-                        for(NetworkMessageObserver observer : observers)
+                        try
                         {
-                            observer.update(MessageCode.UserLogin,"200");
+                            MessageCode mc = MessageCode.fromCode(response.substring(0, 5));
+                            for (NetworkMessageObserver observer : observers)
+                            {
+                                observer.update(mc, response.substring(5));
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.warning("NetManager",e.getMessage());
+                            throw new RuntimeException(e);
                         }
 
                     }

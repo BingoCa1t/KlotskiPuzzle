@@ -1,5 +1,6 @@
 package com.klotski.utils.json;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.klotski.map.MapData;
@@ -182,10 +183,63 @@ public class JsonManager
         {
             if (json == null) json = "";
             Logger.error("JsonManager", String.format("Because '%s', fail to read Json %s", e.getMessage(), json, 500));
-            return null;
+            throw new RuntimeException(e);
+            //return null;
         }
     }
+    public <T> T parseJsonToObject(String json, TypeReference<T> typeReference)
+    {
+        try
+        {
+            // 判断是否加密
+            if (json.indexOf("ENC", 0) == 0)
+            {
 
+                String[] parts = json.replaceFirst("ENC", "").split(":");
+
+                if (parts.length != 2)
+                {
+                    Logger.error(
+                        "JsonManager",
+                        String.format("Json %s... is not a valid encrypted Json", json.substring(0, Math.min(20, json.length())))
+                    );
+                    return null;
+                }
+
+                String encryptedJson = new String(Base64.getDecoder().decode(parts[0]), StandardCharsets.UTF_8);
+                String savedHash = parts[1];
+
+                // 解密 JSON 数据
+                String decryptedJson = decrypt(encryptedJson);
+
+                // 生成解密后 JSON 的 SHA-256 校验值并验证
+                String currentHash = generateSHA256Hash(decryptedJson);
+                if (!currentHash.equals(savedHash))
+                {
+                    Logger.error("JsonManager", String.format("Current Json %s... fail to pass sha256 verification. Expect %s, get %s",
+                        json.substring(0, Math.min(20, json.length())),
+                        savedHash,
+                        currentHash
+                    ));
+                    return null;
+                }
+
+                // 将 JSON 字符串转换为对象
+                return objectMapper.readValue(decryptedJson, typeReference);
+
+            } else
+            {
+                return objectMapper.readValue(json, typeReference);
+            }
+
+        } catch (Exception e)
+        {
+            if (json == null) json = "";
+            Logger.error("JsonManager", String.format("Because '%s', fail to read Json %s", e.getMessage(), json, 500));
+            throw new RuntimeException(e);
+            //return null;
+        }
+    }
 
     /**
      * 加密并保存 Json 数据到文件

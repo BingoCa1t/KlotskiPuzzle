@@ -6,12 +6,15 @@ public class MoveStep
 {
     public Pos origin;
     public Pos destination;
-    public Chess chess;
 
-    public MoveStep(Pos origin, Pos destination, Chess chess)
+    public MoveStep(Pos origin, Pos destination)
     {
         this.origin = origin;
         this.destination = destination;
-        this.chess = chess;
+    }
+    //jackson序列化、反序列化需要
+    public MoveStep()
+    {
+
     }
 }

@@ -6,16 +6,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.klotski.Scene.GameMainScene;
-import com.klotski.Scene.LoginScene;
-import com.klotski.Scene.ScreenManager;
+import com.klotski.Scene.*;
 import com.klotski.archive.ArchiveManager;
+import com.klotski.archive.LevelArchive;
 import com.klotski.assets.AssetsPathManager;
 import com.klotski.logic.LevelInfo;
 import com.klotski.map.MapData;
 import com.klotski.map.MapDataManager;
 import com.klotski.network.NetManager;
-import com.klotski.Scene.StartScene;
 import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
 import com.klotski.utils.json.JsonManager;
@@ -34,14 +32,12 @@ public class Main extends Game
     private ScreenManager screenManager;
     private JsonManager jsonManager;
     private MapDataManager mapDataManager;
-    private HashMap<Integer,LevelInfo> levelInfoMap;
     private SpriteBatch batch;
     private Texture image;
     private ArchiveManager archiveManager;
    // private Stage stage;
     private GameMainScene gms;
     private LoginScene loginScene;
-    private HashMap<Integer, LevelInfo> levelInfos;
     /*
     先在主程序里加载所有MapData
     然后再初始化levelInfo
@@ -56,6 +52,7 @@ public class Main extends Game
     @Override
     public void create()
     {
+
         netManager=new NetManager("127.0.0.1",12345);
         // 创建一个新线程并启动
         Thread netManagerThread = new Thread(netManager);
@@ -66,9 +63,9 @@ public class Main extends Game
         Logger.debug("JSON manager");
         screenManager=new ScreenManager(this);
         Logger.debug("Screen manager");
-        userManager=new UserManager(netManager,screenManager);
+        userManager=new UserManager(this,netManager,screenManager);
         Logger.debug("User manager");
-        userInfo=userManager.DEFAULT();
+        //userInfo=userManager.DEFAULT();
         Logger.debug("User info");
         //userManager.updateUserInfo(userInfo);
         netManager.addObserver(userManager);
@@ -78,16 +75,26 @@ public class Main extends Game
         //加载所有MapData
         mapDataManager.load();
         Logger.debug("Map manager loaded");
-        archiveManager=new ArchiveManager(userInfo);
+        //archiveManager=new ArchiveManager(userInfo);
         Logger.debug("Archive manager");
-        archiveManager.load();
+        //archiveManager.load();
         Logger.debug("Archive manager loaded");
         //加载所有LevelArchive
         //archiveManager=new ArchiveManager(userManager.loadUserInfo(0));
         //加载LevelInfo
+        /*
         batch = new SpriteBatch();
         image = new Texture("libgdx.png");
         loginScene=new LoginScene(this);
+        gms=new GameMainScene(this,1);
+        userInfo=new UserInfo();
+        userInfo.setEmail("wanght2024@mail.sustech.edu.cn");
+        userInfo.setUserName("wanght2024");
+        userInfo.setRememberPassword(true);
+        userInfo.setGuest(false);
+
+         */
+        //jsonManager.saveJsonToFile("D:\\1.JSON",userInfo);
         //gms = new GameMainScene(this);
         //ObjectMapper mapper = new ObjectMapper();
         //String s=mapper.writeValueAsString(gms.getMapData())
@@ -96,8 +103,26 @@ public class Main extends Game
         //jsonManager.saveJsonToFile("D:\\Map\\1.map",gms.getMapData());
         //loginScene.show();
         //screenManager.setScreen(new StartScene(this));
-        screenManager.setScreen(loginScene);
-        screenManager.setScreen(new StartScene(this));
+
+
+
+
+
+
+        LevelArchive levelArchive = new LevelArchive();
+        levelArchive.setMapID(1);
+        ArrayList<Integer> tem=new ArrayList<>();
+        tem.add(1);
+        tem.add(2);
+        tem.add(3);
+        tem.add(4);
+        tem.add(5);
+
+        screenManager.setScreen(new LoginScene(this));
+        //screenManager.setScreen(new GameMainScene(this,1));
+
+
+        //screenManager.setScreen(new StartScene(this));
 
     }
 

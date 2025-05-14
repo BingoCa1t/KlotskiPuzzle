@@ -6,7 +6,8 @@ public enum MessageCode
     UserRegister("0001|"),
     UserLogin("0002|"),
     UserGetRegisterCode("0003|"),
-    UserGetUserInfo("0004|");
+    UserGetUserInfo("0004|"),
+    SendArchive("0005|");
 
     private final String code;
 

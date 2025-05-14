@@ -85,7 +85,7 @@ public class ChessBoardArray
         1、向正方向（右、上）移动
         起点（x0，y0），终点处（x，y），棋子（x+a,y+b)，
         也就是（x0,y0),(x+a,y+b)为两个角的矩形空白即可
-        2、向负方向移动，
+        2、向负方向（左、下）移动
         起点（x0，y0），终点处（x，y）
         也就是（x，y），（x0+a，y0+b）两个角的矩形空白即可
          */
@@ -199,6 +199,14 @@ public class ChessBoardArray
         }
         //Logger.debug("Win");
         return false;
+    }
+    public int getBoardWidth()
+    {
+        return width;
+    }
+    public int getBoradHeight()
+    {
+        return height;
     }
 }
 

@@ -4,5 +4,6 @@ public enum LevelStatus
 {
     Succeed,
     InProgress,
-    UpComing
+    UpComing,
+    Closed;
 }
