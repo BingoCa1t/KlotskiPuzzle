@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.polygon.UserInfoGroup;
@@ -53,7 +55,11 @@ public class StartScene extends KlotskiScene
     public void init()
     {
         super.init();
-        //
+        //背景图片 Background Image
+        Image background = new Image(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("startScene\\startBackGround.png")))));
+        background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        background.setPosition(0,0);
+
         //用户信息组 User Information Group
         UserInfoGroup userInfoGroup=new UserInfoGroup(userInfo);
 
@@ -61,6 +67,27 @@ public class StartScene extends KlotskiScene
 
         //玩法组
 
+        Button.ButtonStyle sStyle=new Button.ButtonStyle();
+        sStyle.up=new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("startScene\\startButton.png"))));
+        Button startButton=new Button(sStyle);
+        startButton.setPosition(1000,50);
+        startButton.addListener(new ClickListener() {
+            @Override
+            public void clicked (InputEvent event,float x, float y)
+            {
+                ArrayList<Integer> tem = new ArrayList<>();
+                tem.add(1);
+                tem.add(2);
+                tem.add(3);
+                tem.add(4);
+                tem.add(5);
+                screenManager.setScreen(new LevelSelectScene(gameMain, tem));
+             }
+        });
+        Button.ButtonStyle watchStyle=new Button.ButtonStyle();
+        watchStyle.up=new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("startScene\\watchButton.png"))));
+        Button watchButton=new Button(watchStyle);
+        watchButton.setPosition(1350,50);
         //用户头像组
 
         upTexture = new Texture(Gdx.files.internal("login.png"));
@@ -78,7 +105,6 @@ public class StartScene extends KlotskiScene
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-
                 ArrayList<Integer> tem=new ArrayList<>();
                 tem.add(1);
                 tem.add(2);
@@ -88,7 +114,10 @@ public class StartScene extends KlotskiScene
                 screenManager.setScreen(new LevelSelectScene(gameMain, tem));
             }
         });
-        stage.addActor(tempentry);
+        stage.addActor(background);
+        stage.addActor(startButton);
+        stage.addActor(watchButton);
+        //stage.addActor(tempentry);
 
     }
     @Override
@@ -100,7 +129,7 @@ public class StartScene extends KlotskiScene
     @Override
     public void draw(float delta)
     {
-
+        stage.draw();
     }
 
     @Override
@@ -111,9 +140,7 @@ public class StartScene extends KlotskiScene
     @Override
     public void render(float delta)
     {
-        Gdx.gl.glClearColor(0,0,0,1);
-        stage.act(delta);
-        stage.draw();
-
+        //ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        super.render(delta);
     }
 }

@@ -155,8 +155,9 @@ public class Chess extends Actor
         this.chessName = chessName;
         this.chessWidth = chessWidth;
         this.chessHeight = chessHeight;
+        setOrigin(this.getWidth()/2, this.getHeight()/2);
         //将图片素材按照棋子大小缩放
-        setScale(squareHW * chessWidth / region.getRegionWidth(), squareHW * chessHeight / this.region.getRegionHeight());
+        setScale((squareHW * chessWidth-5) / region.getRegionWidth(), (squareHW * chessHeight-5) / this.region.getRegionHeight());
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
@@ -172,7 +173,7 @@ public class Chess extends Actor
         this.region = chess.getRegion();
         this.chessWidth = chess.getChessWidth();
         this.chessHeight = chess.getChessHeight();
-        setScale(squareHW * chessWidth / region.getRegionWidth(), squareHW * chessHeight / this.region.getRegionHeight());
+        setScale((squareHW * chessWidth-5) / region.getRegionWidth(), (squareHW * chessHeight-5) / this.region.getRegionHeight());
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
@@ -185,8 +186,7 @@ public class Chess extends Actor
         this.chessHeight = chess.getChessHeight();
         this.setXY(chess.getPosition());
         this.chessName = chess.getChessName();
-        setScale(squareHW * chessWidth / region.getRegionWidth(), squareHW * chessHeight / this.region.getRegionHeight());
-        //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
+        setScale((squareHW * chessWidth-5) / region.getRegionWidth(), (squareHW * chessHeight-5) / this.region.getRegionHeight());
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
 

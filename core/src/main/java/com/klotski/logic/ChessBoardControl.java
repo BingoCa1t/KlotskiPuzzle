@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.klotski.Main;
+import com.klotski.Scene.GameMainScene;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.archive.LevelArchive;
 import com.klotski.map.MapData;
@@ -23,9 +25,10 @@ import java.util.Stack;
  */
 public class ChessBoardControl
 {
-    ArchiveManager archiveManager;
-    LevelArchive levelArchive=new LevelArchive();
-    Stack<MoveStep> moveSteps = new Stack<>();
+    private Main gameMain;
+    private ArchiveManager archiveManager;
+    private LevelArchive levelArchive=new LevelArchive();
+    private Stack<MoveStep> moveSteps = new Stack<>();
     private int second=0;
     private MapData mapData;
     /**前端*/
@@ -37,9 +40,10 @@ public class ChessBoardControl
     private Chess mainChess;
     private ArrayList<Pos> exits;
 
-    public ChessBoardControl(ArchiveManager archiveManager)
+    public ChessBoardControl(Main gameMain)
     {
-        this.archiveManager = archiveManager;
+        this.archiveManager = gameMain.getUserManager().getArchiveManager();
+        this.gameMain = gameMain;
     }
     //获取棋盘
     public ChessBoard getChessBoard()
@@ -148,7 +152,7 @@ public class ChessBoardControl
         exits=mapData.getExit();
         chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(),exits, mapData.getMainIndex());
         //如果存档是null或empty，则将存档的moveSteps设置为当前的moveSteps
-        if(levelArchive.getMoveSteps()==null||levelArchive.getMoveSteps().isEmpty())
+        if(levelArchive.getMoveSteps()==null||levelArchive.getMoveSteps().isEmpty()||levelArchive.getLevelStatus()==LevelStatus.Succeed)
         {
             levelArchive.setMoveSteps(moveSteps);
         }
@@ -191,8 +195,7 @@ public class ChessBoardControl
         if (chessBoardArray.isChessCanMove(chess, pp))
         {
             moveSteps.push(new MoveStep(chess.getPosition(), pp));
-
-
+            levelArchive.setLevelStatus(LevelStatus.InProgress);
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             levelArchive.setSeconds(second);
             archiveManager.saveByNetwork();
@@ -201,6 +204,21 @@ public class ChessBoardControl
             if(isWin())
             {
                 Logger.debug("Win");
+                levelArchive.setLevelStatus(LevelStatus.Succeed);
+                int steps = moveSteps.size();
+                levelArchive.setMoveSteps(levelArchive.getMoveSteps().size()<steps?levelArchive.getMoveSteps():moveSteps);
+                int star=0;
+                if(steps<=mapData.getGrades()[0]) star=3;
+                else if(steps<=mapData.getGrades()[1]) star=2;
+                else if(steps<=mapData.getGrades()[2]) star=1;
+                else if(steps<=mapData.getGrades()[3]) star=0;
+                levelArchive.setStars(star);
+                levelArchive.setSeconds(second);
+                archiveManager.saveByNetwork();
+                if(gameMain.getScreenManager().getCurrentScreen() instanceof GameMainScene gms)
+                {
+                    gms.settle(star,second,moveSteps.size());
+                }
             }
         }
         else
@@ -217,10 +235,6 @@ public class ChessBoardControl
             moveSteps.push(new MoveStep(chess.getPosition(), pp));
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             chessBoard.move(chess, pp);
-            if(isWin())
-            {
-                Logger.debug("Win");
-            }
         }
         else
         {
@@ -305,7 +319,7 @@ public class ChessBoardControl
     }
 
     /**
-     * 重置棋局（将记录栈全部弹出）
+     * 重置棋局（将记录栈全部弹出）并重置时间
      */
     public void restart()
     {
@@ -313,6 +327,7 @@ public class ChessBoardControl
         {
             moveBack();
         }
+        setSecond(0);
     }
     public int getBoardWidth()
     {

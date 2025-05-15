@@ -26,6 +26,8 @@ import com.klotski.logic.ChessBoardControl;
 import com.klotski.logic.LevelInfo;
 import com.klotski.logic.Pos;
 import com.klotski.map.MapData;
+import com.klotski.network.MessageCode;
+import com.klotski.network.NetworkMessageObserver;
 import com.klotski.polygon.Chess;
 import com.klotski.polygon.SettleGroup;
 import com.klotski.polygon.StarProgress;
@@ -40,8 +42,12 @@ import java.util.ArrayList;
  *
  * @author BingoCAT
  */
-public class GameMainScene extends KlotskiScene
+public class GameMainScene extends KlotskiScene implements NetworkMessageObserver
 {
+    /**
+     * 加入观战功能
+     */
+    private boolean isWatch=false;
     private int mapID;
     private ShapeRenderer shapeRenderer;
     private StarProgress starProgress;
@@ -134,7 +140,7 @@ public class GameMainScene extends KlotskiScene
         super.init();
 
         //棋盘控制器ChessBoardControl
-        cbc = new ChessBoardControl(gameMain.getUserManager().getArchiveManager());
+        cbc = new ChessBoardControl(gameMain);
         mapData = gameMain.getMapDataManager().getMapDataList().get(mapID);
         cbc.load(mapData);
         cbc.getChessBoard().setPosition(100,50);
@@ -170,17 +176,18 @@ public class GameMainScene extends KlotskiScene
         tw=new TimerW();
         tw.setPosition(850,750);
 
-        Timer.schedule(new Timer.Task()
+        if(!isWatch)
         {
-            @Override
-            public void run()
+            Timer.schedule(new Timer.Task()
             {
-
-                cbc.addSecond();
-                tw.setTime(cbc.getSecond());
-            }
-        },1f,1f);
-
+                @Override
+                public void run()
+                {
+                    cbc.addSecond();
+                    tw.setTime(cbc.getSecond());
+                }
+            }, 1f, 1f);
+        }
         //重置按钮 Restart Button
         Button.ButtonStyle rbs = new Button.ButtonStyle();
         rbs.up=new TextureRegionDrawable(new TextureRegion(new Texture("restart.png")));
@@ -195,7 +202,6 @@ public class GameMainScene extends KlotskiScene
                 cbc.restart();
                 stepLabel.setText("00");
                 tw.reset();
-
                 starProgress.setStep(cbc.getSteps());
             }
         });
@@ -315,6 +321,17 @@ public class GameMainScene extends KlotskiScene
         stage.addActor(leftButton);
         stage.addActor(rightButton);
         stage.addActor(backButton);
+        if(isWatch)
+        {
+            restartButton.setDisabled(true);
+            undoButton.setDisabled(true);
+            hintButton.setDisabled(true);
+            upButton.setDisabled(true);
+            downButton.setDisabled(true);
+            leftButton.setDisabled(true);
+            rightButton.setDisabled(true);
+        }
+        refreshWidget();
         //
     }
 
@@ -348,6 +365,15 @@ public class GameMainScene extends KlotskiScene
         this.mapID=mapID;
     }
 
+    /**
+     * 此构造函数专门供观战模式使用
+     */
+    public GameMainScene(Main gameMain,int mapID,boolean isWatch)
+    {
+        super(gameMain);
+        this.mapID=mapID;
+        this.isWatch=isWatch;
+    }
     @Override
     public void input()
     {
@@ -385,7 +411,13 @@ public class GameMainScene extends KlotskiScene
         return mapData;
     }
 
-
+    @Override
+    public void update(MessageCode code, String message)
+    {
+        /**
+         * 观战逻辑，屏蔽所有输入，只用update更新
+         */
+    }
 
     private class MyInputListener extends InputListener
     {
@@ -490,5 +522,59 @@ public class GameMainScene extends KlotskiScene
         starProgress.setStep(cbc.getSteps());
         stepLabel.setText(String.format("%02d", cbc.getSteps()));
         tw.setTime(cbc.getSecond());
+    }
+
+    /**
+     * 游戏胜利结算
+     */
+    public void settle(int star,int second,int step)
+    {
+        SettleGroup sg=new SettleGroup(star,String.format("%02d:%02d",second/60,second%60),step);
+        sg.addBackListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().returnPreviousScreen();
+            }
+        });
+        sg.addNextListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+               if(gameMain.getScreenManager().getScreenStack().peek() instanceof LevelSelectScene lss)
+               {
+                   lss.nextLevel();
+               }
+            }
+        });
+        sg.addBackListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                    gameMain.getScreenManager().returnPreviousScreen();
+            }
+        });
+        sg.addReturnListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().returnPreviousScreen();
+                if(gameMain.getScreenManager().getCurrentScreen() instanceof LevelSelectScene lss)
+                {
+                    lss.returnLevel();
+                }
+            }
+        });
+        sg.addHomeListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().returnRootScreen();
+            }
+        });
+        sg.setPosition(600,320);
+        stage.clear();
+
+        stage.addActor(sg);
     }
 }

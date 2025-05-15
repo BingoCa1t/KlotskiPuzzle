@@ -194,7 +194,7 @@ public class UserManager implements NetworkMessageObserver
                     String[] m=message.split(Pattern.quote("|"));
                     archiveManager=new ArchiveManager(activeUser,netManager);
                     archiveManager.loadByNetwork(m[0],m[1],m[2],Integer.parseInt(m[3]));
-                    Gdx.app.postRunnable(()-> screenManager.setScreen(new StartScene(gameMain,archiveManager)));
+                    Gdx.app.postRunnable(()-> screenManager.setScreenWithClear(new StartScene(gameMain,archiveManager)));
                     loggedIn=true;
                 }
             }

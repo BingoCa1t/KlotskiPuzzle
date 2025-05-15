@@ -116,5 +116,13 @@ public class LevelSelectScene extends KlotskiScene
     {
 
     }
+    public void nextLevel()
+    {
+        lg.nextLevel();
+    }
+    public void returnLevel()
+    {
+        lg.returnLevel();
+    }
 
 }

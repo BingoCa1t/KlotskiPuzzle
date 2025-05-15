@@ -50,11 +50,14 @@ public class ScreenManager
         currentScreen = screen;
         currentScreen.show();
         gameMain.setScreen(currentScreen);
+        /*
         for(Actor a : currentScreen.getStage().getActors())
         {
            // a.addAction(Actions.moveTo(10,10,2f));
            a.addAction(Actions.alpha(0,2f));
         }
+
+         */
         Logger.debug("ScreenManager", "Set screen -> " + currentScreen);
     }
 
@@ -71,12 +74,15 @@ public class ScreenManager
         currentScreen.show();
         gameMain.setScreen(currentScreen);
         Gdx.input.setInputProcessor(currentScreen.getStage());
+        /*
         for(Actor a : currentScreen.getStage().getActors())
         {
             a.getColor().set(a.getColor(),0);
             a.addAction(Actions.alpha(1,0.4f));
 
         }
+
+         */
         Logger.debug("ScreenManager", "Set screen -> " + currentScreen);
     }
 
@@ -102,6 +108,11 @@ public class ScreenManager
         return screenStack.get(0);
     }
 
+    public void setScreenWithClearPreviousOne(KlotskiScene screen)
+    {
+        screenStack.pop();
+        setScreen(screen);
+    }
     // 获取当前屏幕
     public KlotskiScene getCurrentScreen() {
         return currentScreen;
@@ -128,5 +139,15 @@ public class ScreenManager
 
     public Stack<KlotskiScene> getScreenStack() {
         return screenStack;
+    }
+
+    public void returnRootScreen()
+    {
+
+        while(screenStack.size()>1)
+        {
+            screenStack.pop();
+        }
+        setScreen(screenStack.pop());
     }
 }

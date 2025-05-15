@@ -21,6 +21,8 @@ public class LevelGroup extends Group
      */
     public Main gameMain;
     ArrayList<Integer> levels=new ArrayList<>();
+    private int currentLevel=0;
+
     private final float levelHW = 140f;
     private final float Y1 = 550f;
     private final float Y2 = 300f;
@@ -126,8 +128,34 @@ public class LevelGroup extends Group
             public void clicked(InputEvent event, float x, float y)
             {
                 gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,la.getMapID()));
+                currentLevel=levels.indexOf(mapID);
             }
         });
         this.addActor(la);
+    }
+    public ArrayList<Integer> getLevels()
+    {
+        return levels;
+    }
+    public int getCurrentLevel()
+    {
+        return currentLevel;
+    }
+    public void nextLevel()
+    {
+        if(currentLevel<levels.size()-2)
+        {
+            gameMain.getScreenManager().setScreenWithoutSaving(new GameMainScene(gameMain, levels.get(currentLevel + 1)));
+            currentLevel++;
+        }
+        else
+        {
+            gameMain.getScreenManager().setScreenWithoutSaving(new GameMainScene(gameMain, levels.getFirst()));
+            currentLevel=0;
+        }
+    }
+    public void returnLevel()
+    {
+        gameMain.getScreenManager().setScreenWithoutSaving(new GameMainScene(gameMain, levels.get(currentLevel)));
     }
 }

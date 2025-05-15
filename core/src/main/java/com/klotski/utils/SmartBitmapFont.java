@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeBitm
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.GlyphAndBitmap;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.klotski.utils.logger.Logger;
 
 import java.lang.reflect.Field;
 
@@ -61,7 +62,7 @@ public class SmartBitmapFont extends BitmapFont
             face = (Face) field.get(generator);
         } catch (Exception e)
         {
-            e.printStackTrace();
+            Logger.debug(e.getMessage());
             return;
         }
 

@@ -16,16 +16,18 @@ public class SettleGroup extends Group
 {
     private int stars=0;
     private String time="00:00";
+    private int step=0;
     Image image;
     Button backButton;
     Button homeButton;
     Button nextButton;
     Button returnButton;
-    public SettleGroup(int stars,String time)
+    public SettleGroup(int stars,String time,int step)
     {
         super();
         this.stars=stars;
         this.time=time;
+        this.step=step;
         switch(this.stars)
         {
             case 0:
@@ -77,7 +79,7 @@ public class SettleGroup extends Group
         //用时 Time Label
         Label.LabelStyle st=new Label.LabelStyle();
         st.font=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),60);
-        Label timeLabel=new Label(time,st);
+        Label timeLabel=new Label(time+" | "+step,st);
         timeLabel.setPosition(230,125);
 
         addActor(image);
@@ -103,4 +105,5 @@ public class SettleGroup extends Group
     {
         return returnButton.addListener(listener);
     }
+
 }
