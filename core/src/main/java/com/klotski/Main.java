@@ -118,7 +118,8 @@ public class Main extends Game
         tem.add(4);
         tem.add(5);
 
-        screenManager.setScreen(new LoginScene(this));
+        screenManager.setScreen(new WatchScene(this));
+        //screenManager.setScreen(new LoginScene(this));
         //screenManager.setScreen(new GameMainScene(this,1));
 
 
@@ -133,16 +134,9 @@ public class Main extends Game
         super.render();
     }
 
-
-
-
-
-
-
     @Override
     public void dispose() {
-        batch.dispose();
-        image.dispose();
+        super.dispose();
     }
 
     public AssetsPathManager getAssetsPathManager()
@@ -178,5 +172,9 @@ public class Main extends Game
     public UserInfo getUserInfo()
     {
         return userInfo;
+    }
+    public NetManager getNetManager()
+    {
+        return netManager;
     }
 }

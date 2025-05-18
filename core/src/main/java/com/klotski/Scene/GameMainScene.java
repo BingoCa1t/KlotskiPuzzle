@@ -22,8 +22,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
+import com.klotski.archive.LevelArchive;
 import com.klotski.logic.ChessBoardControl;
 import com.klotski.logic.LevelInfo;
+import com.klotski.logic.MoveStep;
 import com.klotski.logic.Pos;
 import com.klotski.map.MapData;
 import com.klotski.network.MessageCode;
@@ -33,9 +35,12 @@ import com.klotski.polygon.SettleGroup;
 import com.klotski.polygon.StarProgress;
 import com.klotski.polygon.TimerW;
 import com.klotski.utils.SmartBitmapFont;
+import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * 游戏核心界面
@@ -47,6 +52,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     /**
      * 加入观战功能
      */
+    private String watchEmail;
     private boolean isWatch=false;
     private int mapID;
     private ShapeRenderer shapeRenderer;
@@ -138,11 +144,18 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     public void init()
     {
         super.init();
-
+        gameMain.getNetManager().addObserver(this);
         //棋盘控制器ChessBoardControl
         cbc = new ChessBoardControl(gameMain);
         mapData = gameMain.getMapDataManager().getMapDataList().get(mapID);
-        cbc.load(mapData);
+        if(!isWatch)
+        {
+            cbc.load(mapData);
+        }
+        else
+        {
+            cbc.load(mapData,watchingLevelArchive,true);
+        }
         cbc.getChessBoard().setPosition(100,50);
         cbc.getChessBoard().addListener(new MyInputListener());
 
@@ -303,6 +316,11 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             public void clicked(InputEvent event, float x, float y)
             {
                 gameMain.getScreenManager().returnPreviousScreen();
+                if(isWatch)
+                {
+                    //通知服务器结束观战
+                    gameMain.getNetManager().sendMessage("0010|"+gameMain.getUserManager().getActiveUser().getEmail()+"|0");
+                }
             }
         });
 
@@ -330,6 +348,13 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             downButton.setDisabled(true);
             leftButton.setDisabled(true);
             rightButton.setDisabled(true);
+            //通知服务器开始观战
+            gameMain.getNetManager().sendMessage("0010|"+gameMain.getUserManager().getActiveUser().getEmail()+"|1");
+        }
+        else
+        {
+            //通知服务器开始游戏
+            gameMain.getNetManager().sendMessage("0011|"+gameMain.getUserManager().getActiveUser().getEmail()+"|1");
         }
         refreshWidget();
         //
@@ -364,15 +389,17 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         super(gameMain);
         this.mapID=mapID;
     }
-
+    private LevelArchive watchingLevelArchive;
     /**
      * 此构造函数专门供观战模式使用
      */
-    public GameMainScene(Main gameMain,int mapID,boolean isWatch)
+    public GameMainScene(Main gameMain, LevelArchive levelArchive, boolean isWatch,String watchEmail)
     {
         super(gameMain);
-        this.mapID=mapID;
+        this.watchingLevelArchive=levelArchive;
+        this.mapID=levelArchive.getMapID();
         this.isWatch=isWatch;
+        this.watchEmail=watchEmail;
     }
     @Override
     public void input()
@@ -410,13 +437,23 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     {
         return mapData;
     }
-
+    private JsonManager jsonManager=new JsonManager();
     @Override
     public void update(MessageCode code, String message)
     {
         /**
          * 观战逻辑，屏蔽所有输入，只用update更新
          */
+        String[] str=message.split(Pattern.quote("|"));
+        if(code==MessageCode.UpdateWatch && Objects.equals(str[0], watchEmail))
+        {
+            MoveStep moveStep=jsonManager.parseJsonToObject(str[2],MoveStep.class);
+            if(!cbc.move(cbc.getChessByPosition(moveStep.origin),moveStep.destination))
+            {
+                //如果移动失败，出现未知错误，重置棋盘
+                Gdx.app.postRunnable(() -> cbc.load(mapData,jsonManager.parseJsonToObject(str[1],LevelArchive.class),true));
+            }
+        }
     }
 
     private class MyInputListener extends InputListener
@@ -575,6 +612,16 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         sg.setPosition(600,320);
         stage.clear();
 
+        if(!isWatch)
+        {
+            //通知服务器结束游戏
+            gameMain.getNetManager().sendMessage("0011|"+gameMain.getUserManager().getActiveUser().getEmail()+"|0");
+        }
         stage.addActor(sg);
+    }
+
+    public boolean getIsWatch()
+    {
+        return isWatch;
     }
 }

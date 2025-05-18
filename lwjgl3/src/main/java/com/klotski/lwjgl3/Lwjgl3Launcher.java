@@ -1,5 +1,6 @@
 package com.klotski.lwjgl3;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.klotski.Main;
@@ -22,7 +23,8 @@ public class Lwjgl3Launcher
     {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("Klotski");
-        configuration.setBackBufferConfig(8, 8, 8, 8, 16, 0, 2);
+        configuration.setBackBufferConfig(8, 8, 8, 8, 16, 0, 8);
+
 
         //// Vsync limits the frames per second to what your hardware can display, and helps eliminate
         //// screen tearing. This setting doesn't always work on Linux, so the line after is a safeguard.

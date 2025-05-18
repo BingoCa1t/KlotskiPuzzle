@@ -9,8 +9,10 @@ import com.klotski.Scene.GameMainScene;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.archive.LevelArchive;
 import com.klotski.map.MapData;
+import com.klotski.network.MessageCode;
 import com.klotski.polygon.Chess;
 import com.klotski.polygon.ChessBoard;
+import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
 
 import java.util.ArrayList;
@@ -25,6 +27,9 @@ import java.util.Stack;
  */
 public class ChessBoardControl
 {
+    private JsonManager jsonManager;
+    private boolean isLoadArchive=true;
+    private boolean isWatch=false;
     private Main gameMain;
     private ArchiveManager archiveManager;
     private LevelArchive levelArchive=new LevelArchive();
@@ -44,6 +49,7 @@ public class ChessBoardControl
     {
         this.archiveManager = gameMain.getUserManager().getArchiveManager();
         this.gameMain = gameMain;
+        this.jsonManager=new JsonManager();
     }
     //获取棋盘
     public ChessBoard getChessBoard()
@@ -120,13 +126,20 @@ public class ChessBoardControl
 
     /**
      * 加载棋盘（更新了加载存档）
+     * 此方法从存档管理器里加载存档
      * @param mapData 地图数据
      */
     public void load(MapData mapData)
     {
+        load(mapData,archiveManager.getActiveArchive().get(mapData.getMapID()),false);
+        //loadDefault();
+    }
+    public void load(MapData mapData,LevelArchive levelArchive,boolean isWatch)
+    {
+        this.isWatch=isWatch;
         //创建MapData的副本，不要更改MapDataManager里的数据
         this.mapData=new MapData(mapData);
-        levelArchive=archiveManager.getActiveArchive().get(mapData.getMapID());
+        this.levelArchive=levelArchive;
         //后补（算了其实不需要）
         /*if(levelArchive==null)
         {
@@ -157,7 +170,7 @@ public class ChessBoardControl
             levelArchive.setMoveSteps(moveSteps);
         }
         //如果存在存档，且用户选择载入存档<br>（逻辑后补）</br>，则载入存档
-        else
+        else if(this.isWatch||isLoadArchive)
         {
             //存档里的移动记录栈
             Stack<MoveStep> s = levelArchive.getMoveSteps();
@@ -179,26 +192,37 @@ public class ChessBoardControl
 
         }
 
-        //loadDefault();
     }
-
     /**
      * 移动棋子
      *
      * @param chess 棋子
      * @param p     目标坐标
      */
-    public void move(Chess chess, Pos p)
+    public boolean move(Chess chess, Pos p)
     {
         Pos pp=new Pos(p.getX(),p.getY());
-
+        if(chess==null)
+        {
+            return false;
+        }
         if (chessBoardArray.isChessCanMove(chess, pp))
         {
             moveSteps.push(new MoveStep(chess.getPosition(), pp));
             levelArchive.setLevelStatus(LevelStatus.InProgress);
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             levelArchive.setSeconds(second);
-            archiveManager.saveByNetwork();
+            if(!isWatch)
+            {
+                //存档
+                archiveManager.saveByNetwork();
+                //所有客户端一直向服务器发送LevelArchive和最近一次移动：0015|email|{LevelArchive}|{MoveStep}
+                gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch,gameMain.getUserManager().getActiveUser().getEmail(),jsonManager.getJsonString(levelArchive),jsonManager.getJsonString(moveSteps.peek()));
+            }
+            else
+            {
+
+            }
             chessBoard.move(chess, pp);
 
             if(isWin())
@@ -211,7 +235,7 @@ public class ChessBoardControl
                 if(steps<=mapData.getGrades()[0]) star=3;
                 else if(steps<=mapData.getGrades()[1]) star=2;
                 else if(steps<=mapData.getGrades()[2]) star=1;
-                else if(steps<=mapData.getGrades()[3]) star=0;
+                else  star=0;
                 levelArchive.setStars(star);
                 levelArchive.setSeconds(second);
                 archiveManager.saveByNetwork();
@@ -220,10 +244,12 @@ public class ChessBoardControl
                     gms.settle(star,second,moveSteps.size());
                 }
             }
+            return true;
         }
         else
         {
             Logger.debug(chess.toString() + " Illegal Movement" + pp.toString());
+            return false;
         }
     }
     public void moveInArchive(Chess chess, Pos p)

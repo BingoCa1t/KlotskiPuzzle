@@ -28,15 +28,17 @@ public class SmartBitmapFont extends BitmapFont
 
     public SmartBitmapFont(FreeTypeFontGenerator generator, int fontSize)
     {
+
         if (generator == null)
             throw new GdxRuntimeException("lazyBitmapFont global generator must be not null to use this constructor.");
         this.generator = generator;
         FreeTypeFontParameter param = new FreeTypeFontParameter();
+
         param.size = fontSize;
         // 设置抗锯齿参数
         param.genMipMaps = true; // 生成 MipMaps 可以提高不同缩放级别下的显示质量
         param.minFilter = Texture.TextureFilter.MipMapLinearNearest; // 线性过滤，用于抗锯齿
-        param.magFilter = Texture.TextureFilter.MipMapLinearNearest; // 线性过滤，用于抗锯齿
+        param.magFilter = Texture.TextureFilter.Linear; // 线性过滤，用于抗锯齿
         this.parameter = param;
         this.data = new LazyBitmapFontData(generator, fontSize, this);
         try
