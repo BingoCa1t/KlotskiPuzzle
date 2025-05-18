@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.klotski.Main;
 //import com.klotski.polygon.combine.SokobanCombineObject;
@@ -68,7 +69,9 @@ public abstract class KlotskiScene extends ApplicationAdapter implements Screen 
      * 屏幕切换到隐藏状态
      */
     @Override
-    public void hide() {}
+    public void hide() {
+        
+    }
 
     /**
      * 屏幕初始化
@@ -107,7 +110,9 @@ public abstract class KlotskiScene extends ApplicationAdapter implements Screen 
      * 注意，<b>方法执行顺序为 input -> logic -> draw </b>，并且 input 与 logic 方法仅会执行<b>一次</b>
      */
     @Override
-    public void render(float delta) {
+    public void render(float delta)
+    {
+        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         // 限制 delta 防止异常时间波动
         delta = Math.min(delta, 0.25f);
         accumulatorIntegratedTime += delta;

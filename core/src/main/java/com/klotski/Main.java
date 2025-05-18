@@ -104,11 +104,6 @@ public class Main extends Game
         //loginScene.show();
         //screenManager.setScreen(new StartScene(this));
 
-
-
-
-
-
         LevelArchive levelArchive = new LevelArchive();
         levelArchive.setMapID(1);
         ArrayList<Integer> tem=new ArrayList<>();
@@ -117,8 +112,8 @@ public class Main extends Game
         tem.add(3);
         tem.add(4);
         tem.add(5);
-
-        screenManager.setScreen(new WatchScene(this));
+        screenManager.setScreen(new RegisterScene(this));
+        //screenManager.setScreen(new WatchScene(this));
         //screenManager.setScreen(new LoginScene(this));
         //screenManager.setScreen(new GameMainScene(this,1));
 
@@ -169,10 +164,6 @@ public class Main extends Game
         return mapDataManager;
     }
 
-    public UserInfo getUserInfo()
-    {
-        return userInfo;
-    }
     public NetManager getNetManager()
     {
         return netManager;

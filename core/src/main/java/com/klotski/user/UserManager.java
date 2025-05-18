@@ -3,10 +3,7 @@ package com.klotski.user;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.klotski.Main;
-import com.klotski.Scene.KlotskiScene;
-import com.klotski.Scene.LoginScene;
-import com.klotski.Scene.ScreenManager;
-import com.klotski.Scene.StartScene;
+import com.klotski.Scene.*;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.archive.LevelArchive;
 import com.klotski.logic.LevelStatus;
@@ -17,7 +14,6 @@ import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.Stack;
 import java.util.regex.Pattern;
 
 public class UserManager implements NetworkMessageObserver
@@ -45,9 +41,9 @@ public class UserManager implements NetworkMessageObserver
 
     }
 
-    public int register(String username, String passwordMD5, String email, String code)
+    public void register(String username, String passwordMD5, String email, String code)
     {
-        return -1;
+        netManager.sendMessage(MessageCode.UserRegister,username,email,passwordMD5,code);
     }
 
     public void login(String email, String passwordMD5)
@@ -166,10 +162,16 @@ public class UserManager implements NetworkMessageObserver
                 loginScene.loginFail();
             }
         }
-        //注册时获取验证码
-        else if(code == MessageCode.UserGetRegisterCode)
+        // 注册成功
+        else if(code == MessageCode.UserRegister)
         {
-            registerCode=message;
+            KlotskiScene cs = screenManager.getCurrentScreen();
+            if (cs instanceof RegisterScene registerScene)
+            {
+                if(message.equals("1")) registerScene.registrySucceed();
+                else if(message.equals("2")) registerScene.registryFail("Email has already been registered");
+                else if(message.equals("0")) registerScene.registryFail("Verify Code is wrong");
+            }
         }
         //登录成功，请求用户信息和存档信息（{userInfo}|||{us
         else if(code == MessageCode.UserGetUserInfo)
