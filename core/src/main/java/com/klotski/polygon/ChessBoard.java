@@ -69,6 +69,7 @@ public class ChessBoard extends Group
      */
     public void addChess(Chess chess)
     {
+
         addActor(chess);
         chesses.add(chess);
     }
@@ -101,13 +102,14 @@ public class ChessBoard extends Group
      */
     public void move(Chess chess, Pos p)
     {
-        // 获取一个 MoveTo 动作, 0.8秒内移动到目标位置
+        // 获取一个 MoveTo 动作, 0.5秒内移动到目标位置
         MoveToAction action = Actions.moveTo(p.getX() * Chess.squareHW, p.getY() * Chess.squareHW, 0.5F, Interpolation.smoother);
         // 将动作附加在演员身上, 执行动作
         chess.addAction(action);
         chess.setXYWithoutChangingState(p);
 
     }
+
 
     /**
      * 选中棋子的绘制动作
@@ -134,11 +136,6 @@ public class ChessBoard extends Group
         chess.select();
     }
 
-    /// 临时方法，测试移动动画
-    public Chess getChess10()
-    {
-        return chesses.get(9);
-    }
 
     public void dragged(Chess c, Pos p)
     {

@@ -23,6 +23,7 @@ import java.util.Map;
  * 统一资源管理器 AssetsPathManager
  *
  * @author Life_Checkpoint
+ * @author BingoCAT
  */
 public class AssetsPathManager
 {
@@ -62,15 +63,10 @@ public class AssetsPathManager
             addAsset(Music.class, musicAsset.getAlias());
         }
 
-        // 加载 SpineAssets
-        for (SpineAssets spineAsset : SpineAssets.values())
-        {
-            addAsset(TextureAtlas.class, spineAsset.getAliasAtlas());
-        }
 
-        int preloadAssetsNum = ImageAssets.values().length + MusicAssets.values().length + SpineAssets.values().length;
-        int preserveAssetsNum = ShaderAssets.values().length;
-        Logger.info("AssetsPathManager", String.format("Preload %d Assets, preserve %d Assets", preloadAssetsNum, preserveAssetsNum));
+        int preloadAssetsNum = ImageAssets.values().length + MusicAssets.values().length;
+
+        Logger.info("AssetsPathManager", String.format("Preload %d Assets", preloadAssetsNum));
     }
 
     /**
@@ -170,24 +166,7 @@ public class AssetsPathManager
         return get(resourceEnum.getAlias(), Music.class);
     }
 
-    /**
-     * 获得 Spine 资源对象
-     *
-     * @param resourceEnum Spine 枚举
-     * @return 指定资源
-     */
-    public TextureAtlas get(SpineAssets resourceEnum)
-    {
-        return get(resourceEnum.getAliasAtlas(), TextureAtlas.class);
-    }
 
-    /**
-     * 获得 Shader 资源对象
-     */
-    public ShaderProgram get(ShaderAssets resourceEnum)
-    {
-        return shaderLoad(resourceEnum.getAliasVertex(), resourceEnum.getAliasFragment());
-    }
 
     /**
      * 获得资源对象

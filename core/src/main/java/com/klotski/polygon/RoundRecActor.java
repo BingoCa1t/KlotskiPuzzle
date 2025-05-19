@@ -86,7 +86,7 @@ public class RoundRecActor extends Actor
         X=this.getParent().getX()+6;
         Y=this.getParent().getY()+7;
         batch.end();
-        //OpenGL的一个特性：永远不要同时改变状态。所以在ShapeRender.begin()方法前加上Batch.end()方法
+        //OpenGL的一个特性：永远不要同时改变状态。所以在ShapeRender.begin()方法前加上batch.end()方法
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1, 1, 1, 1);
 

@@ -10,10 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -50,27 +47,22 @@ import java.util.regex.Pattern;
 public class GameMainScene extends KlotskiScene implements NetworkMessageObserver
 {
     /**
+     * 加入倒计时功能
+     */
+    private boolean isTimeAttack=false;
+    /**
      * 加入观战功能
      */
     private String watchEmail;
     private boolean isWatch=false;
     private int mapID;
-    private ShapeRenderer shapeRenderer;
     private StarProgress starProgress;
-    // 长方形的宽度和高度变量
-    private float rectangleWidth = 200;
-    private float rectangleHeight = 100;
-    // 圆角的半径
-    private float cornerRadius = 20;
-    private SpriteBatch batch;
-   // private Stage stage;
+
     private ChessBoardControl cbc;
     private boolean isInBackMenu;
     private LocalDateTime startTime;
     private MapData mapData;
     private boolean isInAI = false;
-    //private Main game;
-    //private Label timeLabel;
     private Label stepLabel;
     private BitmapFont font;
     //private LevelInfo levelInfo;
@@ -321,6 +313,11 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                     //通知服务器结束观战
                     gameMain.getNetManager().sendMessage("0010|"+gameMain.getUserManager().getActiveUser().getEmail()+"|0");
                 }
+                else
+                {
+                    //通知服务器结束游戏
+                    gameMain.getNetManager().sendMessage("0041|"+gameMain.getUserManager().getActiveUser().getEmail());
+                }
             }
         });
 
@@ -348,6 +345,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             downButton.setDisabled(true);
             leftButton.setDisabled(true);
             rightButton.setDisabled(true);
+            cbc.getChessBoard().setTouchable(Touchable.disabled);
             //通知服务器开始观战
             gameMain.getNetManager().sendMessage("0010|"+gameMain.getUserManager().getActiveUser().getEmail()+"|1");
         }
@@ -378,6 +376,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             stepLabel.setText(String.format("%02d", cbc.getSteps()));
         }
     }
+
     /**
      * 基类初始化，需要传入 gameMain
      *
@@ -389,7 +388,9 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         super(gameMain);
         this.mapID=mapID;
     }
+
     private LevelArchive watchingLevelArchive;
+
     /**
      * 此构造函数专门供观战模式使用
      */
@@ -427,7 +428,6 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         super.render(delta);
     }
 
-
     public void setMapData(MapData mapData)
     {
         this.mapData = mapData;
@@ -456,6 +456,9 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         }
     }
 
+    /**
+     * 鼠标选中棋子并移动
+     */
     private class MyInputListener extends InputListener
     {
         private boolean isDragging = false;
@@ -517,6 +520,9 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
          */
     }
 
+    /**
+     * 键盘控制棋子移动
+     */
     private class ChessBoardListener extends InputListener
     {
         @Override
@@ -526,34 +532,27 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             switch (keycode)
             {
                 case Input.Keys.UP:
-                {
-
-                    //Gdx.app.log(TAG, "被按下的按键: 方向上键");
-                    // cb2.move(cb2.getChess10(),new Pos(2,0));
-                    // System.out.println("移动棋子");
+                    move(new Pos(0,1));
                     break;
-                }
                 case Input.Keys.DOWN:
-                {
-                    Logger.debug("move back");
-                    cbc.moveBack();
-                    stepLabel.setText(String.format("%02d", cbc.getSteps()));
+                    move(new Pos(0,-1));
                     break;
-                }
                 case Input.Keys.LEFT:
-                {
-
+                    move(new Pos(-1,0));
                     break;
-                }
+                case Input.Keys.RIGHT:
+                    move(new Pos(1,0));
+                    break;
                 default:
-                {
-                    //Gdx.app.log(TAG, "其他按键, KeyCode: " + keycode);
                     break;
-                }
             }
             return false;
         }
     }
+
+    /**
+     * 刷新组件
+     */
     public void refreshWidget()
     {
         starProgress.setStep(cbc.getSteps());
@@ -567,6 +566,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     public void settle(int star,int second,int step)
     {
         SettleGroup sg=new SettleGroup(star,String.format("%02d:%02d",second/60,second%60),step);
+
         sg.addBackListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y)
@@ -582,13 +582,6 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                {
                    lss.nextLevel();
                }
-            }
-        });
-        sg.addBackListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y)
-            {
-                    gameMain.getScreenManager().returnPreviousScreen();
             }
         });
         sg.addReturnListener(new ClickListener(){
@@ -610,8 +603,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             }
         });
         sg.setPosition(600,320);
-        stage.clear();
 
+        stage.clear();
         if(!isWatch)
         {
             //通知服务器结束游戏

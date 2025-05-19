@@ -1,22 +1,39 @@
 package com.klotski.polygon;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.klotski.Main;
+import com.klotski.assets.AssetsPathManager;
+import com.klotski.assets.ImageAssets;
 import com.klotski.logic.Pos;
 
 /**
  * 棋子类，继承自Actor
- *
+ * 请注意：此类的构造方法仅给字段赋值，读取绘制区域要执行init()方法
  * @author BingoCAT
  */
 public class Chess extends Actor
 {
+    /*
+    关于棋子贴图的处理思路产生变动
+    后期会使用AssetManager，放弃自定义贴图的处理方式，改成提供标识符，由AssetManager负责读取对应的所有贴图
+    imagePath字段应为棋子中文名的前两个字母小写，比如 曹操：cc 关羽：gy
+    如果是正方形棋子（卒和曹操），则命名为（cc.png 和 ccS.png 、 zu.png 和 zuS.png）
+    如果是长方形棋子，则1*2时，命名为**H（gyH.png 和 gyHS.png）  2*1 命名为**W（gyS.png 和 gyWS.png）
+    读取时采用：
+    1、如果是曹操（cc）和卒（zu），则直接读取唯一的贴图
+    2、如果是其他棋子，则根据长宽来决定贴图
+    */
+
     /*自定义里面的宽度、高度、坐标都是如（3,3）这样的，Actor基类本身的才是像素绘制的坐标*/
     private int ID;
     private String imagePath;
+    private String selectedImagePath;
+    private TextureRegion disSelectedImage;
+    private TextureRegion selectedImage;
     /**
      * 绘制区域
      */
@@ -37,6 +54,7 @@ public class Chess extends Actor
     public static final float squareHW = 170f;
     //棋子是否被选中
     private boolean isSelected = false;
+
 
     public void setSelected(boolean isSelected)
     {
@@ -67,6 +85,7 @@ public class Chess extends Actor
     {
         return position;
     }
+
     public String getChessName()
     {
         return chessName;
@@ -127,11 +146,11 @@ public class Chess extends Actor
     }
 
     /**
-     * 初始化棋子
+     * 初始化棋子（已弃用）
      *
      * @param chessName   棋子名称，例如：“曹操”
      * @param chessHeight 棋子高度，例如：棋子“曹操”高度是2
-     * @param chessWidth  棋子宽度，例如：棋子“曹操”宽度是2
+     * @param chessWidth  棋
      * @param region      绘制区域
      */
     public Chess(TextureRegion region, String chessName, int chessWidth, int chessHeight)
@@ -147,21 +166,44 @@ public class Chess extends Actor
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
+
+    /**
+     * 初始化棋子,这里只会给几个字段赋值，不会读取绘制区域
+     * 路径命名方式：取棋子名字前两个字母
+     * @param imagePath
+     * @param chessName 棋子名称，例如：“曹操”
+     * @param chessWidth 棋子宽度，例如：棋子“曹操”宽度是2
+     * @param chessHeight 棋子高度，例如：棋子“曹操”高度是2
+     */
     public Chess(String imagePath, String chessName, int chessWidth, int chessHeight)
     {
         super();
-        this.imagePath = imagePath;
-        this.region=new TextureRegion(new Texture(imagePath));
+        this.imagePath =imagePath;
         this.chessName = chessName;
         this.chessWidth = chessWidth;
         this.chessHeight = chessHeight;
+    }
+
+    /**
+     * 读取绘制区域，完成棋子初始化
+     * @param apm 资源管理器
+     */
+    public void init(AssetsPathManager apm)
+    {
+        String s1=imagePath;
+        String s2="";
+        String s3="S";
+        if(chessHeight>chessWidth) s2="H";
+        else if(chessWidth>chessHeight) s2="W";
+        this.disSelectedImage=new TextureRegion(apm.get(ImageAssets.valueOf(s1+s2)));
+        this.selectedImage=new TextureRegion(apm.get(ImageAssets.valueOf(s1+s2+s3)));
+        this.region=this.disSelectedImage;
         setOrigin(this.getWidth()/2, this.getHeight()/2);
         //将图片素材按照棋子大小缩放
         setScale((squareHW * chessWidth-5) / region.getRegionWidth(), (squareHW * chessHeight-5) / this.region.getRegionHeight());
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
-
     /**
      * 创建chess的副本
      *
@@ -170,13 +212,17 @@ public class Chess extends Actor
     public Chess(Chess chess)
     {
         super();
-        this.region = chess.getRegion();
-        this.chessWidth = chess.getChessWidth();
-        this.chessHeight = chess.getChessHeight();
-        setScale((squareHW * chessWidth-5) / region.getRegionWidth(), (squareHW * chessHeight-5) / this.region.getRegionHeight());
-        //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
-        setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
+        this.imagePath=chess.getImagePath();
+        this.chessName=chess.getChessName();
+        this.chessWidth=chess.getChessWidth();
+        this.chessHeight=chess.getChessHeight();
     }
+
+    /**
+     * 在读取地图的时候
+     * @param chess
+     * @param isArchive
+     */
     public Chess(Chess chess,boolean isArchive)
     {
         super();
@@ -210,7 +256,7 @@ public class Chess extends Actor
      */
     public void select()
     {
-        this.setRegion(new TextureRegion(new Texture("CaocSelected.png")));
+        this.setRegion(selectedImage);
         isSelected = true;
     }
 
@@ -219,7 +265,7 @@ public class Chess extends Actor
      */
     public void disSelect()
     {
-        this.setRegion(new TextureRegion(new Texture("Caoc.png")));
+        this.setRegion(disSelectedImage);
         isSelected = false;
     }
 
@@ -238,20 +284,7 @@ public class Chess extends Actor
             return;
         }
         super.draw(batch, parentAlpha);
-        /*
-        if(isSelected)
-        {
 
-
-            shapeRenderer.setAutoShapeType(true);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-            shapeRenderer.setColor(1, 1, 1, 1);
-            shapeRenderer.rect(getX(), getY(), getWidth()*getScaleX(), getHeight()*getScaleY());
-            shapeRenderer.end();
-        }
-
-         */
 		/* 这里选择一个较为复杂的绘制方法进行绘制
 		batch.draw(
 				region,
@@ -266,7 +299,10 @@ public class Chess extends Actor
          * 将演员中的 位置(position, 即 X, Y 坐标), 缩放和旋转支点(origin), 宽高尺寸, 缩放比, 旋转角度 应用到绘制中,
          * 最终 batch 会将综合结果绘制到屏幕上
          */
-        batch.setColor(1.0f, 1.0f, 1.0f, 1f);
+        Color color = getColor();
+
+        // 设置 Batch 的颜色，将当前 Actor 的透明度与父元素透明度相乘
+        batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
         batch.draw(
             region,
             getX(), getY(),
@@ -297,5 +333,35 @@ public class Chess extends Actor
         builder.append(getPosition().toString());
         builder.append("]");
         return builder.toString();
+    }
+
+    public String getSelectedImagePath()
+    {
+        return selectedImagePath;
+    }
+
+    public void setSelectedImagePath(String selectedImagePath)
+    {
+        this.selectedImagePath = selectedImagePath;
+    }
+
+    public TextureRegion getDisSelectedImage()
+    {
+        return disSelectedImage;
+    }
+
+    public void setDisSelectedImage(TextureRegion disSelectedImage)
+    {
+        this.disSelectedImage = disSelectedImage;
+    }
+
+    public TextureRegion getSelectedImage()
+    {
+        return selectedImage;
+    }
+
+    public void setSelectedImage(TextureRegion selectedImage)
+    {
+        this.selectedImage = selectedImage;
     }
 }

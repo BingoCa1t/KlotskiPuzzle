@@ -9,17 +9,17 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
 import com.klotski.network.MessageCode;
 import com.klotski.network.NetworkMessageObserver;
+import com.klotski.utils.ImageButtonStyleHelper;
 import com.klotski.utils.SmartBitmapFont;
 
 import java.util.TimerTask;
@@ -34,6 +34,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
      */
     // 文本框背景纹理
     //private Texture bgTexture;
+    private ImageButton backButton;
     public static final int TEXT_FIELD_WIDTH = 500;
     public static final int TEXT_FIELD_HEIGHT = 50;
     // 位图字体
@@ -140,6 +141,16 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
                 }
             }
         });
+
+        backButton=new ImageButton(new TextureRegionDrawable(new Texture("registerScene/left_arrow.png")));
+        backButton.setPosition(100,900);
+        backButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().returnPreviousScreen();
+            }
+        });
         stage.addActor(registImage);
         stage.addActor(getCodeButton);
         stage.addActor(registerButton);
@@ -148,6 +159,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
         stage.addActor(passwordTextField);
         stage.addActor(verifyCodeField);
         stage.addActor(infoLabel);
+        stage.addActor(backButton);
 
 
     }
@@ -263,7 +275,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
             @Override
             public void run()
             {
-                gameMain.getScreenManager().setScreenWithoutSaving(new LoginScene(gameMain));
+                gameMain.getScreenManager().setScreenWithoutSaving(new LoginScene(gameMain,emailTextField.getText()));
             }
         }, 2);
     }

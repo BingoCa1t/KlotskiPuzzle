@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -16,6 +17,7 @@ import com.klotski.utils.logger.Logger;
 
 public class LoginScene extends KlotskiScene
 {
+    private ImageButton backButton;
     private UserManager userManager;
     private LoginGroup loginGroup;
     private String email="";
@@ -57,10 +59,19 @@ public class LoginScene extends KlotskiScene
     public void init()
     {
         super.init();
-        stage=new Stage();
+        backButton=new ImageButton(new TextureRegionDrawable(new Texture("registerScene/left_arrow.png")));
+        backButton.setPosition(100,900);
+        backButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().returnPreviousScreen();
+            }
+        });
+
         loginGroup=new LoginGroup(email);
         loginGroup.setPosition(700,300);
-        stage.addActor(loginGroup);
+
 
         Button.ButtonStyle buttonStyle=new Button.ButtonStyle();
         buttonStyle.up=new TextureRegionDrawable(new Texture("login.png"));
@@ -82,7 +93,9 @@ public class LoginScene extends KlotskiScene
                 }
             }
         });
+        stage.addActor(loginGroup);
         stage.addActor(loginButton);
+        stage.addActor(backButton);
 
         //Gdx.input.setInputProcessor(stage);
     }

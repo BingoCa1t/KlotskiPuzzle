@@ -32,12 +32,7 @@ public class Main extends Game
     private ScreenManager screenManager;
     private JsonManager jsonManager;
     private MapDataManager mapDataManager;
-    private SpriteBatch batch;
-    private Texture image;
-    private ArchiveManager archiveManager;
-   // private Stage stage;
-    private GameMainScene gms;
-    private LoginScene loginScene;
+    private AssetsPathManager assetsPathManager;
     /*
     先在主程序里加载所有MapData
     然后再初始化levelInfo
@@ -52,7 +47,9 @@ public class Main extends Game
     @Override
     public void create()
     {
-
+        assetsPathManager=new AssetsPathManager(this);
+        assetsPathManager.preloadAllAssets();
+        assetsPathManager.startAssetsLoading();
         netManager=new NetManager("127.0.0.1",12345);
         // 创建一个新线程并启动
         Thread netManagerThread = new Thread(netManager);
@@ -112,7 +109,7 @@ public class Main extends Game
         tem.add(3);
         tem.add(4);
         tem.add(5);
-        screenManager.setScreen(new RegisterScene(this));
+        screenManager.setScreen(new WelcomeScene(this));
         //screenManager.setScreen(new WatchScene(this));
         //screenManager.setScreen(new LoginScene(this));
         //screenManager.setScreen(new GameMainScene(this,1));
@@ -154,10 +151,6 @@ public class Main extends Game
         return jsonManager;
     }
 
-    public ArchiveManager getArchiveManager()
-    {
-        return archiveManager;
-    }
 
     public MapDataManager getMapDataManager()
     {

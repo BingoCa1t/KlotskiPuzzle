@@ -2,8 +2,13 @@ package com.klotski.logic;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
 import com.klotski.archive.ArchiveManager;
@@ -15,10 +20,7 @@ import com.klotski.polygon.ChessBoard;
 import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * 控制器，负责控制前后端
@@ -66,7 +68,7 @@ public class ChessBoardControl
     /**
      * 测试时候使用的。默认构造棋盘（已弃用）
      */
-
+/*
     private void loadDefault()
     {
         chessBoard = new ChessBoard();
@@ -123,7 +125,7 @@ public class ChessBoardControl
         chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), 4, 5,null,0);
         chessBoard.setPosition(100, 100);
     }
-
+*/
     /**
      * 加载棋盘（更新了加载存档）
      * 此方法从存档管理器里加载存档
@@ -160,6 +162,10 @@ public class ChessBoardControl
         background.setWidth(4 * Chess.squareHW + 20);
         chessBoard.addActor(background);
         chessBoard.addActor(chessBoardImage);
+        for(Chess c:this.mapData.getChesses())
+        {
+            c.init(gameMain.getAssetsPathManager());
+        }
         chessBoard.addChessArray(this.mapData.getChesses());
         chessBoard.setPosition(100, 100);
         exits=mapData.getExit();
@@ -227,6 +233,7 @@ public class ChessBoardControl
 
             if(isWin())
             {
+                chess.clearActions();
                 Logger.debug("Win");
                 levelArchive.setLevelStatus(LevelStatus.Succeed);
                 int steps = moveSteps.size();
@@ -241,7 +248,18 @@ public class ChessBoardControl
                 archiveManager.saveByNetwork();
                 if(gameMain.getScreenManager().getCurrentScreen() instanceof GameMainScene gms)
                 {
-                    gms.settle(star,second,moveSteps.size());
+                    MoveToAction action = Actions.moveTo((p.getX()) * Chess.squareHW, (p.getY()-2) * Chess.squareHW, 1.3f, Interpolation.smoother);
+                    AlphaAction a= Actions.fadeOut(1.3f, Interpolation.smoother);
+                    chess.addAction(Actions.parallel(action, a));
+                    int finalStar = star;
+                    Timer.schedule(new Timer.Task()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            gms.settle(finalStar,second,moveSteps.size());
+                        }
+                    },1.3f);
                 }
             }
             return true;

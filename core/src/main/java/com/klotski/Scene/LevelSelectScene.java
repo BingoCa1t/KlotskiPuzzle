@@ -63,8 +63,17 @@ public class LevelSelectScene extends KlotskiScene
         }
 
         //返回按钮
-        ImageButton.ImageButtonStyle style = ImageButtonStyleHelper.createFromTexture(new Texture(Gdx.files.internal("\"gameMainButton/backButton.png\"")));
+        ImageButton.ImageButtonStyle style = ImageButtonStyleHelper.createFromTexture(new Texture(Gdx.files.internal("gameMainButton/leftButton.png")));
         backButton=new ImageButton(style);
+        backButton.setPosition(100,950);
+        backButton.setSize(100,100);
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().returnPreviousScreen();
+            }
+        });
         /*
         li=new LevelInfo();
         li.setMapID(0);
