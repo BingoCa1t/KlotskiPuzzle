@@ -50,6 +50,7 @@ public class ScreenManager
         currentScreen = screen;
         currentScreen.show();
         gameMain.setScreen(currentScreen);
+        Gdx.input.setInputProcessor(currentScreen.getStage());
         /*
         for(Actor a : currentScreen.getStage().getActors())
         {
@@ -99,8 +100,11 @@ public class ScreenManager
         currentScreen = screenStack.pop();
         currentScreen.show();
         gameMain.setScreen(currentScreen);
+        /*
         currentScreen.getStage().addAction(Actions.sequence(
             Actions.fadeIn(2f) ));// 2 秒内渐隐)
+
+         */
         Logger.debug("ScreenManager", "Set screen -> " + currentScreen);
     }
 
@@ -108,11 +112,7 @@ public class ScreenManager
         return screenStack.get(0);
     }
 
-    public void setScreenWithClearPreviousOne(KlotskiScene screen)
-    {
-        screenStack.pop();
-        setScreen(screen);
-    }
+
     // 获取当前屏幕
     public KlotskiScene getCurrentScreen() {
         return currentScreen;

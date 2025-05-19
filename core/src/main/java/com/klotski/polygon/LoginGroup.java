@@ -28,7 +28,7 @@ public class LoginGroup extends Group
     private BitmapFont bitmapFont;
     private Image cursorImage;
     private Button loginButton;
-    public LoginGroup()
+    public LoginGroup(String email)
     {
         super();
         cursorImage = new Image(new Texture(Gdx.files.internal("zuhe2.png")));
@@ -39,15 +39,12 @@ public class LoginGroup extends Group
         textFieldStyle.font = bitmapFont;
         textFieldStyle.fontColor = Color.WHITE;
         textFieldStyle.cursor=new TextureRegionDrawable(createCursorTexture());
-        Color selectionColor = new Color(0.2f, 0.2f, 0.8f, 0.5f);
 
         //textFieldStyle.selection = new TextureRegionDrawable(new TextureRegion(selectionColor));
         textFieldStyle.selection=new TextureRegionDrawable(createSelected());
         //textFieldStyle.background=new TextureRegionDrawable(new TextureRegion(bgTexture));
-        usernameTextField =new TextField("username", textFieldStyle);
         passwordTextField =new TextField("", textFieldStyle);
-
-        usernameTextField =new TextField("", textFieldStyle);
+        usernameTextField =new TextField(email, textFieldStyle);
         usernameTextField.setSize(TEXT_FIELD_WIDTH, TEXT_FIELD_HEIGHT);
         passwordTextField.setSize(TEXT_FIELD_WIDTH, TEXT_FIELD_HEIGHT);
 

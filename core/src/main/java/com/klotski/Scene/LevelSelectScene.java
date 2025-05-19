@@ -7,14 +7,18 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.logic.LevelInfo;
 import com.klotski.polygon.LevelActor;
 import com.klotski.polygon.LevelGroup;
+import com.klotski.utils.ImageButtonStyleHelper;
 import com.klotski.utils.logger.Logger;
 
 import java.util.ArrayList;
@@ -27,6 +31,7 @@ public class LevelSelectScene extends KlotskiScene
     private Image selectLevelText;
     private ArchiveManager archiveManager;
     private ArrayList<Integer> mapIDs;
+    private ImageButton backButton;
     /**
      * 基类初始化，需要传入 gameMain
      *
@@ -41,21 +46,25 @@ public class LevelSelectScene extends KlotskiScene
     @Override
     public void init()
     {
-        //背景图片 Background
+        // 背景图片 Background
         background=new Image(new TextureRegion(new Texture(Gdx.files.internal("selectLevelBackground.png"))));
         background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        //上方文字 "Select Level"
+        // 上方文字 "Select Level"
         selectLevelText=new Image(new TextureRegion(new Texture(Gdx.files.internal("selectLevelText.png"))));
         selectLevelText.setScale(0.6f);
         selectLevelText.setPosition(550,900);
 
-        //关卡选择组
+        // 关卡选择组
         lg = new LevelGroup(gameMain);
         for(int i : mapIDs)
         {
             lg.addLevel(i,true);
         }
+
+        //返回按钮
+        ImageButton.ImageButtonStyle style = ImageButtonStyleHelper.createFromTexture(new Texture(Gdx.files.internal("\"gameMainButton/backButton.png\"")));
+        backButton=new ImageButton(style);
         /*
         li=new LevelInfo();
         li.setMapID(0);
@@ -96,6 +105,7 @@ public class LevelSelectScene extends KlotskiScene
         stage.addActor(background);
         stage.addActor(selectLevelText);
         stage.addActor(lg);
+        stage.addActor(backButton);
     }
     @Override
     public void input()

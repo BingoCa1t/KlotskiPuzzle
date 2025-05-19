@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
 import com.klotski.network.MessageCode;
@@ -70,7 +71,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
         labelStyle.font = bitmapFont;
         labelStyle.fontColor = Color.WHITE;
         infoLabel = new Label("", labelStyle);
-
+        infoLabel.setPosition(1400,400);
         // 初始化文本框
         usernameTextField = new TextField("", textFieldStyle);
         emailTextField = new TextField("", textFieldStyle);
@@ -146,6 +147,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
         stage.addActor(emailTextField);
         stage.addActor(passwordTextField);
         stage.addActor(verifyCodeField);
+        stage.addActor(infoLabel);
 
 
     }
@@ -181,6 +183,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
     @Override
     public void render(float delta)
     {
+        ScreenUtils.clear(0, 0, 0, 1);
         super.render(delta);
         // 更新倒计时
         if (isCountingDown)
@@ -254,6 +257,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
                 return true;
             }
         });
+        infoLabel.setText("Registry Succeed, Jump to the login interface in 2 seconds");
         Timer.schedule(new Timer.Task()
         {
             @Override
@@ -266,7 +270,6 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
 
     public void registryFail(String message)
     {
-
         infoLabel.setText(message);
     }
 }

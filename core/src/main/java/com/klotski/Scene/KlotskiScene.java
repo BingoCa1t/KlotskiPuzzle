@@ -70,7 +70,7 @@ public abstract class KlotskiScene extends ApplicationAdapter implements Screen 
      */
     @Override
     public void hide() {
-        
+
     }
 
     /**
@@ -112,7 +112,7 @@ public abstract class KlotskiScene extends ApplicationAdapter implements Screen 
     @Override
     public void render(float delta)
     {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        //ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         // 限制 delta 防止异常时间波动
         delta = Math.min(delta, 0.25f);
         accumulatorIntegratedTime += delta;

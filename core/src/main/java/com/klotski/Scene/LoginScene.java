@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
 import com.klotski.polygon.LoginGroup;
 import com.klotski.user.UserInfo;
@@ -17,6 +18,7 @@ public class LoginScene extends KlotskiScene
 {
     private UserManager userManager;
     private LoginGroup loginGroup;
+    private String email="";
     /**
      * 基类初始化，需要传入 gameMain
      *
@@ -29,6 +31,14 @@ public class LoginScene extends KlotskiScene
 
     }
 
+    public LoginScene(Main gameMain,String email)
+    {
+        super(gameMain);
+        this.userManager=gameMain.getUserManager();
+        if(email==null) return;
+        this.email=email;
+
+    }
     public void login(String email, String password)
     {
         userManager.login(email, password);
@@ -48,7 +58,7 @@ public class LoginScene extends KlotskiScene
     {
         super.init();
         stage=new Stage();
-        loginGroup=new LoginGroup();
+        loginGroup=new LoginGroup(email);
         loginGroup.setPosition(700,300);
         stage.addActor(loginGroup);
 
@@ -85,15 +95,15 @@ public class LoginScene extends KlotskiScene
     @Override
     public void draw(float delta)
     {
-
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
     public void render(float delta)
     {
-        Gdx.gl.glClearColor(0,0,0,1);
-        stage.act(delta);
-        stage.draw();
+        ScreenUtils.clear(0,0,0,1);
+        super.render(delta);
     }
     @Override
     public void logic(float delta)
