@@ -106,7 +106,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,levelArchive,true,"wanght2024@mail.sustech.edu.cn"));
+                gameMain.getScreenManager().setScreen(new WatchScene(gameMain));
             }
         });
         //用户头像组

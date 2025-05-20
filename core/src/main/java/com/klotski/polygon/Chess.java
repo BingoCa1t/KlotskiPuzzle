@@ -227,13 +227,10 @@ public class Chess extends Actor
     {
         super();
         this.imagePath = chess.imagePath;
-        this.region=new TextureRegion(new Texture(imagePath));
         this.chessWidth = chess.getChessWidth();
         this.chessHeight = chess.getChessHeight();
         this.setXY(chess.getPosition());
         this.chessName = chess.getChessName();
-        setScale((squareHW * chessWidth-5) / region.getRegionWidth(), (squareHW * chessHeight-5) / this.region.getRegionHeight());
-        setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
 
     /**
@@ -247,7 +244,7 @@ public class Chess extends Actor
         // 重新设置纹理区域后, 需要重新设置宽高
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
         //将图片素材按照棋子大小缩放
-        setScale(squareHW * chessWidth / region.getRegionWidth(), squareHW * chessHeight / this.region.getRegionHeight());
+        setScale((squareHW * chessWidth-5) / region.getRegionWidth(), (squareHW * chessHeight-5) / this.region.getRegionHeight());
 
     }
 

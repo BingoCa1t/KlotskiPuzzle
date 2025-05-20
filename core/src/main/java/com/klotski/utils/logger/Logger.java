@@ -43,10 +43,10 @@ public class Logger
     /**
      * 输出方法
      *
-     * @param level      日志等级
-     * @param message    日志信息
+     * @param level   日志等级
+     * @param message 日志信息
      */
-    private static void Output(LogLevel level,String color,String message) throws IOException
+    private static void Output(LogLevel level, String color, String message) throws IOException
     {
         if (enableFileOutput)
         {
@@ -54,7 +54,7 @@ public class Logger
             logFileWriter.newLine();
             logFileWriter.flush();
         }
-        System.out.println(color+message+RESET);
+        System.out.println(color + message + RESET);
         //else System.err.println(color+message+RESET);
         /*err输出流和out输出流混用会出现前后顺序不一致的问题*/
     }
@@ -72,9 +72,9 @@ public class Logger
         {
             try
             {
-                if(!logPath.toFile().exists()) logPath.toFile().mkdir();
+                if (!logPath.toFile().exists()) logPath.toFile().mkdir();
                 logFile.createNewFile();
-                logFileWriter=new BufferedWriter(new FileWriter(logFile));
+                logFileWriter = new BufferedWriter(new FileWriter(logFile));
             } catch (IOException e)
             {
                 throw new RuntimeException(e);
@@ -84,7 +84,7 @@ public class Logger
         String shortTime = getShortTime();
         String color = getColorForLevel(level);
         String format = String.format("[%s] [%s] [%s] %s", level, moduleName, shortTime, message);
-        Output(level,color ,format);
+        Output(level, color, format);
     }
 
     /**
@@ -95,19 +95,23 @@ public class Logger
      */
     public static void log(LogLevel level, String message) throws IOException
     {
-        try
+        if (!logFile.exists())
         {
-            if(!logPath.toFile().exists()) logPath.toFile().mkdir();
-            logFile.createNewFile();
-            logFileWriter=new BufferedWriter(new FileWriter(logFile));
-        } catch (IOException e)
-        {
-            throw new RuntimeException(e);
+            try
+            {
+                if (!logPath.toFile().exists()) logPath.toFile().mkdir();
+                logFile.createNewFile();
+                logFileWriter = new BufferedWriter(new FileWriter(logFile));
+            } catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
         }
         if (!screenLevel(level) || !enableLog) return;
         String shortTime = getShortTime();
         String color = getColorForLevel(level);
-        Output(level,color , String.format("[%s] [%s] %s", level, shortTime, message) );
+        Output(level, color, String.format("[%s] [%s] %s", level, shortTime, message));
+
     }
 
     /**
@@ -247,6 +251,7 @@ public class Logger
             throw new RuntimeException(e);
         }
     }
+
     /**
      * 获取短时间格式HH:mm:ss
      *

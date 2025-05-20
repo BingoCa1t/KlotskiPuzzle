@@ -151,7 +151,7 @@ public class LevelGroup extends Group
     }
     public void nextLevel()
     {
-        if(currentLevel<levels.size()-2)
+        if(currentLevel<levels.size()-1)
         {
             gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(currentLevel + 1)));
             currentLevel++;

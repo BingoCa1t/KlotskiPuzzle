@@ -5,7 +5,6 @@ package com.klotski.assets;
  */
 public enum ImageAssets
 {
-    AboutButton("img/button/about.png"),
     // 曹操
     cc("chess\\cc.png"),
     ccS("chess\\ccS.png"),

@@ -133,7 +133,7 @@ public class Main extends Game
 
     public AssetsPathManager getAssetsPathManager()
     {
-        return null;
+        return assetsPathManager;
     }
 
     public UserManager getUserManager()

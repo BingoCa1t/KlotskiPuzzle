@@ -183,9 +183,9 @@ public class JsonManager
         {
             if (json == null) json = "";
             Logger.error("JsonManager", String.format("Because '%s', fail to read Json %s", e.getMessage(), json, 500));
-            throw new RuntimeException(e);
             //return null;
         }
+        return null;
     }
     public <T> T parseJsonToObject(String json, TypeReference<T> typeReference)
     {

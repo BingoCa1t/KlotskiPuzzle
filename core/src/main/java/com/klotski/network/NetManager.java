@@ -64,7 +64,6 @@ public class NetManager implements Runnable
                         catch (Exception e)
                         {
                             Logger.warning("NetManager",e.getMessage());
-                            throw new RuntimeException(e);
                         }
 
                     }

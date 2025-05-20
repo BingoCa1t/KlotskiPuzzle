@@ -142,6 +142,7 @@ public class ChessBoardControl
         //创建MapData的副本，不要更改MapDataManager里的数据
         this.mapData=new MapData(mapData);
         this.levelArchive=levelArchive;
+        this.second=levelArchive.getSeconds();
         //后补（算了其实不需要）
         /*if(levelArchive==null)
         {
@@ -197,6 +198,7 @@ public class ChessBoardControl
             levelArchive.setMoveSteps(moveSteps);
 
         }
+        gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch,gameMain.getUserManager().getActiveUser().getEmail(),jsonManager.getJsonString(levelArchive),moveSteps.isEmpty()?"0":jsonManager.getJsonString(moveSteps.peek()));
 
     }
     /**
@@ -235,17 +237,21 @@ public class ChessBoardControl
             {
                 chess.clearActions();
                 Logger.debug("Win");
-                levelArchive.setLevelStatus(LevelStatus.Succeed);
                 int steps = moveSteps.size();
-                levelArchive.setMoveSteps(levelArchive.getMoveSteps().size()<steps?levelArchive.getMoveSteps():moveSteps);
-                int star=0;
-                if(steps<=mapData.getGrades()[0]) star=3;
-                else if(steps<=mapData.getGrades()[1]) star=2;
-                else if(steps<=mapData.getGrades()[2]) star=1;
-                else  star=0;
-                levelArchive.setStars(star);
-                levelArchive.setSeconds(second);
-                archiveManager.saveByNetwork();
+                int star = 0;
+                if (steps <= mapData.getGrades()[0]) star = 3;
+                else if (steps <= mapData.getGrades()[1]) star = 2;
+                else if (steps <= mapData.getGrades()[2]) star = 1;
+                else star = 0;
+                if(!isWatch)
+                {
+                    levelArchive.setLevelStatus(LevelStatus.Succeed);
+                    levelArchive.setMoveSteps(levelArchive.getMoveSteps().size() < steps ? levelArchive.getMoveSteps() : moveSteps);
+                    levelArchive.setStars(star);
+                    levelArchive.setSeconds(second);
+                    archiveManager.saveByNetwork();
+                }
+
                 if(gameMain.getScreenManager().getCurrentScreen() instanceof GameMainScene gms)
                 {
                     MoveToAction action = Actions.moveTo((p.getX()) * Chess.squareHW, (p.getY()-2) * Chess.squareHW, 1.3f, Interpolation.smoother);

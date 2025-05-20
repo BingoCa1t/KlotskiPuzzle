@@ -143,10 +143,12 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         if(!isWatch)
         {
             cbc.load(mapData);
+            gameMain.getNetManager().sendMessage(MessageCode.BeginGame,gameMain.getUserManager().getActiveUser().getEmail());
         }
         else
         {
             cbc.load(mapData,watchingLevelArchive,true);
+            gameMain.getNetManager().sendMessage(MessageCode.BeginWatch,gameMain.getUserManager().getActiveUser().getEmail()+"|1");
         }
         cbc.getChessBoard().setPosition(100,50);
         cbc.getChessBoard().addListener(new MyInputListener());
@@ -180,9 +182,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //计时器
         tw=new TimerW();
         tw.setPosition(850,750);
-
-        if(!isWatch)
-        {
+        tw.setTime(cbc.getSecond());
             Timer.schedule(new Timer.Task()
             {
                 @Override
@@ -192,7 +192,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                     tw.setTime(cbc.getSecond());
                 }
             }, 1f, 1f);
-        }
+
         //重置按钮 Restart Button
         Button.ButtonStyle rbs = new Button.ButtonStyle();
         rbs.up=new TextureRegionDrawable(new TextureRegion(new Texture("restart.png")));
@@ -402,6 +402,10 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         this.isWatch=isWatch;
         this.watchEmail=watchEmail;
     }
+    public String getWatchEmail()
+    {
+        return watchEmail;
+    }
     @Override
     public void input()
     {
@@ -448,6 +452,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         if(code==MessageCode.UpdateWatch && Objects.equals(str[0], watchEmail))
         {
             MoveStep moveStep=jsonManager.parseJsonToObject(str[2],MoveStep.class);
+            if(moveStep==null) return;
             if(!cbc.move(cbc.getChessByPosition(moveStep.origin),moveStep.destination))
             {
                 //如果移动失败，出现未知错误，重置棋盘
@@ -578,7 +583,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-               if(gameMain.getScreenManager().getScreenStack().peek() instanceof LevelSelectScene lss)
+               gameMain.getScreenManager().returnPreviousScreen();
+               if(gameMain.getScreenManager().getCurrentScreen() instanceof LevelSelectScene lss)
                {
                    lss.nextLevel();
                }
@@ -608,7 +614,12 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         if(!isWatch)
         {
             //通知服务器结束游戏
-            gameMain.getNetManager().sendMessage("0011|"+gameMain.getUserManager().getActiveUser().getEmail()+"|0");
+            gameMain.getNetManager().sendMessage("0041|"+gameMain.getUserManager().getActiveUser().getEmail());
+        }
+        else
+        {
+            gameMain.getNetManager().sendMessage("0041|"+gameMain.getUserManager().getActiveUser().getEmail());
+            gameMain.getNetManager().sendMessage("0010|"+gameMain.getUserManager().getActiveUser().getEmail()+"|0");
         }
         stage.addActor(sg);
     }
@@ -616,5 +627,18 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     public boolean getIsWatch()
     {
         return isWatch;
+    }
+    public void exitWatch()
+    {
+        Timer.schedule(new Timer.Task()
+        {
+
+            @Override
+            public void run()
+            {
+                gameMain.getNetManager().sendMessage(gameMain.getUserManager().getActiveUser().getEmail());
+                gameMain.getScreenManager().returnPreviousScreen();
+            }
+        },2);
     }
 }
