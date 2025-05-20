@@ -26,8 +26,6 @@ public class ChessBoard extends Group
     private final int DEFAULT_WIDTH = 4;
     //棋盘默认高度
     private final int DEFAULT_HEIGHT = 5;
-    //后端
-    private ChessBoardArray boardArray;
     //暂时无用，以后可能会用到
     private Chess virtualChess;
     private Chess selectedChess;

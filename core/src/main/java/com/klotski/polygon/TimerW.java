@@ -60,7 +60,7 @@ public class TimerW extends Group
     {
         this.minutes=seconds/60;
         this.seconds=seconds%60;
-        label2.setText(String.format(": %02d",seconds));
+        label2.setText(String.format(": %02d",this.seconds));
         label1.setText(minutes);
     }
 }

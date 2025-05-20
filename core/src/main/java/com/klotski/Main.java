@@ -33,6 +33,7 @@ public class Main extends Game
     private JsonManager jsonManager;
     private MapDataManager mapDataManager;
     private AssetsPathManager assetsPathManager;
+    Thread netManagerThread;
     /*
     先在主程序里加载所有MapData
     然后再初始化levelInfo
@@ -44,6 +45,7 @@ public class Main extends Game
     MapData和LevelArchive
     在用户登录（or guest）之后初始化LevelInfo
      */
+
     @Override
     public void create()
     {
@@ -52,8 +54,9 @@ public class Main extends Game
         assetsPathManager.startAssetsLoading();
         netManager=new NetManager("127.0.0.1",12345);
         // 创建一个新线程并启动
-        Thread netManagerThread = new Thread(netManager);
 
+        netManagerThread = new Thread(netManager);
+        netManagerThread.setDaemon(true);
         netManagerThread.start();
 
         jsonManager=new JsonManager();
@@ -129,6 +132,7 @@ public class Main extends Game
     @Override
     public void dispose() {
         super.dispose();
+
     }
 
     public AssetsPathManager getAssetsPathManager()

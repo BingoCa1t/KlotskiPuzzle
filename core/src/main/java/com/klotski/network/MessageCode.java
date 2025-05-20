@@ -29,7 +29,7 @@ public enum MessageCode
     /**
      * 开始观战
      */
-    BeginWatch("0010"),
+    BeginWatch("0010|"),
     /**
      * 结束观战
      */

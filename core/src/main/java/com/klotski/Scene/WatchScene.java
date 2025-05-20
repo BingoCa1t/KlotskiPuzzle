@@ -201,10 +201,6 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
         dataTable.pad(10);
 
 
-        dataTable.debug();
-        headerTable.debug();
-        mainTable.debug();
-
         // 添加分隔线到表头
         Table separator = new Table();
         separator.setBackground(new TextureRegionDrawable(new Texture("startScene/startBackGround.png")));
@@ -252,8 +248,6 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
 
         // 创建滚动面板，只包含数据表格
         ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
-        // scrollStyle.background = new TextureRegionDrawable(new Texture("startScene/startBackGround.png"));
-
         ScrollPane scrollPane = new ScrollPane(dataTable, scrollStyle);
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollingDisabled(true, false);
@@ -295,6 +289,14 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
     {
 
     }
+
+    /**
+     * 邮箱 -> 存档
+     */
+    private Map<String,String> uarchive=new ConcurrentHashMap<>();
+    /**
+     * 邮箱 -> 信息:邮箱|昵称|状态（|存档）
+     */
     private Map<String,String> u=new ConcurrentHashMap<>();
     @Override
     public void update(MessageCode code, String message)
@@ -305,15 +307,18 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
             TypeReference<ArrayList<String>> ref = new TypeReference<ArrayList<String>>()
             {
             };
+            //全部信息：邮箱|昵称|状态（|存档）
             onlineUsers = jsonManager.parseJsonToObject(message, ref);
             for (String user : onlineUsers)
             {
+                //按照邮箱对信息添加索引 邮箱 -> 信息:邮箱|昵称|状态（|存档）
                 u.put(user.split(Pattern.quote("|"))[0],user);
+
             }
             if(gameMain.getScreenManager().getCurrentScreen() instanceof GameMainScene gms && gms.getIsWatch())
             {
                 String i=u.get(gms.getWatchEmail());
-                if(gms.getIsWatch()&&i.charAt(i.length() - 1)!='2')
+                if(gms.getIsWatch()&& !Objects.equals(i.split(Pattern.quote("|"))[2], "2"))
                 {
                     gms.exitWatch();
                 }
@@ -322,35 +327,27 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
             if (dataTable == null) dataTable = new Table();
             dataTable.clear();
             addData(onlineUsers);
+            dataTable.invalidateHierarchy(); // 标记布局需重新计算
+            dataTable.layout(); // 强制刷新布局
             //添加到表格
             //添加单击事件
-
-
-
         }
         JsonManager j = new JsonManager();
         if (code == MessageCode.UpdateWatch)
         {
             String[] str = message.split(Pattern.quote("|"));
-            levelArchive = j.parseJsonToObject(str[1], LevelArchive.class);
+            uarchive.put(str[0],str[1]);
         }
-        if (code == MessageCode.ToWatch1)
-        {
-            LevelArchive levelArchive = jsonManager.parseJsonToObject(message, LevelArchive.class);
-            gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levelArchive, true, ""));
-        }
-
-
     }
-
-    LevelArchive levelArchive;
 
     private void addData(java.util.List<String> infos)
     {
         for (String info : infos)
         {
+            //邮箱|昵称|状态（|存档）
             //list.add(entry.getKey()+"|"+entry.getValue().name+"|"+status)
             String[] i = info.split(Pattern.quote("|"));
+            u.put(i[0],i[1]);
             Gdx.app.postRunnable(() ->
             {
                 Label label1 = new Label(i[1], labelStyle);
@@ -381,12 +378,13 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
                     case "2":
                         statusBtn = new TextButton("Playing", textButtonStyle);
                         final String emaill=i[0];
+                        uarchive.put(i[0],i[3]);
                         statusBtn.addListener(new ClickListener()
                         {
                             @Override
                             public void clicked(InputEvent e, float x, float y)
                             {
-                                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levelArchive, true,emaill));
+                                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, jsonManager.parseJsonToObject(uarchive.get(emaill),LevelArchive.class), true,emaill));
                             }
                         });
                         break;

@@ -1,13 +1,20 @@
 package com.klotski.logic;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
@@ -17,6 +24,7 @@ import com.klotski.map.MapData;
 import com.klotski.network.MessageCode;
 import com.klotski.polygon.Chess;
 import com.klotski.polygon.ChessBoard;
+import com.klotski.utils.SmartBitmapFont;
 import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
 
@@ -29,6 +37,8 @@ import java.util.*;
  */
 public class ChessBoardControl
 {
+    private Table dataTable;
+    private ArrayList<String> stepsData= new ArrayList<>();
     private JsonManager jsonManager;
     private boolean isLoadArchive=true;
     private boolean isWatch=false;
@@ -47,11 +57,25 @@ public class ChessBoardControl
     private Chess mainChess;
     private ArrayList<Pos> exits;
 
+    public ArrayList<String> getStepsData()
+    {
+        return stepsData;
+    }
+
     public ChessBoardControl(Main gameMain)
     {
         this.archiveManager = gameMain.getUserManager().getArchiveManager();
         this.gameMain = gameMain;
         this.jsonManager=new JsonManager();
+        dataTable = new Table();
+    }
+
+    public ChessBoardControl(Main gameMain, Table dataTable)
+    {
+        this.archiveManager = gameMain.getUserManager().getArchiveManager();
+        this.gameMain = gameMain;
+        this.jsonManager=new JsonManager();
+        this.dataTable=dataTable;
     }
     //获取棋盘
     public ChessBoard getChessBoard()
@@ -191,6 +215,10 @@ public class ChessBoardControl
             {
                 MoveStep moveStep = s2.pop();
                 //移动棋子
+                if(getChessByPosition(moveStep.origin)==null)
+                {
+                    levelArchive.setMoveSteps(moveSteps);
+                }
                 moveInArchive(getChessByPosition(moveStep.origin),moveStep.destination);
                 //不要重复添加
                 //moveSteps.push(moveStep);
@@ -198,8 +226,39 @@ public class ChessBoardControl
             levelArchive.setMoveSteps(moveSteps);
 
         }
-        gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch,gameMain.getUserManager().getActiveUser().getEmail(),jsonManager.getJsonString(levelArchive),moveSteps.isEmpty()?"0":jsonManager.getJsonString(moveSteps.peek()));
+        if(!isWatch)
+        {
+            gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch, gameMain.getUserManager().getActiveUser().getEmail(), jsonManager.getJsonString(levelArchive), moveSteps.isEmpty() ? "0" : jsonManager.getJsonString(moveSteps.peek()));
+        }
 
+    }
+    public String getStepsString(Pos delta,Chess chess)
+    {
+        String direction="";
+        int num=0;
+        if(delta.getX()==0)
+        {
+            if(delta.getY()>0)
+            {
+                direction="上";
+            }
+            else{
+                direction="下";
+            }
+            num=Math.abs(delta.getY());
+        }
+        else
+        {
+            if(delta.getX()>0)
+            {
+                direction="右";
+            }
+            else{
+                direction="左";
+            }
+            num=Math.abs(delta.getX());
+        }
+        return (String.format("棋子 [%s] 向 %s 移动了 %s 格",chess.getChessName(),direction,num));
     }
     /**
      * 移动棋子
@@ -209,6 +268,10 @@ public class ChessBoardControl
      */
     public boolean move(Chess chess, Pos p)
     {
+        return move(chess,p,false);
+    }
+    public boolean move(Chess chess,Pos p,boolean isBack)
+    {
         Pos pp=new Pos(p.getX(),p.getY());
         if(chess==null)
         {
@@ -216,7 +279,19 @@ public class ChessBoardControl
         }
         if (chessBoardArray.isChessCanMove(chess, pp))
         {
-            moveSteps.push(new MoveStep(chess.getPosition(), pp));
+            if(!isBack)
+            {
+                moveSteps.push(new MoveStep(chess.getPosition(), pp));
+            }
+            //stepsData.add(getStepsString(pp,chess));
+            BitmapFont font=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),30);
+            Label.LabelStyle ls=new Label.LabelStyle();
+            ls.font = font;
+            ls.fontColor = Color.WHITE;
+            Label l=new Label(getStepsString(pp.sub(chess.getPosition()),chess),ls);
+            dataTable.add(l).width(300).pad(5);
+            dataLabels.add(l);
+            dataTable.row();
             levelArchive.setLevelStatus(LevelStatus.InProgress);
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             levelArchive.setSeconds(second);
@@ -225,7 +300,7 @@ public class ChessBoardControl
                 //存档
                 archiveManager.saveByNetwork();
                 //所有客户端一直向服务器发送LevelArchive和最近一次移动：0015|email|{LevelArchive}|{MoveStep}
-                gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch,gameMain.getUserManager().getActiveUser().getEmail(),jsonManager.getJsonString(levelArchive),jsonManager.getJsonString(moveSteps.peek()));
+                gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch,gameMain.getUserManager().getActiveUser().getEmail(),jsonManager.getJsonString(levelArchive),moveSteps.isEmpty()?"0":jsonManager.getJsonString(moveSteps.peek()),isBack?"1":"0");
             }
             else
             {
@@ -236,9 +311,10 @@ public class ChessBoardControl
             if(isWin())
             {
                 chess.clearActions();
+                chessBoard.setTouchable(Touchable.disabled);
                 Logger.debug("Win");
                 int steps = moveSteps.size();
-                int star = 0;
+                int star;
                 if (steps <= mapData.getGrades()[0]) star = 3;
                 else if (steps <= mapData.getGrades()[1]) star = 2;
                 else if (steps <= mapData.getGrades()[2]) star = 1;
@@ -257,13 +333,14 @@ public class ChessBoardControl
                     MoveToAction action = Actions.moveTo((p.getX()) * Chess.squareHW, (p.getY()-2) * Chess.squareHW, 1.3f, Interpolation.smoother);
                     AlphaAction a= Actions.fadeOut(1.3f, Interpolation.smoother);
                     chess.addAction(Actions.parallel(action, a));
-                    int finalStar = star;
+                    final int finalStar = star;
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
                         public void run()
                         {
                             gms.settle(finalStar,second,moveSteps.size());
+
                         }
                     },1.3f);
                 }
@@ -276,6 +353,7 @@ public class ChessBoardControl
             return false;
         }
     }
+    ArrayList<Label> dataLabels=new ArrayList<>();
     public void moveInArchive(Chess chess, Pos p)
     {
         Pos pp=new Pos(p.getX(),p.getY());
@@ -283,6 +361,15 @@ public class ChessBoardControl
         if (chessBoardArray.isChessCanMove(chess, pp))
         {
             moveSteps.push(new MoveStep(chess.getPosition(), pp));
+            //stepsData.add(getStepsString(pp.sub(chess.getPosition()),chess));
+            BitmapFont font=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),30);
+            Label.LabelStyle ls=new Label.LabelStyle();
+            ls.font = font;
+            ls.fontColor = Color.WHITE;
+            Label l=new Label(getStepsString(pp.sub(chess.getPosition()),chess),ls);
+            dataTable.add(l).width(300).pad(5);
+            dataLabels.add(l);
+            dataTable.row();
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             chessBoard.move(chess, pp);
         }
@@ -291,7 +378,16 @@ public class ChessBoardControl
             Logger.debug(chess.toString() + " Illegal Movement" + pp.toString());
         }
     }
+    public void refreshDataTable()
+    {
+        dataTable.clearChildren(true);
+        for(Label l:dataLabels)
+        {
+            dataTable.add(l).width(300).pad(5);
+            dataTable.row();
+        }
 
+    }
     /**
      * 返回步数
      * @return 返回步数记录栈的长度
@@ -309,8 +405,12 @@ public class ChessBoardControl
         if (!moveSteps.isEmpty())
         {
             MoveStep ms = moveSteps.pop();
-            move(getChessByPosition(ms.destination), ms.origin);
-            moveSteps.pop();
+            move(getChessByPosition(ms.destination), ms.origin,true);
+            dataLabels.removeLast();
+            dataLabels.removeLast();
+            refreshDataTable();
+
+
         }
     }
 

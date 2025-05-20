@@ -143,5 +143,14 @@ public class LevelSelectScene extends KlotskiScene
     {
         lg.returnLevel();
     }
-
+    @Override
+    public void show()
+    {
+        super.show();
+        lg=new LevelGroup(gameMain);
+        for(int i : mapIDs)
+        {
+            lg.addLevel(i,true);
+        }
+    }
 }

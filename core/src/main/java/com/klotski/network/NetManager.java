@@ -75,6 +75,8 @@ public class NetManager implements Runnable
                     }
                 }
             });
+            //设置为守护线程
+            receiveThread.setDaemon(true);
             receiveThread.start();
 
             // 循环检查消息队列并发送消息
