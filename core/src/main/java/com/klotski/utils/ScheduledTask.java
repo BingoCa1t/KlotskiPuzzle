@@ -31,7 +31,8 @@ public class ScheduledTask
     // 启动定时任务
     public void start()
     {
-        if (future == null || future.isCancelled()) {
+        if (future == null || future.isCancelled())
+        {
             future = scheduler.scheduleAtFixedRate(() -> {
                 if (!isPaused) {
                     task.run();

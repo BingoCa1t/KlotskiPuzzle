@@ -82,13 +82,21 @@ public class SettleGroup extends Group
         Label timeLabel=new Label(time+" | "+step,st);
         timeLabel.setPosition(230,125);
 
+        //回放
+        Label.LabelStyle st2=new Label.LabelStyle();
+        st2.font=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),60);
+
+        playbackLabel = new Label("查看回放",st2);
+        playbackLabel.setPosition(230,425);
         addActor(image);
         addActor(backButton);
         addActor(homeButton);
         addActor(nextButton);
         addActor(returnButton);
+        addActor(playbackLabel);
         addActor(timeLabel);
     }
+    Label playbackLabel;
     public boolean addBackListener(EventListener listener)
     {
         return backButton.addListener(listener);
@@ -104,6 +112,10 @@ public class SettleGroup extends Group
     public boolean addReturnListener(EventListener listener)
     {
         return returnButton.addListener(listener);
+    }
+    public boolean addPlaybackListener(EventListener listener)
+    {
+        return playbackLabel.addListener(listener);
     }
 
 }

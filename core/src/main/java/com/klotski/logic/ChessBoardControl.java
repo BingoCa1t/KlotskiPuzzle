@@ -56,7 +56,7 @@ public class ChessBoardControl
     private Chess selectingChess;
     private Chess mainChess;
     private ArrayList<Pos> exits;
-
+    private boolean isPlayback=false;
     public ArrayList<String> getStepsData()
     {
         return stepsData;
@@ -148,6 +148,53 @@ public class ChessBoardControl
         chessBoard.addChess(c10);
         chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), 4, 5,null,0);
         chessBoard.setPosition(100, 100);
+    }
+    public void loadPlayback(MapData mapData,LevelArchive levelArchive)
+    {
+        this.mapData=new MapData(mapData);
+        this.levelArchive=new LevelArchive(levelArchive);
+        this.second=levelArchive.getSeconds();
+        chessBoard=new ChessBoard();
+        Image background;
+        Image chessBoardImage;
+        chessBoardImage = new Image(new Sprite(new Texture("chessBoard.png")));
+        chessBoardImage.setPosition(-16, -16);
+        background = new Image(new Sprite(new Texture("background.png")));
+        background.setPosition(-10, -10);
+        background.setHeight(5 * Chess.squareHW + 20);
+        background.setWidth(4 * Chess.squareHW + 20);
+        chessBoard.addActor(background);
+        chessBoard.addActor(chessBoardImage);
+        for(Chess c:this.mapData.getChesses())
+        {
+            c.init(gameMain.getAssetsPathManager());
+        }
+        chessBoard.addChessArray(this.mapData.getChesses());
+        chessBoard.setPosition(100, 100);
+        exits=mapData.getExit();
+        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(),exits, mapData.getMainIndex());
+
+            //存档里的移动记录栈
+            Stack<MoveStep> s = levelArchive.getMoveSteps();
+            //栈后进先出，所以使用新栈，将顺序反转后再弹出
+            Stack<MoveStep> s2 = new Stack<>();
+            while (!s.isEmpty())
+            {
+                s2.push(s.pop()); // 将栈中的元素弹出并添加到新栈中
+            }
+            while (!s2.isEmpty())
+            {
+                MoveStep moveStep = s2.pop();
+                //移动棋子
+                if(getChessByPosition(moveStep.origin)==null)
+                {
+                    levelArchive.setMoveSteps(moveSteps);
+                }
+                moveInArchive(getChessByPosition(moveStep.origin),moveStep.destination);
+                //不要重复添加
+                //moveSteps.push(moveStep);
+            }
+            levelArchive.setMoveSteps(moveSteps);
     }
     /**
      * 加载棋盘（更新了加载存档）
@@ -311,7 +358,7 @@ public class ChessBoardControl
             }
             chessBoard.move(chess, pp);
 
-            if(isWin())
+            if(!isPlayback&&isWin())
             {
                 chess.clearActions();
                 chessBoard.setTouchable(Touchable.disabled);
@@ -325,7 +372,7 @@ public class ChessBoardControl
                 if(!isWatch)
                 {
                     levelArchive.setLevelStatus(LevelStatus.Succeed);
-                    levelArchive.setMoveSteps(levelArchive.getMoveSteps().size() < steps ? levelArchive.getMoveSteps() : moveSteps);
+                    //levelArchive.setMoveSteps(levelArchive.getMoveSteps().size() < steps ? levelArchive.getMoveSteps() : moveSteps);
                     levelArchive.setStars(star);
                     levelArchive.setSeconds(second);
                     archiveManager.saveByNetwork();

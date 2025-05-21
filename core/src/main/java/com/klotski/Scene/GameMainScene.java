@@ -703,6 +703,14 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 gameMain.getScreenManager().returnRootScreen();
             }
         });
+        sg.addPlaybackListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().setScreen(new PlayBackScene(gameMain,gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID)));
+            }
+        });
         sg.setPosition(600, 320);
 
         stage.clear();

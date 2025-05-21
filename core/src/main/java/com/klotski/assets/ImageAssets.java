@@ -5,6 +5,12 @@ package com.klotski.assets;
  */
 public enum ImageAssets
 {
+    pbBackButton("playbackScene\\pbBackButton.png"),
+    pbBackKButton("playbackScene\\pbBackKButton.png"),
+    pbNextButton("playbackScene\\pbNextButton.png"),
+    pbNextTButton("playbackScene\\pbNextTButton.png"),
+    pbPlayButton("playbackScene\\pbPlayButton.png"),
+    pbPauseButton("playbackScene\\pbPauseButton.png"),
     // 曹操
     cc("chess\\cc.png"),
     ccS("chess\\ccS.png"),
@@ -47,4 +53,4 @@ public enum ImageAssets
     {
         return alias;
     }
-    }
+}
