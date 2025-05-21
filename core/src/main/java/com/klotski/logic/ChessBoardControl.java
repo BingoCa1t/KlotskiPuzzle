@@ -92,7 +92,7 @@ public class ChessBoardControl
     /**
      * 测试时候使用的。默认构造棋盘（已弃用）
      */
-/*
+    @Deprecated
     private void loadDefault()
     {
         chessBoard = new ChessBoard();
@@ -149,7 +149,6 @@ public class ChessBoardControl
         chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), 4, 5,null,0);
         chessBoard.setPosition(100, 100);
     }
-*/
     /**
      * 加载棋盘（更新了加载存档）
      * 此方法从存档管理器里加载存档
@@ -259,6 +258,10 @@ public class ChessBoardControl
             num=Math.abs(delta.getX());
         }
         return (String.format("棋子 [%s] 向 %s 移动了 %s 格",chess.getChessName(),direction,num));
+    }
+    public boolean move(MoveStep moveStep)
+    {
+        return move(getChessByPosition(moveStep.origin),moveStep.destination);
     }
     /**
      * 移动棋子
@@ -399,8 +402,9 @@ public class ChessBoardControl
 
     /**
      * 回退，弹出移动记录栈最顶层的元素并反向移动
+     * @return 被弹出的元素
      */
-    public void moveBack()
+    public MoveStep moveBack()
     {
         if (!moveSteps.isEmpty())
         {
@@ -409,9 +413,9 @@ public class ChessBoardControl
             dataLabels.removeLast();
             dataLabels.removeLast();
             refreshDataTable();
-
-
+            return ms;
         }
+        return null;
     }
 
     /**

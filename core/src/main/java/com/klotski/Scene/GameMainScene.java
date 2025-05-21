@@ -6,10 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -20,7 +18,6 @@ import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
 import com.klotski.archive.LevelArchive;
 import com.klotski.logic.ChessBoardControl;
-import com.klotski.logic.LevelInfo;
 import com.klotski.logic.MoveStep;
 import com.klotski.logic.Pos;
 import com.klotski.map.MapData;
@@ -46,39 +43,40 @@ import java.util.regex.Pattern;
  */
 public class GameMainScene extends KlotskiScene implements NetworkMessageObserver
 {
-    /**
-     * 加入显示步数表的功能
-     */
-    private Table stepsTable;
-
-    /**
-     * 加入倒计时功能
-     */
+    /** 加入显示步数表的功能 */
+    private Table dataTable;
+    /** 观战时WatchScene提供的从服务器获取到的存档 */
+    private LevelArchive watchingLevelArchive;
+    /** 加入倒计时功能 */
     private boolean isTimeAttack = false;
-    /**
-     * 加入观战功能
-     */
+    /** 观战的用户email */
     private String watchEmail;
+    /** 是否处于观战模式  */
     private boolean isWatch = false;
+    /** 关卡地图的mapID */
     private int mapID;
+    /** 星星进度条 */
     private StarProgress starProgress;
-
+    /** 棋盘控制器*/
     private ChessBoardControl cbc;
+    /** 是否打开了菜单 */
     private boolean isInBackMenu;
-    private LocalDateTime startTime;
+    /** 地图数据 */
     private MapData mapData;
     private boolean isInAI = false;
+    /** 步数Label */
     private Label stepLabel;
-    private BitmapFont font;
-    //private LevelInfo levelInfo;
-    private Image background;
+    /** 关卡标题Label */
     private Label titleLabel;
-
+    /** 计时器组件 */
+    private TimerW tw;
+    private JsonManager jsonManager = new JsonManager();
     /**
-     * 测试时候的默认MapData
+     * 测试时候的默认MapData（已弃用）
      *
      * @return 返回的默认MapData
      */
+    @Deprecated
     private MapData Default()
     {
         MapData mapData = new MapData();
@@ -137,38 +135,39 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         return mapData;
     }
 
-    private int second = 0;
-    private TimerW tw;
-
+    /**
+     * 初始化GameMainScene
+     */
     @Override
     public void init()
     {
         super.init();
-        Table dataTable = new Table();
         gameMain.getNetManager().addObserver(this);
-        //棋盘控制器ChessBoardControl
+        // 棋步记录表
+        dataTable = new Table();
+        //初始化棋盘控制器ChessBoardControl
         cbc = new ChessBoardControl(gameMain, dataTable);
+        //从地图管理器获取地图
         mapData = gameMain.getMapDataManager().getMapDataList().get(mapID);
+        //如果处于游戏中，则使cbc加载地图及存档（存档从存档管理器获得），并通知服务器开始游戏
         if (!isWatch)
         {
             cbc.load(mapData);
             gameMain.getNetManager().sendMessage(MessageCode.BeginGame, gameMain.getUserManager().getActiveUser().getEmail());
-        } else
+        }
+        //如果处于观战中，则使cbc加载地图及存档（存档由WatchScene提供），并通知服务器开始观战
+        else
         {
             cbc.load(mapData, watchingLevelArchive, true);
             gameMain.getNetManager().sendMessage(MessageCode.BeginWatch, gameMain.getUserManager().getActiveUser().getEmail() + "|1");
         }
+        //设置cbc的位置和添加鼠标移动监听器
         cbc.getChessBoard().setPosition(100, 50);
         cbc.getChessBoard().addListener(new MyInputListener());
 
         //星星进度条
         starProgress = new StarProgress(mapData.getGrades()[0], mapData.getGrades()[1], mapData.getGrades()[2]);
         starProgress.setPosition(830, 650);
-
-        //背景
-        background = new Image(new Texture("selectLevelBackground.png"));
-        background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
 
         //标题Label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -177,25 +176,28 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         titleLabel = new Label(mapData.getMapName(), labelStyle);
         titleLabel.setPosition(700, 970);
 
-        font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 75);
+        //步数信息
+        BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 75);
         Label.LabelStyle ls = new Label.LabelStyle();
         ls.font = font;
         ls.fontColor = Color.WHITE;
         stepLabel = new Label("00", ls);
         stepLabel.setPosition(1200, 800);
-        //startTime = LocalDateTime.now();
-        //stage.addActor(timeLabel);
 
+        //向舞台添加键盘移动棋子监听器
         stage.addListener(new ChessBoardListener());
-        //计时器
+
+        //计时器（时间交由cbc管理，计时器每秒同步时长）
+        //可以改成记录开始和结束的UTC时间，不过会比较麻烦
         tw = new TimerW();
         tw.setPosition(850, 750);
         tw.setTime(cbc.getSecond());
-        if(cbc.getSecond()==-1)
+        if(cbc.getSecond()<=0)
         {
             tw.setTime(0);
         }
 
+        //每秒更新计时器和时间
         Timer.schedule(new Timer.Task()
         {
             @Override
@@ -340,6 +342,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 }
             }
         });
+
         // 步数列表功能
         Label.LabelStyle ls2 = new Label.LabelStyle();
         ls2.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 40);
@@ -347,13 +350,11 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         // 创建主容器
         Table mainTable = new Table();
         mainTable.setFillParent(false);
-
         dataTable.align(Align.topLeft);
         dataTable.pad(10);
         // 创建表头表格
         Table headerTable = new Table();
         headerTable.align(Align.left);
-
         headerTable.pad(10);
         // 添加表头
         Label label1 = new Label("棋步记录", ls2);
@@ -365,13 +366,28 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.setFillParent(false); // 填充整个父容器
-        mainTable.setPosition(1350, 100);
-        mainTable.setSize(450, 800);
+        mainTable.setPosition(1414, 47);
+        mainTable.setSize(450, 860);
         // 将表头和滚动面板添加到主表格
         mainTable.add(headerTable).fillX().row();
-        //mainTable.add(dataTable).fillX().row();
         mainTable.add(scrollPane).expand().fill().row();
-        //stage.addActor(background);
+
+        // 全屏的背景
+        Image background =new Image(new Texture("mainBackground.jpeg"));
+        background.setSize(1920,1080);
+        //几部分组件的半透明灰色圆角矩形背景
+        Image directionBackground =new Image(new Texture("directionBackground.png"));
+        directionBackground.setPosition(826,48);
+        Image stepBackground =new Image(new Texture("stepBackground.png"));
+        stepBackground.setPosition(826,635);
+        Image recordBackground =new Image(new Texture("recordBackground.png"));
+        recordBackground.setPosition(1414,47);
+
+        //将所有演员添加到舞台
+        stage.addActor(background);
+        stage.addActor(stepBackground);
+        stage.addActor(directionBackground);
+        stage.addActor(recordBackground);
         stage.addActor(tw);
         stage.addActor(starProgress);
         stage.addActor(titleLabel);
@@ -387,6 +403,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         stage.addActor(backButton);
         stage.addActor(mainTable);
 
+        //如果处于观战中，禁用所有输入
         if (isWatch)
         {
             restartButton.setTouchable(Touchable.disabled);
@@ -397,15 +414,9 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             leftButton.setTouchable(Touchable.disabled);
             rightButton.setTouchable(Touchable.disabled);
             cbc.getChessBoard().setTouchable(Touchable.disabled);
-            //通知服务器开始观战
-            gameMain.getNetManager().sendMessage("0010|" + gameMain.getUserManager().getActiveUser().getEmail() + "|1");
-        } else
-        {
-            //通知服务器开始游戏
-            gameMain.getNetManager().sendMessage("0040|" + gameMain.getUserManager().getActiveUser().getEmail() + "|1");
         }
+        //刷新一下组件
         refreshWidget();
-        //
     }
 
     /**
@@ -429,31 +440,36 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     }
 
     /**
-     * 基类初始化，需要传入 gameMain
+     * 传入gameMain和关卡mapID，默认为游戏模式
      *
-     * @param gameMain 全局句柄Q
+     * @param gameMain 全局句柄
+     * @param mapID 关卡地图ID
      */
     public GameMainScene(Main gameMain, int mapID)
     {
-
         super(gameMain);
         this.mapID = mapID;
     }
 
-    private LevelArchive watchingLevelArchive;
-
     /**
-     * 此构造函数专门供观战模式使用
+     * 此构造函数供观战模式使用
+     * @param gameMain 全局句柄
+     * @param levelArchive 服务器传来的存档
+     * @param watchEmail 被观战用户的Email
      */
-    public GameMainScene(Main gameMain, LevelArchive levelArchive, boolean isWatch, String watchEmail)
+    public GameMainScene(Main gameMain, LevelArchive levelArchive, String watchEmail)
     {
         super(gameMain);
         this.watchingLevelArchive = levelArchive;
         this.mapID = levelArchive.getMapID();
-        this.isWatch = isWatch;
+        this.isWatch = true;
         this.watchEmail = watchEmail;
     }
 
+    /**
+     * 获取正在被观战的用户Email
+     * @return 正在被观战的用户Email
+     */
     public String getWatchEmail()
     {
         return watchEmail;
@@ -495,27 +511,28 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         return mapData;
     }
 
-    private JsonManager jsonManager = new JsonManager();
-
+    /**
+     * 获取并处理服务器发来的消息
+     * @param code 消息代码
+     * @param message 消息内容
+     */
     @Override
     public void update(MessageCode code, String message)
     {
-        /**
-         * 观战逻辑，屏蔽所有输入，只用update更新
-         */
+        //观战逻辑，屏蔽所有输入，只用update更新
         String[] str = message.split(Pattern.quote("|"));
+        //如果更新的是观战存档，且是正在被观战的用户Email
         if (code == MessageCode.UpdateWatch && Objects.equals(str[0], watchEmail))
         {
+            //涉及到OpenGL，发送到主线程执行
             Gdx.app.postRunnable(() ->
             {
-
+                // 执行收到的MoveStep
                 MoveStep moveStep = jsonManager.parseJsonToObject(str[2], MoveStep.class);
                 LevelArchive l = jsonManager.parseJsonToObject(str[1], LevelArchive.class);
                 cbc.setSecond(l.getSeconds());
-
-
-
                 if (moveStep == null) return;
+                //如果是正常移动
                 if(Objects.equals(str[3], "0"))
                 {
                     if (!cbc.move(cbc.getChessByPosition(moveStep.origin), moveStep.destination))
@@ -524,10 +541,12 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                         cbc.load(mapData, l, true);
                     }
                 }
+                //如果是悔棋
                 else
                 {
                    cbc.moveBack();
                 }
+                //刷新组件
                 refreshWidget();
             });
         }
@@ -704,6 +723,9 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         return isWatch;
     }
 
+    /**
+     * 通知退出观战
+     */
     public void exitWatch()
     {
         Timer.schedule(new Timer.Task()

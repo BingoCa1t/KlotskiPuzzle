@@ -165,6 +165,15 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
             }
         }, 0, 3);
 
+        ImageButton backButton=new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("registerScene/left_arrow.png"))));
+        backButton.setPosition(100,900);
+        backButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().returnPreviousScreen();
+            }
+        });
 
         //ScrollPane scrollPane=new ScrollPane();
         // stage = new Stage(new ScreenViewport());
@@ -384,7 +393,7 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
                             @Override
                             public void clicked(InputEvent e, float x, float y)
                             {
-                                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, jsonManager.parseJsonToObject(uarchive.get(emaill),LevelArchive.class), true,emaill));
+                                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, jsonManager.parseJsonToObject(uarchive.get(emaill),LevelArchive.class),emaill));
                             }
                         });
                         break;
