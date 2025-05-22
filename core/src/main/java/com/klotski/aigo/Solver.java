@@ -13,8 +13,7 @@ import com.klotski.polygon.Chess;
  * regarding how we traverse our tree. We also have a HashSet that is an
  * AlreadySeenCollection, and booleans and integers for debugging purposes.
  */
-public class Solver
-{
+public class Solver {
 
     private BlockCollection myGoals; // collection of blocks in goal
     private Tray myTray; // the current tray of the puzzle
@@ -33,8 +32,7 @@ public class Solver
     private int countSolution; // count of moves in the solution
 
     // Events that we are timing
-    private enum DebugEvent
-    {
+    private enum DebugEvent {
         MakeMoves, UndoMoves, AddPossibleMoves, CheckAlreadySeen,
         AddToAlreadySeen, CheckMatchesGoal, GetNextNode,
         FindSolution, PrintSolution;
@@ -45,8 +43,7 @@ public class Solver
     private long[] startTimes = new long[DebugEvent.values().length];
 
 
-    public Solver(Tray tray, BlockCollection goals)
-    {
+    public Solver(Tray tray, BlockCollection goals) {
         /*
          * A constructor for Solver that takes a valid tray and
          * a valid goal BlockCollection.
@@ -60,34 +57,28 @@ public class Solver
     }
 
     // Sets the debug options based on the specified level
-    private void setDebugLevel(int level)
-    {
+    private void setDebugLevel(int level) {
         if (level == 1 || level > 2) debugCount = true;
         if (level == 2 || level > 2) debugTime = true;
         if (level == 4) debugEachMove = true;
     }
 
     // Starts the timer of a specified event
-    private void startTimer(DebugEvent de)
-    {
+    private void startTimer(DebugEvent de) {
         if (debugTime) startTimes[de.ordinal()] = System.currentTimeMillis();
     }
 
     // Stops the timer of a specified events
-    private void stopTimer(DebugEvent de)
-    {
-        if (debugTime)
-        {
+    private void stopTimer(DebugEvent de) {
+        if (debugTime) {
             long stopTime = System.currentTimeMillis();
             debugTimes[de.ordinal()] += stopTime - startTimes[de.ordinal()];
         }
     }
 
     // Prints the debug results for the specified debugging options
-    private void printDebugResults()
-    {
-        if (debugCount)
-        {
+    private void printDebugResults() {
+        if (debugCount) {
             System.out.println("=========================================");
             System.out.println("Solver Debugging Counts:");
             System.out.println("    MakeMove called " + countMakeMove + " times");
@@ -99,12 +90,10 @@ public class Solver
             System.out.println("    The solution is " + countSolution + " moves");
             System.out.println("=========================================");
         }
-        if (debugTime)
-        {
+        if (debugTime) {
             System.out.println("=========================================");
             System.out.println("Solver Debugging Times: ");
-            for (DebugEvent de : DebugEvent.values())
-            {
+            for (DebugEvent de : DebugEvent.values()) {
                 System.out.println("    " + de.name() + " took " + debugTimes[de.ordinal()]
                     + " ms");
             }
@@ -113,29 +102,24 @@ public class Solver
     }
 
     // Finds the solution of the puzzle
-    private void findSolution()
-    {
+    private void findSolution() {
         startTimer(DebugEvent.FindSolution);
         // check if the start tray matches the goal
         solved = matchesGoal();
-        if (!solved)
-        {
+        if (!solved) {
             // if the puzzle isn't solved, add current tray to alreadySeen
             alreadySeen.add(myTray.getMyBlocks());
             // add possible moves to the tree
             addPossibleMoves();
             // go to the next node
             getNextNode();
-            while (currentNode != myRoot && !solved)
-            {
+            while (currentNode != myRoot && !solved) {
                 // if we've made an invalid move, we go to the next node
                 if (!makeMove()) getNextNode();
-                else
-                {
+                else {
                     // otherwise, see if the move solved the puzzle
                     if (matchesGoal()) solved = true;
-                    else
-                    {
+                    else {
                         // if it doesn't, we add the new possible moves	to the tree
                         addPossibleMoves();
                         // then go to the next node
@@ -148,8 +132,7 @@ public class Solver
     }
 
     // Returns true if current tray matches goal
-    private boolean matchesGoal()
-    {
+    private boolean matchesGoal() {
         startTimer(DebugEvent.CheckMatchesGoal);
         // true if the current blocks contains all the goals
         boolean matches = myTray.getMyBlocks().containsAll(myGoals);
@@ -158,19 +141,16 @@ public class Solver
     }
 
     // Adds possible moves to the tree
-    private void addPossibleMoves()
-    {
+    private void addPossibleMoves() {
         if (debugCount) countAddPossibleMoves++;
         startTimer(DebugEvent.AddPossibleMoves);
         // make an array list of possible moves for the current tray
         ArrayList<Move> moves = myTray.getPossibleMoves();
         // for each possible move, make a node and add it to the tree
-        for (Move m : moves)
-        {
+        for (Move m : moves) {
             Node newNode = new Node(m, currentNode);
             // if the block we are moving isn't in the goal file
-            if (!myGoals.contains(m.myBlock))
-            {
+            if (!myGoals.contains(m.myBlock)) {
                 // put it at the beginning
                 currentNode.myChildren.add(0, newNode);
             } else
@@ -180,16 +160,13 @@ public class Solver
     }
 
     // Changes current node to the next possible move
-    private void getNextNode()
-    {
+    private void getNextNode() {
         if (debugCount) countGetNextNode++;
         startTimer(DebugEvent.GetNextNode);
         // if there are no possible moves
-        if (currentNode.myChildren.size() == 0)
-        {
+        if (currentNode.myChildren.size() == 0) {
             // return if it is the root (puzzle is impossible)
-            if (currentNode == myRoot)
-            {
+            if (currentNode == myRoot) {
                 stopTimer(DebugEvent.GetNextNode);
                 return;
             }
@@ -199,16 +176,13 @@ public class Solver
             // go to the next node
             getNextNode();
             // if there are possible moves
-        } else
-        {
+        } else {
             // check if the next move is the reverse of the move we just made
-            if (isReverseMove(currentNode.myChildren.get(0).myMove))
-            {
+            if (isReverseMove(currentNode.myChildren.get(0).myMove)) {
                 // if it is then remove it from the tree
                 currentNode.myChildren.remove(0);
                 // if there are no more possible moves
-                if (currentNode.myChildren.size() == 0)
-                {
+                if (currentNode.myChildren.size() == 0) {
                     stopTimer(DebugEvent.GetNextNode);
                     // get the next node
                     getNextNode();
@@ -223,8 +197,7 @@ public class Solver
     }
 
     // Returns true when the given move is the reverse of the current node's move
-    private boolean isReverseMove(Move m)
-    {
+    private boolean isReverseMove(Move m) {
         // cannot be the reverse of the root (root has no move)
         if (currentNode == myRoot) return false;
         Move currentMove = currentNode.myMove;
@@ -236,8 +209,7 @@ public class Solver
 
 
     // Return true when we make a successful move
-    private boolean makeMove()
-    {
+    private boolean makeMove() {
         if (debugCount) countMakeMove++;
         if (currentNode.myMove == null) return false;
         startTimer(DebugEvent.MakeMoves);
@@ -245,8 +217,7 @@ public class Solver
         myTray.makeMove(currentNode.myMove.myBlock, currentNode.myMove.myDir);
         // check if this tray has been seen before
         startTimer(DebugEvent.CheckAlreadySeen);
-        if (alreadySeen.contains(myTray.getMyBlocks()))
-        {
+        if (alreadySeen.contains(myTray.getMyBlocks())) {
             if (debugCount) countFoundAlreadySeen++;
             stopTimer(DebugEvent.CheckAlreadySeen);
             // if we have seen this tray before, then undo the move
@@ -254,8 +225,7 @@ public class Solver
             stopTimer(DebugEvent.MakeMoves);
             // return false to say it was a bad move and we undid it
             return false;
-        } else
-        { //otherwise if we haven't seen the tray before
+        } else { //otherwise if we haven't seen the tray before
             stopTimer(DebugEvent.CheckAlreadySeen);
             startTimer(DebugEvent.AddToAlreadySeen);
             // add current tray to alreadySeen
@@ -263,8 +233,7 @@ public class Solver
             stopTimer(DebugEvent.AddToAlreadySeen);
             stopTimer(DebugEvent.MakeMoves);
             // prints when highest debugging is on to show which successful move we made
-            if (debugEachMove)
-            {
+            if (debugEachMove) {
                 System.out.println("!!!!!!!!!!!!!!Successful Move!!!!!!!!!!!!");
                 System.out.println("Block     : " + currentNode.myMove.myBlock);
                 System.out.println("Direction : " + currentNode.myMove.myDir);
@@ -278,8 +247,7 @@ public class Solver
     }
 
     // Undoes a move
-    private void undoMove()
-    {
+    private void undoMove() {
         if (debugCount) countUndoMove++;
         startTimer(DebugEvent.UndoMoves);
         Move.Direction dir = currentNode.myMove.myDir; // current node's direction
@@ -293,8 +261,7 @@ public class Solver
         myTray.makeMove(currentNode.myMove.myBlock, dir);
 
         // prints when highest debugging is on to show which unsuccessful move we tried to make
-        if (debugEachMove)
-        {
+        if (debugEachMove) {
             System.out.println("~~~~~~~~~~~~~Unsuccessful Move~~~~~~~~~~~~");
             System.out.println("Block     : " + currentNode.myMove.myBlock);
             System.out.println("Direction : " + currentNode.myMove.myDir);
@@ -310,22 +277,18 @@ public class Solver
     }
 
     // Prints Solution
-    private ArrayList<MoveStep> printSolution()
-    {
+    private ArrayList<MoveStep> printSolution() {
         // exit if there is no solution
         ArrayList<MoveStep> solution = null;
-        if (solved == false)
-        {
+        if (solved == false) {
             System.exit(1);
 
-        } else
-        {
+        } else {
             solution = new ArrayList<>();
             startTimer(DebugEvent.PrintSolution);
             // print moves of the solution from the beginning
             currentNode = myRoot;
-            while (!currentNode.myChildren.isEmpty())
-            {
+            while (!currentNode.myChildren.isEmpty()) {
                 currentNode = currentNode.myChildren.get(0);
                 System.out.println(currentNode.myMove.toString());
                 int destinationRow = currentNode.myMove.newUpperRow;
@@ -348,24 +311,21 @@ public class Solver
      * An node object in which we store our moves, a parent Node, and
      * an ArrayList of children.
      */
-    private class Node
-    {
+    private class Node {
 
         private Move myMove; // current move
         private Node myParent; // previous move
         private ArrayList<Node> myChildren; // all possible moves given the current tray
 
         // A constructor that creates a new node
-        private Node(Move m, Node previousMove)
-        {
+        private Node(Move m, Node previousMove) {
             myMove = m;
             myParent = previousMove;
             myChildren = new ArrayList<Node>();
         }
 
         // A constructor for the root node
-        private Node()
-        {
+        private Node() {
             myMove = null;
             myParent = null;
             myChildren = new ArrayList<Node>();
@@ -373,22 +333,59 @@ public class Solver
     }
 
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
+
+    }
+
+    public ArrayList<MoveStep> getSolution(ArrayList<Chess> chesses, int width, int height) {
         ArrayList<MoveStep> result = new ArrayList<MoveStep>();
-        SolverChecker checker = new SolverChecker (args);
-        Tray tray=new Tray(checker.length, checker.width, checker.blocks);
-        Solver solver = new Solver (tray,checker.goals);
+        BlockCollection blocks = new BlockCollection();
+        BlockCollection goals = new BlockCollection();  // 新增目标集合
+
+        // 转换棋子为Block对象并设置曹操目标
+        for (Chess chess : chesses) {
+            // 注意坐标系转换（根据Block构造函数逻辑）
+            Block block = new Block(
+
+                chess.getPosition().getY(),  // 行坐标（原始y）
+                chess.getPosition().getX(),  // 列坐标（原始x）
+                chess.getChessWidth(),
+                chess.getChessHeight(),
+                false
+            );
+            blocks.add(block);
+
+            // 设置曹操目标位置（底部中央）
+            if (chess.getWidth() == 2 && chess.getHeight() == 2) {
+                // 目标位置转换：棋盘总高度为5（根据Block构造函数推断）
+                int targetRow = 0;    // 最后一行（索引从0开始）
+                int targetColumn = 1;  // 中间列（转换前）
+
+                Block goalBlock = new Block(
+                            // 标记为曹操
+                    targetRow,
+                    targetColumn,
+                    chess.getChessWidth(),
+                    chess.getChessHeight(),
+                true
+                );
+                goals.add(goalBlock);
+            }
+        }
+
+        // 初始化校验器和托盘（修正参数顺序）
+        SolverChecker checker = new SolverChecker(width, height, blocks, goals);
+        Tray tray = new Tray(checker.length, checker.width, checker.blocks);
+        Solver solver = new Solver(tray, goals);  // 直接使用目标集合
+
+        // 求解并获取结果
         solver.findSolution();
         result = solver.printSolution();
-        solver.myTray.printDebugResults();
-        solver.printDebugResults();
-    }
 
-    public ArrayList<MoveStep> getSolution(ArrayList<Chess> chesses, int width, int height)
-    {
-        return null;
+
+        return result;  // 返回实际结果而非null
+    }
     }
 
 
-}
+

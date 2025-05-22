@@ -13,7 +13,7 @@ public class Block {
 	private int myUpperColumn; // position of the upper left corner column
 	private int myLowerRow; // position of the lower right corner row
 	private int myLowerColumn; // position of the lower right corner column
-	public Block(Boolean n,int x,int y,int width,int height)
+	public Block(int x,int y,int width,int height,Boolean n)
 	{
 		myUpperRow = x;
 		myUpperColumn = 4-y-(height-1);
