@@ -86,7 +86,7 @@ public class WelcomeScene extends KlotskiScene
             @Override
             public void clicked(InputEvent e, float x, float y)
             {
-                //gameMain.getScreenManager().setScreen(new StartScene(gameMain));
+                gameMain.getUserManager().guestLogin();
             }
         });
 

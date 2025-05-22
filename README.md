@@ -1,33 +1,58 @@
-# Klotski
+# Klotski Puzzle 华容道
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+## Project Requirements 项目要求
 
-This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
+### Task1 Game Initialization 游戏初始化（10分）
 
-## Platforms
+- [x] 游戏启动界面：实现游戏启动界面。
+- [x] 板初始化：对于基本要求，板应初始化为具有不同大小块的4 x 5网格：
+- [x] 块颜色区分：不同大小的块应该用不同的颜色来区分。
+- [x] 重启功能：玩家可以随时重启游戏，棋盘应重置为初始状态。
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
+### Task 2: Block Movement 积木移动（20分）
 
-## Gradle
+- [x] 积木移动：玩家可以控制积木的移动（上、下、左、右）。块只能沿着板上的空白区域移动，不能与其他块重叠。
+- [x] 按钮控制：界面应包括上、下、左、右按钮，用于控制块移动。
+- [x] 键盘控制：游戏还必须支持移动键盘控制。
+- [x] 边界检测：块不能移动到板边界之外。
+- [x] 碰撞检测：在移动过程中，块不能与其他块重叠。
+- [x] 信息记录：在新游戏开始时，记录移动次数和其他必要信息。
+- [x] 动作记录：记录每个动作并提供撤消功能（完成此功能将获得高级积分）。
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
+### Task 3: Victory Condition 胜利条件（5分）
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
+- [x] 胜利条件：当“曹操”挡块到达退出位置时，游戏获胜，需要显示胜利提示。
+- [x] 胜利界面：胜利界面应显示玩家的移动次数。
 
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
+### Task 4: Multi-User Login 多用户登录（15分）
+
+- [x] 为访客和注册用户实现登录选择界面。
+- [x] 客人可以在没有注册的情况下玩游戏，但没有保存游戏进度的功能。
+- [x] 用户登录界面包括一个注册页面，允许在输入帐户凭据后登录。
+- [x] 程序退出并再次运行后，以前注册的用户仍然可以登录
+
+### Task 5: Save and Load Game 保存并加载游戏（20分）
+
+- [x] 每个用户（访客除外）都可以加载以前保存的游戏。保存文件应为单个文件，后续保存将覆盖前一个文件（覆盖是基本操作要求。如果每个用户都有多个保存槽，则不会给出额外的分数）。
+- [x] 从游戏开始界面，玩家可以选择加载上次保存的游戏。该文件应包括游戏板状态、迄今为止的移动次数和其他必要信息。
+- [x] 每个用户保存的数据都是唯一的。
+- [x] 手动保存是基本要求；执行定时自动保存或退出时自动保存将获得高级积分。
+- [x] 保存文件错误处理：如果保存文件的格式或内容损坏，则不会加载损坏的文件，游戏应继续运行而不会崩溃。（如果你的游戏能够检测到被他人修改的保存文件，同时仍然保持保存数据的合法性，它将获得高级积分。）
+
+### Task 6: Graphical User Interface (GUI) 图形用户界面（10分）
+
+- [x] 使用JavaFX、Swing或任何其他Java为游戏实现图形界面图形框架。
+- [x] 独立创建一个独特的GUI将获得高级积分。
+
+### Task 7: Advanced Features 高级功能（20分）
+
+超出基本要求的任何功能都可以获得高级积分，包括但不限于：
+
+- [x] 界面美化：增强图形和视觉效果。
+- [x] 多层次设计：设计不同难度的多个层次，每个层次有不同的布局（如果添加了多级功能，请在启动界面上提供相应的按钮以访问不同级别）。
+- [ ] 人工智能：实现AI算法自动解决Klotski难题。不同的智力水平将获得不同的分数。
+- [x] 动画效果：为块移动添加平滑的动画。
+- [ ] 音效与背景音乐：通过音效和背景音乐提升游戏体验。
+- [ ] 时间攻击模式：引入定时模式，玩家必须在设定时间内完成游戏(如果添加了定时模式，则保存和加载操作必须包括玩家的时间使用情况,胜利界面还应显示所花费的时间)。
+- [ ] 道具和障碍：添加道具和障碍以丰富游戏玩法(如果添加了道具和障碍物，保存和加载操作必须包含此信息)。
+- [x] 在线观看：允许多个用户同时登录并观看游戏或

@@ -69,10 +69,10 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
         textFieldStyle.selection = new TextureRegionDrawable(createSelected());
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = bitmapFont;
+        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 30);
         labelStyle.fontColor = Color.WHITE;
         infoLabel = new Label("", labelStyle);
-        infoLabel.setPosition(1400,400);
+        infoLabel.setPosition(880,900);
         // 初始化文本框
         usernameTextField = new TextField("", textFieldStyle);
         emailTextField = new TextField("", textFieldStyle);

@@ -13,6 +13,7 @@ import com.klotski.network.NetworkMessageObserver;
 import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
 
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -246,5 +247,20 @@ public class UserManager implements NetworkMessageObserver
     public ArchiveManager getArchiveManager()
     {
          return archiveManager;
+    }
+
+    public void guestLogin()
+    {
+        UserInfo u=new UserInfo();
+        u.setRememberPassword(false);
+        u.setUserName("Guest");
+        u.setEmail("guest@guest.com");
+        u.setGuest(true);
+        activeUser=u;
+        Gdx.app.postRunnable(()-> screenManager.setScreenWithClear(new StartScene(gameMain,archiveManager)));
+        String[] m= Gdx.files.internal("defaultUserArchive.json").readString().split(Pattern.quote("|"));
+        archiveManager=new ArchiveManager(activeUser,netManager);
+        archiveManager.loadByNetwork(m[0],m[1],m[2],Integer.parseInt(m[3]));
+
     }
 }

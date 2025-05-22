@@ -1,16 +1,21 @@
 package com.klotski.Scene;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
 import com.klotski.archive.LevelArchive;
@@ -18,7 +23,10 @@ import com.klotski.assets.ImageAssets;
 import com.klotski.logic.ChessBoardControl;
 import com.klotski.logic.MoveStep;
 import com.klotski.map.MapData;
+import com.klotski.polygon.StarProgress;
+import com.klotski.polygon.TimerW;
 import com.klotski.utils.ScheduledTask;
+import com.klotski.utils.SmartBitmapFont;
 
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
@@ -70,13 +78,71 @@ public class PlayBackScene extends KlotskiScene
         mapData = gameMain.getMapDataManager().getMapDataList().get(mapID);
         //载入存档
         cbc.loadPlayback(mapData, levelArchive);
+
+        //进度条
+        StarProgress starProgress = new StarProgress(mapData.getGrades()[0], mapData.getGrades()[1], mapData.getGrades()[2]);
+        starProgress.setPosition(830, 650);
+        starProgress.setStep(levelArchive.getMoveSteps().size());
+
+        //步数信息
+        BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 75);
+        Label.LabelStyle ls = new Label.LabelStyle();
+        ls.font = font;
+        ls.fontColor = Color.WHITE;
+        Label stepLabel = new Label(String.format("%02d",levelArchive.getMoveSteps().size()), ls);
+        stepLabel.setPosition(1200, 800);
+
+        //计时器
+        TimerW tw = new TimerW();
+        tw.setPosition(850, 750);
+        tw.setTime(cbc.getSecond());
+
+        // 步数列表功能
+        Label.LabelStyle ls2 = new Label.LabelStyle();
+        ls2.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 40);
+        ls2.fontColor = Color.WHITE;
+        // 创建主容器
+        Table mainTable = new Table();
+        mainTable.setFillParent(false);
+        dataTable.align(Align.topLeft);
+        dataTable.pad(10);
+        // 创建表头表格
+        Table headerTable = new Table();
+        headerTable.align(Align.left);
+        headerTable.pad(10);
+        // 添加表头
+        Label label1 = new Label("棋步记录", ls2);
+        label1.setAlignment(Align.center);
+        headerTable.add(label1).width(300).pad(5);
+        headerTable.row();
+        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
+        ScrollPane scrollPane = new ScrollPane(dataTable, scrollStyle);
+        scrollPane.setFadeScrollBars(false);
+        scrollPane.setScrollingDisabled(true, false);
+        scrollPane.setFillParent(false); // 填充整个父容器
+        mainTable.setPosition(1414, 47);
+        mainTable.setSize(450, 860);
+        // 将表头和滚动面板添加到主表格
+        mainTable.add(headerTable).fillX().row();
+        mainTable.add(scrollPane).expand().fill().row();
+
+        // 全屏的背景
+        Image background =new Image(new Texture("mainBackground.jpeg"));
+        background.setSize(1920,1080);
+        //几部分组件的半透明灰色圆角矩形背景
+        Image directionBackground =new Image(new Texture("directionBackground.png"));
+        directionBackground.setPosition(826,48);
+        Image stepBackground =new Image(new Texture("stepBackground.png"));
+        stepBackground.setPosition(826,635);
+        Image recordBackground =new Image(new Texture("recordBackground.png"));
+        recordBackground.setPosition(1414,47);
         //将棋盘恢复到初始状态，同时存储步数
         while(cbc.getSteps()>0)
         {
             backSteps.push(cbc.moveBack());
             cbc.getChessBoard().getChildren().forEach(Actor::clearActions);
         }
-        cbc.getChessBoard().setPosition(100,100);
+        cbc.getChessBoard().setPosition(100,50);
         //自动播放任务
         autoPlay.setTask(()->
             {
@@ -109,25 +175,57 @@ public class PlayBackScene extends KlotskiScene
         playDrawable=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton));
         ImageButton.ImageButtonStyle playStyle=new ImageButton.ImageButtonStyle();
         playStyle.imageDown = playDrawable;
-        playStyle.imageChecked = playDrawable;
+        playStyle.imageUp = playDrawable;
         playButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton)));
         pauseDrawable=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPauseButton));
+
+        backButton.setSize(80,80);
+        backKButton.setSize(80,80);
+        nextButton.setSize(80,80);
+        nextTButton.setSize(80,80);
+        playButton.setSize(80,80);
+        backKButton.setPosition(0,0);
+        backButton.setPosition(70,0);
+        playButton.setPosition(140,0);
+        nextButton.setPosition(210,0);
+        nextTButton.setPosition(280,0);
+        stage.addActor(background);
+        stage.addActor(directionBackground);
+        stage.addActor(stepBackground);
+        stage.addActor(recordBackground);
+        stage.addActor(starProgress);
+        stage.addActor(tw);
+        stage.addActor(mainTable);
+        stage.addActor(stepLabel);
         group.addActor(backButton);
         group.addActor(backKButton);
         group.addActor(nextButton);
         group.addActor(nextTButton);
         group.addActor(playButton);
-        backButton.setSize(100,100);
-        backKButton.setSize(100,100);
-        nextButton.setSize(100,100);
-        nextTButton.setSize(100,100);
-        playButton.setSize(100,100);
-        backButton.setPosition(0,100);
-        backKButton.setPosition(200,100);
-        playButton.setPosition(400,100);
-        nextButton.setPosition(600,100);
-        nextTButton.setPosition(800,100);
-        group.setPosition(800,0);
+
+        group.setPosition(825,400);
+
+        Label titleLabel;
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("furore.ttf")), 80);
+        labelStyle.fontColor = Color.WHITE;
+        titleLabel = new Label("Playback-"+mapData.getMapName(), labelStyle);
+        titleLabel.setPosition(700, 970);
+
+        //返回按钮 Back Button
+        Button.ButtonStyle backbs = new Button.ButtonStyle();
+        backbs.up = new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\backButton.png")));
+        Button backButtonn = new Button(backbs);
+        backButtonn.setPosition(50, 950);
+        backButtonn.setSize(100, 100);
+        backButtonn.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().returnPreviousScreen();
+            }
+        });
 
         backButton.addListener(new ClickListener()
         {
@@ -179,17 +277,33 @@ public class PlayBackScene extends KlotskiScene
                    if(!backSteps.isEmpty())
                    {
                         autoPlay.resume();
+                        nextButton.setTouchable(Touchable.disabled);
+                        nextTButton.setTouchable(Touchable.disabled);
+                        backButton.setTouchable(Touchable.disabled);
+                        backKButton.setTouchable(Touchable.disabled);
                    }
                 }
                 else
                 {
                     autoPlay.pause();
+                    nextButton.setTouchable(Touchable.enabled);
+                    nextTButton.setTouchable(Touchable.enabled);
+                    backButton.setTouchable(Touchable.enabled);
+                    backKButton.setTouchable(Touchable.enabled);
                 }
                 isPlaying =!isPlaying;
             }
         });
+        stage.addActor(directionBackground);
+        stage.addActor(stepBackground);
+        stage.addActor(recordBackground);
+        stage.addActor(titleLabel);
         stage.addActor(group);
         stage.addActor(cbc.getChessBoard());
+        stage.addActor(starProgress);
+        stage.addActor(tw);
+        stage.addActor(mainTable);
+        stage.addActor(backButtonn);
     }
     private boolean isPlaying=false;
     @Override

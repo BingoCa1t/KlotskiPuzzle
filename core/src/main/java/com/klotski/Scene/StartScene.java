@@ -3,6 +3,7 @@ package com.klotski.Scene;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -45,7 +46,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
     private ScreenManager screenManager;
     // 按钮 弹起 状态的纹理
     private Texture upTexture;
-
+    private Group userGroup;
     // 按钮 按下 状态的纹理
     private Texture downTexture;
 
@@ -60,13 +61,14 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         screenManager = gameMain.getScreenManager();
         userInfo = gameMain.getUserManager().getActiveUser();
         this.archiveManager = archiveManager;
+        userGroup = new Group();
     }
 
     @Override
     public void init()
     {
-        gameMain.getNetManager().addObserver(this);
         super.init();
+        gameMain.getNetManager().addObserver(this);
         //背景图片 Background Image
         Image background = new Image(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("startScene\\startBackGround.png")))));
         background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -74,6 +76,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
 
         //用户信息组 User Information Group
         UserInfoGroup userInfoGroup = new UserInfoGroup(userInfo);
+        userInfoGroup.setPosition(20,980);
 
         //曹操Spine Object组
 
@@ -136,7 +139,9 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
                 screenManager.setScreen(new LevelSelectScene(gameMain, tem));
             }
         });
+
         stage.addActor(background);
+        stage.addActor(userInfoGroup);
         stage.addActor(startButton);
         stage.addActor(watchButton);
         //stage.addActor(tempentry);

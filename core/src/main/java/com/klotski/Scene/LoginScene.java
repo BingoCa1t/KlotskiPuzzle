@@ -1,11 +1,14 @@
 package com.klotski.Scene;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -13,6 +16,7 @@ import com.klotski.Main;
 import com.klotski.polygon.LoginGroup;
 import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
+import com.klotski.utils.SmartBitmapFont;
 import com.klotski.utils.logger.Logger;
 
 public class LoginScene extends KlotskiScene
@@ -21,6 +25,7 @@ public class LoginScene extends KlotskiScene
     private UserManager userManager;
     private LoginGroup loginGroup;
     private String email="";
+    private Label infoLabel;
     /**
      * 基类初始化，需要传入 gameMain
      *
@@ -49,10 +54,12 @@ public class LoginScene extends KlotskiScene
     {
         //UserInfo userInfo=userManager.getActiveUser();
         //gameMain.getScreenManager().setScreen(new StartScene(gameMain));
+        infoLabel.setText("Welcome to Klotski Puzzle!");
         Logger.info("Login Succeed");
     }
     public void loginFail()
     {
+        infoLabel.setText("Login Failed");
         Logger.info("Login Fail");
     }
     @Override
@@ -71,7 +78,11 @@ public class LoginScene extends KlotskiScene
 
         loginGroup=new LoginGroup(email);
         loginGroup.setPosition(700,300);
-
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 30);
+        labelStyle.fontColor = Color.WHITE;
+        infoLabel = new Label("", labelStyle);
+        infoLabel.setPosition(880,900);
 
         Button.ButtonStyle buttonStyle=new Button.ButtonStyle();
         buttonStyle.up=new TextureRegionDrawable(new Texture("login.png"));

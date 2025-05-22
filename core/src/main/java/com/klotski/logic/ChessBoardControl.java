@@ -151,6 +151,7 @@ public class ChessBoardControl
     }
     public void loadPlayback(MapData mapData,LevelArchive levelArchive)
     {
+        isPlayback=true;
         this.mapData=new MapData(mapData);
         this.levelArchive=new LevelArchive(levelArchive);
         this.second=levelArchive.getSeconds();
@@ -249,32 +250,62 @@ public class ChessBoardControl
         //如果存在存档，且用户选择载入存档<br>（逻辑后补）</br>，则载入存档
         else if(this.isWatch||isLoadArchive)
         {
-            //存档里的移动记录栈
-            Stack<MoveStep> s = levelArchive.getMoveSteps();
-            //栈后进先出，所以使用新栈，将顺序反转后再弹出
-            Stack<MoveStep> s2 = new Stack<>();
-            while (!s.isEmpty())
+            try
             {
-                s2.push(s.pop()); // 将栈中的元素弹出并添加到新栈中
-            }
-            while (!s2.isEmpty())
-            {
-                MoveStep moveStep = s2.pop();
-                //移动棋子
-                if(getChessByPosition(moveStep.origin)==null)
+                //存档里的移动记录栈
+                Stack<MoveStep> s = levelArchive.getMoveSteps();
+                //栈后进先出，所以使用新栈，将顺序反转后再弹出
+                Stack<MoveStep> s2 = new Stack<>();
+                while (!s.isEmpty())
                 {
-                    levelArchive.setMoveSteps(moveSteps);
+                    s2.push(s.pop()); // 将栈中的元素弹出并添加到新栈中
                 }
-                moveInArchive(getChessByPosition(moveStep.origin),moveStep.destination);
-                //不要重复添加
-                //moveSteps.push(moveStep);
+                while (!s2.isEmpty())
+                {
+                    MoveStep moveStep = s2.pop();
+                    //移动棋子
+                    if (getChessByPosition(moveStep.origin) == null)
+                    {
+                        levelArchive.setMoveSteps(moveSteps);
+                    }
+                    moveInArchive(getChessByPosition(moveStep.origin), moveStep.destination);
+                    //不要重复添加
+                    //moveSteps.push(moveStep);
+                }
+                levelArchive.setMoveSteps(moveSteps);
             }
-            levelArchive.setMoveSteps(moveSteps);
-
+            catch(Exception e)
+            {
+                Logger.warning("Chess archive load error: ",e.getMessage()+", will not load archive");
+                moveSteps.clear();
+                chessBoard=new ChessBoard();
+                Image background2;
+                Image chessBoardImage2;
+                chessBoardImage2 = new Image(new Sprite(new Texture("chessBoard.png")));
+                chessBoardImage2.setPosition(-16, -16);
+                background2 = new Image(new Sprite(new Texture("background.png")));
+                background2.setPosition(-10, -10);
+                background2.setHeight(5 * Chess.squareHW + 20);
+                background2.setWidth(4 * Chess.squareHW + 20);
+                chessBoard.addActor(background2);
+                chessBoard.addActor(chessBoardImage2);
+                for(Chess c:this.mapData.getChesses())
+                {
+                    c.init(gameMain.getAssetsPathManager());
+                }
+                chessBoard.addChessArray(this.mapData.getChesses());
+                chessBoard.setPosition(100, 100);
+                exits=mapData.getExit();
+                chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(),exits, mapData.getMainIndex());
+                levelArchive.setMoveSteps(moveSteps);
+            }
         }
         if(!isWatch)
         {
-            gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch, gameMain.getUserManager().getActiveUser().getEmail(), jsonManager.getJsonString(levelArchive), moveSteps.isEmpty() ? "0" : jsonManager.getJsonString(moveSteps.peek()));
+            if(!gameMain.getUserManager().getActiveUser().isGuest())
+            {
+                gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch, gameMain.getUserManager().getActiveUser().getEmail(), jsonManager.getJsonString(levelArchive), moveSteps.isEmpty() ? "0" : jsonManager.getJsonString(moveSteps.peek()));
+            }
         }
 
     }
@@ -345,7 +376,7 @@ public class ChessBoardControl
             levelArchive.setLevelStatus(LevelStatus.InProgress);
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             levelArchive.setSeconds(second);
-            if(!isWatch)
+            if(!isWatch&&!isPlayback)
             {
                 //存档
                 archiveManager.saveByNetwork();

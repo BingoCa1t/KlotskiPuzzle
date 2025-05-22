@@ -139,6 +139,10 @@ public class ArchiveManager
      */
     public void saveByNetwork()
     {
+        if(userInfo.isGuest())
+        {
+            return;
+        }
         //String json0=jsonManager.getJsonString(userInfo);
         String json1=jsonManager.getJsonString(archive1);
         String json2=jsonManager.getJsonString(archive2);

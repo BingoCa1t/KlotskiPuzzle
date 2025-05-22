@@ -153,13 +153,19 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         if (!isWatch)
         {
             cbc.load(mapData);
-            gameMain.getNetManager().sendMessage(MessageCode.BeginGame, gameMain.getUserManager().getActiveUser().getEmail());
+            if(!gameMain.getUserManager().getActiveUser().isGuest())
+            {
+                gameMain.getNetManager().sendMessage(MessageCode.BeginGame, gameMain.getUserManager().getActiveUser().getEmail());
+            }
         }
         //如果处于观战中，则使cbc加载地图及存档（存档由WatchScene提供），并通知服务器开始观战
         else
         {
             cbc.load(mapData, watchingLevelArchive, true);
-            gameMain.getNetManager().sendMessage(MessageCode.BeginWatch, gameMain.getUserManager().getActiveUser().getEmail() + "|1");
+            if(!gameMain.getUserManager().getActiveUser().isGuest())
+            {
+                gameMain.getNetManager().sendMessage(MessageCode.BeginWatch, gameMain.getUserManager().getActiveUser().getEmail() + "|1");
+            }
         }
         //设置cbc的位置和添加鼠标移动监听器
         cbc.getChessBoard().setPosition(100, 50);
@@ -176,7 +182,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         titleLabel = new Label(mapData.getMapName(), labelStyle);
         titleLabel.setPosition(700, 970);
 
-        //步数信息
+
         BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 75);
         Label.LabelStyle ls = new Label.LabelStyle();
         ls.font = font;
@@ -334,11 +340,17 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 if (isWatch)
                 {
                     //通知服务器结束观战
-                    gameMain.getNetManager().sendMessage("0010|" + gameMain.getUserManager().getActiveUser().getEmail() + "|0");
+                    if(!gameMain.getUserManager().getActiveUser().isGuest())
+                    {
+                        gameMain.getNetManager().sendMessage("0010|" + gameMain.getUserManager().getActiveUser().getEmail() + "|0");
+                    }
                 } else
                 {
-                    //通知服务器结束游戏
-                    gameMain.getNetManager().sendMessage("0041|" + gameMain.getUserManager().getActiveUser().getEmail());
+                    if(!gameMain.getUserManager().getActiveUser().isGuest())
+                    {
+                        //通知服务器结束游戏
+                        gameMain.getNetManager().sendMessage("0041|" + gameMain.getUserManager().getActiveUser().getEmail());
+                    }
                 }
             }
         });
@@ -716,12 +728,18 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         stage.clear();
         if (!isWatch)
         {
-            //通知服务器结束游戏
-            gameMain.getNetManager().sendMessage("0041|" + gameMain.getUserManager().getActiveUser().getEmail());
+            if(!gameMain.getUserManager().getActiveUser().isGuest())
+            {
+                //通知服务器结束游戏
+                gameMain.getNetManager().sendMessage("0041|" + gameMain.getUserManager().getActiveUser().getEmail());
+            }
         } else
         {
-            gameMain.getNetManager().sendMessage("0041|" + gameMain.getUserManager().getActiveUser().getEmail());
-            gameMain.getNetManager().sendMessage("0010|" + gameMain.getUserManager().getActiveUser().getEmail() + "|0");
+            if(!gameMain.getUserManager().getActiveUser().isGuest())
+            {
+                gameMain.getNetManager().sendMessage("0041|" + gameMain.getUserManager().getActiveUser().getEmail());
+                gameMain.getNetManager().sendMessage("0010|" + gameMain.getUserManager().getActiveUser().getEmail() + "|0");
+            }
         }
         stage.addActor(sg);
     }

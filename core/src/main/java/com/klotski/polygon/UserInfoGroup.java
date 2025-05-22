@@ -26,19 +26,19 @@ public class UserInfoGroup extends Group
         Button.ButtonStyle style2 = new Button.ButtonStyle();
         style2.up=new TextureRegionDrawable(new Texture(Gdx.files.internal("headImage.jpg")));
         headButton = new Button(style2);
-        headButton.setSize(60,60);
+        headButton.setSize(85,85);
         headButton.setPosition(0,0);
 
         //昵称 Name Label
         Label.LabelStyle style = new Label.LabelStyle();
-        style.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),40);
+        style.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("Scheherazade-Bold.ttf")),45);
         style.fontColor = Color.WHITE;
         nameLabel = new Label(userInfo.getUserName(), style);
-        nameLabel.setPosition(30,60);
+        nameLabel.setPosition(105,18);
 
         //邮箱 E-mail Label
         eMailLabel = new Label(userInfo.getEmail(), style);
-        eMailLabel.setPosition(30,20);
+        eMailLabel.setPosition(105,-20);
 
         addActor(headButton);
         addActor(nameLabel);
