@@ -2,6 +2,7 @@ package com.klotski.Scene;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -16,11 +17,13 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
+import com.klotski.aigo.Solver;
 import com.klotski.archive.LevelArchive;
 import com.klotski.logic.ChessBoardControl;
 import com.klotski.logic.MoveStep;
 import com.klotski.logic.Pos;
 import com.klotski.map.MapData;
+import com.klotski.music.MusicManager;
 import com.klotski.network.MessageCode;
 import com.klotski.network.NetworkMessageObserver;
 import com.klotski.polygon.Chess;
@@ -71,6 +74,10 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     /** 计时器组件 */
     private TimerW tw;
     private JsonManager jsonManager = new JsonManager();
+    /** 音效 */
+    Sound selectedSound;
+    Sound moveSound;
+
     /**
      * 测试时候的默认MapData（已弃用）
      *
@@ -142,6 +149,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     public void init()
     {
         super.init();
+        gameMain.getMusicManager().play(MusicManager.MusicAudio.GameMusic,true);
+
         gameMain.getNetManager().addObserver(this);
         // 棋步记录表
         dataTable = new Table();
@@ -261,7 +270,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                //还没搞
+
             }
         });
 
@@ -763,5 +772,11 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 gameMain.getScreenManager().returnPreviousScreen();
             }
         }, 2);
+    }
+    @Override
+    public void dispose()
+    {
+        gameMain.getMusicManager().play(MusicManager.MusicAudio.MainBGM,true);
+        super.dispose();
     }
 }

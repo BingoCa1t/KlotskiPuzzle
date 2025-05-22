@@ -1,6 +1,7 @@
 package com.klotski.logic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -37,6 +38,7 @@ import java.util.*;
  */
 public class ChessBoardControl
 {
+
     private Table dataTable;
     private ArrayList<String> stepsData= new ArrayList<>();
     private JsonManager jsonManager;
@@ -209,6 +211,8 @@ public class ChessBoardControl
     }
     public void load(MapData mapData,LevelArchive levelArchive,boolean isWatch)
     {
+
+
         this.isWatch=isWatch;
         //创建MapData的副本，不要更改MapDataManager里的数据
         this.mapData=new MapData(mapData);

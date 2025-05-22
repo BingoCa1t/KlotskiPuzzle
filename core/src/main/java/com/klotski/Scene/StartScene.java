@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.klotski.Main;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.archive.LevelArchive;
+import com.klotski.music.MusicManager;
 import com.klotski.network.MessageCode;
 import com.klotski.network.NetworkMessageObserver;
 import com.klotski.polygon.UserInfoGroup;
@@ -63,11 +64,16 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         this.archiveManager = archiveManager;
         userGroup = new Group();
     }
-
+    @Override
+    public void show()
+    {
+        super.show();
+    }
     @Override
     public void init()
     {
         super.init();
+        gameMain.getMusicManager().play(MusicManager.MusicAudio.MainBGM,true);
         gameMain.getNetManager().addObserver(this);
         //背景图片 Background Image
         Image background = new Image(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("startScene\\startBackGround.png")))));

@@ -1,5 +1,7 @@
 package com.klotski.polygon;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -21,7 +23,9 @@ public class ChessBoard extends Group
 {
     //ChessBoardArray为后端，负责维护数组
     //Chess只有X和Y坐标（整数），由ChessBoard负责转换成像素坐标
-
+    /** 音效 */
+    private Sound selectedSound;
+    private Sound moveSound;
     //棋盘默认宽度
     private final int DEFAULT_WIDTH = 4;
     //棋盘默认高度
@@ -52,6 +56,8 @@ public class ChessBoard extends Group
     public ChessBoard()
     {
         super();
+        moveSound= Gdx.audio.newSound(Gdx.files.internal("music/move.mp3"));
+        selectedSound=Gdx.audio.newSound(Gdx.files.internal("music/select.mp3"));
     }
 
     @Override
@@ -104,6 +110,7 @@ public class ChessBoard extends Group
         MoveToAction action = Actions.moveTo(p.getX() * Chess.squareHW, p.getY() * Chess.squareHW, 0.5F, Interpolation.smoother);
         // 将动作附加在演员身上, 执行动作
         chess.addAction(action);
+        moveSound.play();
         chess.setXYWithoutChangingState(p);
 
     }
@@ -132,6 +139,7 @@ public class ChessBoard extends Group
             chess2.disSelect();
         }
         chess.select();
+        selectedSound.play();
     }
 
 

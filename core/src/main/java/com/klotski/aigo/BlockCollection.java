@@ -1,5 +1,5 @@
 //Valerie Cook, Jennifer Dai, Daniel Radding, Yangzi He
-
+package com.klotski.aigo;
 import java.util.*;
 
 public class BlockCollection implements Iterable<Block>{
@@ -7,14 +7,14 @@ public class BlockCollection implements Iterable<Block>{
 	 * A BlockCollection represents a collection of blocks
 	 * on the current tray
 	 */
-	
+
 	private ArrayList<Block> myBlocks;
 
 	// A constructor for a new blockCollection
 	public BlockCollection() {
 		myBlocks = new ArrayList<Block>();
 	}
-	
+
 	// Adds a block to the current BlockCollection
 	public void add(Block b) {
 		myBlocks.add(b);
@@ -34,15 +34,15 @@ public class BlockCollection implements Iterable<Block>{
 	public boolean contains (Block b) {
 		return myBlocks.contains(b);
 	}
-		 
+
 	// Return the block that has a corner with the given row and column
-	// if there is such a block in the collection 
+	// if there is such a block in the collection
 	// otherwise it returns null
 	public Block getBlockWithCorner(int row, int column) {
 		// check each block in the collection
 		for (Block b : myBlocks) {
 			// check if the block has a corner with the given row and column
-			if ((b.getUpperRow()==row && b.getUpperColumn()==column) 
+			if ((b.getUpperRow()==row && b.getUpperColumn()==column)
 					|| (b.getLowerRow()==row && b.getLowerColumn()==column)) {
 				// if it does, return the block
 				return b;
@@ -63,7 +63,7 @@ public class BlockCollection implements Iterable<Block>{
 		return clone;
 	}
 
-	// Returns true if the current block collection contains all the 
+	// Returns true if the current block collection contains all the
 	// blocks in the given block collection
 	public boolean containsAll(BlockCollection bc) {
 		return myBlocks.containsAll(bc.myBlocks);

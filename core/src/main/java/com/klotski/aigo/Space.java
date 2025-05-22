@@ -3,11 +3,12 @@
 /*	 * A Space object is a mutable object that has a row and column integer.
 	 * It contains all the coordinates of the spaces in the board.
 	 */
+package com.klotski.aigo;
 public class Space {
-	
+
 	private int myRow;
 	private int myColumn;
-	
+
 	public Space(int row, int column) {
 		/*
 		 * Constructs a tray object
@@ -17,7 +18,7 @@ public class Space {
 		myRow = row;
 		myColumn = column;
 	}
-	
+
 	public int [] getPosition() {
 		/*
 		 * Gets the position of the space and returns
@@ -28,7 +29,7 @@ public class Space {
 		rtn[1] = myColumn;
 		return rtn;
 	}
-	
+
 	public int getRow() {
 		/*
 		 * Gets the row of the space.
@@ -36,7 +37,7 @@ public class Space {
 		 */
 		return myRow;
 	}
-	
+
 	public int getColumn() {
 		/*
 		 * Gets the column of the space.
@@ -44,7 +45,7 @@ public class Space {
 		 */
 		return myColumn;
 	}
-	
+
 	public void setColumn(int column) {
 		/*
 		 * Sets the column of the space.
@@ -53,7 +54,7 @@ public class Space {
 		 */
 		myColumn = column;
 	}
-	
+
 	public void setRow(int row) {
 		/*
 		 * Sets the row of the space.
@@ -62,7 +63,7 @@ public class Space {
 		 */
 		myRow = row ;
 	}
-	
+
 	public boolean equals(Object obj) {
 		/*
 		 * Checks whether "this" space object equals the space object
@@ -72,7 +73,7 @@ public class Space {
 		Space s = (Space) obj;
 		return myRow==s.myRow && myColumn ==s.myColumn;
 	}
-	
+
 	public String toString() {
 		/*
 		 * Returns a string that contains the row and column
@@ -80,5 +81,5 @@ public class Space {
 		 */
 		return myRow + " " + myColumn;
 	}
-	
+
 }

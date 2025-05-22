@@ -1,34 +1,34 @@
 //Valerie Cook, Jennifer Dai, Daniel Radding, Yangzi He
-
+package com.klotski.aigo;
 import java.util.*;
 /*
  * A Tray object is a mutable data structure that contains
  * a BlockCollection, a SpaceCollection, integers that denote
  * the size of the tray, and debugging flags.
  */
-public class Tray {	
+public class Tray {
 
 	private BlockCollection myBlocks; // collection of blocks in the tray
 	private int myLength; // length of the tray
 	private int myWidth; // width of the tray
 	private SpaceCollection myEmptySpaces; // collection of spaces in the tray
 	private boolean debugCount; // true when debugging counting is turned on
-	private boolean debugTime; // true when debugging timing is turned on 
+	private boolean debugTime; // true when debugging timing is turned on
 	private boolean debugEachMove; // true when highest debug level is turned on
 	protected static int countGetPossibleMoves; // count of calls to getPossibleMoves
 	protected static int countCanMove; // count of calls to canMove
 	protected static int countMakeMove; // count of calls to makeMove
-	
+
 	// events we are timing for debugging purposes
 	private enum DebugEvent {
 		FindEmptySpaces, GetPossibleMoves, CanMove, MakeMoves,
 		GetBlocksAdjacentToEmpty;
 	}
-	
+
 	private long [] debugTimes = new long [DebugEvent.values().length];
 	private long [] startTimes = new long [DebugEvent.values().length];
-	
-	// A constructor for tray which takes 
+
+	// A constructor for tray which takes
 	// length, width, and a BlockCollection
 	//@precondition: length and width are valid integers
 	//BlockCollection bc is a valid block collection
@@ -49,7 +49,7 @@ public class Tray {
 			}
 		}
 	}
-	
+
 	// sets the debug level depending on what level the user chose
 	//@precondition: level has to be a valid integer 1-4
 	private void setDebugLevel(int level) {
@@ -57,13 +57,13 @@ public class Tray {
 		if (level==2||level>2) debugTime = true;
 		if (level==4) debugEachMove=true;
 	}
-	
+
 	// starts a timer for a specified debugging event
 	// if debugging time is true
 	private void startTimer(DebugEvent de) {
 		if (debugTime) startTimes[de.ordinal()] = System.currentTimeMillis();
 	}
-	
+
 	// stops a timer for a specified debugging event
 	// if debugging time is true
 	private void stopTimer(DebugEvent de) {
@@ -72,7 +72,7 @@ public class Tray {
 			debugTimes[de.ordinal()] += stopTime - startTimes[de.ordinal()];
 		}
 	}
-	
+
 	// prints the debugging results
 	public void printDebugResults() {
 		if (debugCount) {
@@ -85,27 +85,27 @@ public class Tray {
 			System.out.println("    CanMove called " + countCanMove + " times");
 			System.out.println("    MakeMove called " + countMakeMove + " times");
 			System.out.println("=========================================");
-			
+
 		}
 		if (debugTime) {
 			// if debugging time is true, print times
 			System.out.println("=========================================");
 			System.out.println("Tray Debugging Times: ");
 			for(DebugEvent de:DebugEvent.values()) {
-				System.out.println("    " + de.name() + " took " + debugTimes[de.ordinal()] 
+				System.out.println("    " + de.name() + " took " + debugTimes[de.ordinal()]
 						+ " ms");
 			}
 			System.out.println("=========================================");
 		}
 	}
-	
+
 	public BlockCollection getMyBlocks(){
 		/*
 		 * Returns the current BlockCollection
 		 */
 		return myBlocks;
 	}
-	
+
 	public void findEmptySpaces () {
 		// find the empty spaces on the tray
 		startTimer(DebugEvent.FindEmptySpaces);
@@ -126,17 +126,17 @@ public class Tray {
 		}
 		stopTimer(DebugEvent.FindEmptySpaces);
 	}
-	
+
 	// Gets possible moves given the list of blocks
 	public ArrayList<Move> getPossibleMoves() {
 		// given a list of blocks it will return all possible moves
 		if (debugCount) countGetPossibleMoves++;
 		startTimer(DebugEvent.GetPossibleMoves);
-		
-		
+
+
 		// list to be returned of all possible moves
 		ArrayList<Move> possibleMoves = new ArrayList<Move>();
-		
+
 		// list of blocks with corners adjacent to empty squares
 		// which are the only blocks that might be able to move
 		ArrayList<Block> blocksAdjacentToEmpty = getBlocksAdjacentToEmpty();;
@@ -180,18 +180,18 @@ public class Tray {
 			System.out.println();
 			System.out.println();
 		}
-		
+
 		return possibleMoves;
 	}
-		
+
 	// return an arrayList of Blocks that have either the upper left
 	// or lower right corner that is adjacent to an empty square
 	private ArrayList<Block> getBlocksAdjacentToEmpty() {
 		startTimer(DebugEvent.GetBlocksAdjacentToEmpty);
-		
+
 		// list to be returned of blocks with corners adjacent to an empty square
 		ArrayList<Block> blocksAdjacentToEmpty = new ArrayList<Block>();
-		
+
 		// check each space in empty spaces
 		for (Space s: myEmptySpaces) {
 			int row = s.getRow();
@@ -201,19 +201,19 @@ public class Tray {
 			// if there is such a block, add it to the list
 			if (aboveEmpty!=null && !blocksAdjacentToEmpty.contains(aboveEmpty))
 				blocksAdjacentToEmpty.add(aboveEmpty);
-			
+
 			// check for a block with a corner below the empty space
 			Block belowEmpty = myBlocks.getBlockWithCorner(row+1, column);
 			// if there is such a block, add it to the list
 			if (belowEmpty!=null && !blocksAdjacentToEmpty.contains(belowEmpty))
 				blocksAdjacentToEmpty.add(belowEmpty);
-			
+
 			// check for a block with a corner to the left of the empty space
 			Block leftOfEmpty = myBlocks.getBlockWithCorner(row, column-1);
 			// if there is such a block, add it to the list
 			if (leftOfEmpty!=null && !blocksAdjacentToEmpty.contains(leftOfEmpty))
 				blocksAdjacentToEmpty.add(leftOfEmpty);
-			
+
 			// check for a block with a corner to the right of the empty space
 			Block rightOfEmpty = myBlocks.getBlockWithCorner(row, column+1);
 			// if there is such a block, add it to the list
@@ -223,13 +223,13 @@ public class Tray {
 		stopTimer(DebugEvent.GetBlocksAdjacentToEmpty);
 		return blocksAdjacentToEmpty;
 	}
-	
+
 	// Returns true if a given block can be moved in the given direction
 	public boolean canMove(Block b, Move.Direction dir) {
 		if (debugCount) countCanMove++; startTimer(DebugEvent.CanMove);
 		if (dir == Move.Direction.Up) {
 			// return false if it is in the top row
-			if(b.getUpperRow()==0) { 
+			if(b.getUpperRow()==0) {
 				stopTimer(DebugEvent.CanMove);
 				return false;
 				}
@@ -240,7 +240,7 @@ public class Tray {
 					if ( ! myEmptySpaces.contains(e) ) {
 						stopTimer(DebugEvent.CanMove);
 						return false;
-					}		
+					}
 				}
 		} else if (dir == Move.Direction.Down) {
 			 // return false if it is in the bottom row
@@ -291,7 +291,7 @@ public class Tray {
 		stopTimer(DebugEvent.CanMove);
 		return true;
 	}
-	
+
 	// move a specific block in a given direction
 	public void makeMove(Block b, Move.Direction dir) {
 		if (debugCount) countMakeMove++;
@@ -306,7 +306,7 @@ public class Tray {
 			// change values of the block
 			b.setUpperRow(b.getUpperRow()-1, myLength);
 			b.setLowerRow(b.getLowerRow()-1, myLength);
-			
+
 		} else if(dir== Move.Direction.Down){
 			for(int i=b.getUpperColumn(); i<=b.getLowerColumn(); i++){
 				// take old empty spaces out of tray
@@ -317,7 +317,7 @@ public class Tray {
 			// change values of the block
 			b.setUpperRow(b.getUpperRow()+1, myLength);
 			b.setLowerRow(b.getLowerRow()+1, myLength);
-			
+
 		} else if(dir==Move.Direction.Right){
 			for(int i=b.getUpperRow(); i<=b.getLowerRow(); i++){
 				// take old empty spaces out of tray
@@ -342,9 +342,9 @@ public class Tray {
 		stopTimer(DebugEvent.MakeMoves);
 		// check that the tray is still valid after the move was made
 		// if debugging for tray is turned on
-		if (SolverChecker.debugTray) isOK(); 
+		if (SolverChecker.debugTray) isOK();
 	}
-	
+
 	public void isOK() throws IllegalStateException{
 		/*
 		 * Checks whether the tray satisfies all the invariants
@@ -355,7 +355,7 @@ public class Tray {
 		for (Block b : myBlocks) {
 			HashSet<Space> spacedBlock=makeBlockIntoSpaces(b);
 			//checks to make sure that dimensions are correct relative to one another
-			if (b.getUpperRow() > b.getLowerRow() 
+			if (b.getUpperRow() > b.getLowerRow()
 						|| b.getUpperColumn() > b.getLowerColumn()){
 					throw new IllegalStateException("Upper row and upper column should never be greater than "
 							+ "lower row or lower column.");
@@ -394,7 +394,7 @@ public class Tray {
 		}
 		return toCompare;
 	}
-	
+
 	public void isOverlapping(Block b, HashSet<Space> toCompare) {
 		/*
 		 * Checks whether any of the spaces within
@@ -410,12 +410,12 @@ public class Tray {
 			}
 		}
 	}
-	
+
 //	public boolean[][] createBoard() {
 	/*
 	 * In order to check whether our empty spaces overlap
 	 * with blocks, create a 2D boolean array with the blocks
-	 * and spaces on the board. 
+	 * and spaces on the board.
 	 * @precondition: blocks and spaces don't overlap
 	 * @postcondition: returns a 2D boolean array
 	 */
@@ -432,5 +432,5 @@ public class Tray {
 //		}
 //		return totalBoard;
 //	}
-	
+
 }

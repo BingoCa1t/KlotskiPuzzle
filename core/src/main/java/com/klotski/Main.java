@@ -10,9 +10,11 @@ import com.klotski.Scene.*;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.archive.LevelArchive;
 import com.klotski.assets.AssetsPathManager;
+import com.klotski.assets.MusicAssets;
 import com.klotski.logic.LevelInfo;
 import com.klotski.map.MapData;
 import com.klotski.map.MapDataManager;
+import com.klotski.music.MusicManager;
 import com.klotski.network.NetManager;
 import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
@@ -28,7 +30,7 @@ public class Main extends Game
     private UserManager userManager;
     private UserInfo userInfo;
     private NetManager netManager;
-
+    private MusicManager musicManager;
     private ScreenManager screenManager;
     private JsonManager jsonManager;
     private MapDataManager mapDataManager;
@@ -79,6 +81,9 @@ public class Main extends Game
         Logger.debug("Archive manager");
         //archiveManager.load();
         Logger.debug("Archive manager loaded");
+        musicManager=new MusicManager(this);
+        musicManager.loadMusic(MusicManager.MusicAudio.GameMusic, MusicAssets.GameMusic);
+        musicManager.loadMusic(MusicManager.MusicAudio.MainBGM, MusicAssets.MainBGM);
         //加载所有LevelArchive
         //archiveManager=new ArchiveManager(userManager.loadUserInfo(0));
         //加载LevelInfo
@@ -164,5 +169,10 @@ public class Main extends Game
     public NetManager getNetManager()
     {
         return netManager;
+    }
+
+    public MusicManager getMusicManager()
+    {
+        return musicManager;
     }
 }

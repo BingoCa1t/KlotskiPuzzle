@@ -5,7 +5,7 @@
 	 * , a length, and a width. It reads in command line arguments of the initial file and the goal file
 	 * and translates them into these block collections that Solver's main then calls.
 	 */
-
+package com.klotski.aigo;
 public class SolverChecker {
 
 	protected BlockCollection blocks;	//block collection
@@ -46,7 +46,7 @@ public class SolverChecker {
 
 		while(initialBlocks!=null) {
 			// add blocks to the blocks blockCollection
-			blocks.add (splitTokens(initialBlocks)); 
+			blocks.add (splitTokens(initialBlocks));
 			initialBlocks=initialTray.readLine();
 		}
 		// the next argument is the the goal tray
@@ -60,7 +60,16 @@ public class SolverChecker {
 			goalBlocks = goalTray.readLine();
 		}
 	}
-	
+
+    public SolverChecker(int width,int height ,BlockCollection blocks, BlockCollection goals)
+    {
+        this.blocks=blocks;
+        this.goals=goals;
+        this.length=height;
+        this.width=width;
+
+    }
+
 	private void actOnInvalidInput(String [] args) {
 		/*
 		 * Catches incorrect user input, prints a useful message, then exits.
@@ -86,13 +95,13 @@ public class SolverChecker {
 			System.exit(1);
 		}
 	}
-	
+
 	private void debuggingOptions(String s) {
 		/*
 		 * Changes our boolean flags to true when we call our debugging
 		 * options and makes sure our debugging options do what they're supposed to.
 		 * @precondition: s has to be a valid debugging option
-		 * 
+		 *
 		 */
 		if(s.equals("-ooptions")) {
 			// print out all options
@@ -104,11 +113,11 @@ public class SolverChecker {
 					"a min of one level followed by a class (Solver(s) or Tray(t)) and ");
 			System.out.println("a max of one level followed by two classes (Solver(s) and Tray(t))");
 			System.exit(1);
-		} else if (s.charAt(2)!='1' && s.charAt(2)!='2' 
+		} else if (s.charAt(2)!='1' && s.charAt(2)!='2'
 				&& s.charAt(2)!='3' && s.charAt(2)!='4') {
 			System.out.println("The debugging option does not indicate an appropriate level");
 			System.exit(1);
-		} 
+		}
 		else if (s.charAt(2)=='1') debugLevel=1;
 		else if (s.charAt(2)=='2') debugLevel=2;
 		else if (s.charAt(2)=='3') debugLevel=3;
@@ -123,7 +132,7 @@ public class SolverChecker {
 			if (s.length()>4 && s.charAt(4)=='t') {
 				debugTray=true;
 			}
-		} 
+		}
 		else {
 			System.out.println("The debugging option does not call appropriate classes.");
 			System.exit(1);
@@ -134,7 +143,7 @@ public class SolverChecker {
 			System.exit(1);
 		}
 	}
-	
+
 	private void printOptions() {
 		/*
 		 * Prints the options when -ooptions is called
@@ -150,7 +159,7 @@ public class SolverChecker {
 		System.out.println("-o3t, which will print " +
 				"both the counts and the times of important events in Tray");
 		System.out.println("-o4t, which will print both the counts and times "
-				+ "of important events in Tray and the blocks, spaces and " 
+				+ "of important events in Tray and the blocks, spaces and "
 				+ "possible moves for each call to getPossibleMoves");
 		System.out.println("-o1s, which will print " +
 				"the counts of important events in Solver");
@@ -174,7 +183,7 @@ public class SolverChecker {
 				"call to getPossibleMoves and the successful and " +
 				"unsucessful moves that Solver makes");
 	}
-	
+
 	private Block splitTokens(String s) {
 		/*
 		 * Takes a string and splits the string up by spaces so that

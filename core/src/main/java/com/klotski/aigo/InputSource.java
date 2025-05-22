@@ -1,5 +1,5 @@
 //Valerie Cook, Jennifer Dai, Daniel Radding, Yangzi He
-
+package com.klotski.aigo;
 import java.util.*;
 import java.io.*;
 
@@ -45,7 +45,7 @@ public class InputSource {
 		// Added call to trim: March 18, 2011.
 		return line.toLowerCase ( ).trim ( );
 	}
-	
+
 	public int lineNumber ( ) {
 		return myLineNumber;
 	}
