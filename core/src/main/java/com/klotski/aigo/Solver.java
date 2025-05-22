@@ -337,7 +337,7 @@ public class Solver {
 
     }
 
-    public ArrayList<MoveStep> getSolution(ArrayList<Chess> chesses, int width, int height) {
+    public static ArrayList<MoveStep> getSolution(ArrayList<Chess> chesses, int width, int height) {
         ArrayList<MoveStep> result = new ArrayList<MoveStep>();
         BlockCollection blocks = new BlockCollection();
         BlockCollection goals = new BlockCollection();  // 新增目标集合

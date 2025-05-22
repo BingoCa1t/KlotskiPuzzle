@@ -270,7 +270,11 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-
+                ArrayList<MoveStep> s=Solver.getSolution(cbc.getChessBoard().getChesses(),4,5);
+                for(MoveStep ms:s)
+                {
+                    cbc.move(ms);
+                }
             }
         });
 
