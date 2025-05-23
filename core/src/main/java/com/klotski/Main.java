@@ -109,18 +109,10 @@ public class Main extends Game
         //loginScene.show();
         //screenManager.setScreen(new StartScene(this));
 
-        LevelArchive levelArchive = new LevelArchive();
-        levelArchive.setMapID(1);
-        ArrayList<Integer> tem=new ArrayList<>();
-        tem.add(1);
-        tem.add(2);
-        tem.add(3);
-        tem.add(4);
-        tem.add(5);
         screenManager.setScreen(new WelcomeScene(this));
         //screenManager.setScreen(new WatchScene(this));
         //screenManager.setScreen(new LoginScene(this));
-        //screenManager.setScreen(new GameMainScene(this,1));
+
 
 
         //screenManager.setScreen(new StartScene(this));

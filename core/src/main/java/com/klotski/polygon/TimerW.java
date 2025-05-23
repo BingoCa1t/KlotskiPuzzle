@@ -12,10 +12,20 @@ public class TimerW extends Group
     private int seconds=0;
     private Label label1;
     private Label label2;
+    public boolean isCountdown = false;
+    private int countdownSeconds = 0;
     public TimerW()
     {
         super();
         init();
+    }
+    public TimerW(boolean isCountdown,int seconds)
+    {
+        super();
+        this.isCountdown = isCountdown;
+        this.countdownSeconds = seconds;
+        init();
+        setTime(seconds);
     }
     public void init()
     {
@@ -58,9 +68,20 @@ public class TimerW extends Group
     }
     public void setTime(int seconds)
     {
-        this.minutes=seconds/60;
-        this.seconds=seconds%60;
-        label2.setText(String.format(": %02d",this.seconds));
-        label1.setText(minutes);
+        if(!isCountdown)
+        {
+            this.minutes = seconds / 60;
+            this.seconds = seconds % 60;
+            label2.setText(String.format(": %02d", this.seconds));
+            label1.setText(minutes);
+        }
+        else
+        {
+            seconds = 90-seconds;
+            this.minutes = seconds / 60;
+            this.seconds = seconds % 60;
+            label2.setText(String.format(": %02d", this.seconds));
+            label1.setText(minutes);
+        }
     }
 }

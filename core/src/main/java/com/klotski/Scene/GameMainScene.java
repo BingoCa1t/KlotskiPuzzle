@@ -159,9 +159,12 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //从地图管理器获取地图
         mapData = gameMain.getMapDataManager().getMapDataList().get(mapID);
         //如果处于游戏中，则使cbc加载地图及存档（存档从存档管理器获得），并通知服务器开始游戏
+        if(mapData.getMapType()==0) isTimeAttack=false;
+        if(mapData.getMapType()==1) isTimeAttack=true;
         if (!isWatch)
         {
             cbc.load(mapData);
+
             if(!gameMain.getUserManager().getActiveUser().isGuest())
             {
                 gameMain.getNetManager().sendMessage(MessageCode.BeginGame, gameMain.getUserManager().getActiveUser().getEmail());
@@ -204,7 +207,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //计时器（时间交由cbc管理，计时器每秒同步时长）
         //可以改成记录开始和结束的UTC时间，不过会比较麻烦
-        tw = new TimerW();
+        tw = new TimerW(isTimeAttack,90);
         tw.setPosition(850, 750);
         tw.setTime(cbc.getSecond());
         if(cbc.getSecond()<=0)
@@ -220,8 +223,13 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             {
                 cbc.addSecond();
                 tw.setTime(cbc.getSecond());
+                if(cbc.getSecond()<=0)
+                {
+                    tw.setTime(0);
+                }
+                if(isTimeAttack&&cbc.getSecond()>=90) settleFail();
             }
-        }, 1f, 1f);
+        }, 0f, 1f);
 
         //重置按钮 Restart Button
         Button.ButtonStyle rbs = new Button.ButtonStyle();
@@ -237,7 +245,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             {
                 cbc.restart();
                 stepLabel.setText("00");
-                tw.reset();
+                tw.setTime(cbc.getSecond());
                 starProgress.setStep(cbc.getSteps());
             }
         });
@@ -265,7 +273,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         Button hintButton = new Button(hbs);
         hintButton.setPosition(830, 350);
         hintButton.setSize(200, 100);
-        hintButton.addListener(new ClickListener()
+       /* hintButton.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
@@ -277,6 +285,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 }
             }
         });
+
+        */
 
         //上移按钮 Up Button
         Button.ButtonStyle upbs = new Button.ButtonStyle();
@@ -756,7 +766,10 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         }
         stage.addActor(sg);
     }
+public void settleFail()
+{
 
+}
     public boolean getIsWatch()
     {
         return isWatch;
@@ -782,5 +795,9 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     {
         gameMain.getMusicManager().play(MusicManager.MusicAudio.MainBGM,true);
         super.dispose();
+    }
+    public void setTimeAttack(boolean isTimeAttack)
+    {
+        this.isTimeAttack=isTimeAttack;
     }
 }

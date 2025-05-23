@@ -79,6 +79,14 @@ public class ChessBoardControl
         this.jsonManager=new JsonManager();
         this.dataTable=dataTable;
     }
+    public ChessBoardControl(Main gameMain, Table dataTable,int countdownSecond)
+    {
+        this.archiveManager = gameMain.getUserManager().getArchiveManager();
+        this.gameMain = gameMain;
+        this.jsonManager=new JsonManager();
+        this.dataTable=dataTable;
+        this.second=countdownSecond;
+    }
     //获取棋盘
     public ChessBoard getChessBoard()
     {
