@@ -1,25 +1,19 @@
 package com.klotski.Scene;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
 import com.klotski.archive.ArchiveManager;
-import com.klotski.logic.LevelInfo;
-import com.klotski.polygon.LevelActor;
+import com.klotski.assets.ImageAssets;
 import com.klotski.polygon.LevelGroup;
 import com.klotski.utils.ImageButtonStyleHelper;
-import com.klotski.utils.logger.Logger;
 
 import java.util.ArrayList;
 
@@ -47,11 +41,11 @@ public class LevelSelectScene extends KlotskiScene
     public void init()
     {
         // 背景图片 Background
-        background=new Image(new TextureRegion(new Texture(Gdx.files.internal("selectLevelBackground.png"))));
+        background=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.LevelSelectBackground)));
         background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // 上方文字 "Select Level"
-        selectLevelText=new Image(new TextureRegion(new Texture(Gdx.files.internal("selectLevelText.png"))));
+        selectLevelText=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.SelectLevelText)));
         selectLevelText.setScale(0.6f);
         selectLevelText.setPosition(550,900);
 
@@ -63,7 +57,7 @@ public class LevelSelectScene extends KlotskiScene
         }
 
         //返回按钮
-        ImageButton.ImageButtonStyle style = ImageButtonStyleHelper.createFromTexture(new Texture(Gdx.files.internal("gameMainButton/leftButton.png")));
+        ImageButton.ImageButtonStyle style = ImageButtonStyleHelper.createFromTexture(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackButton));
         backButton=new ImageButton(style);
         backButton.setPosition(100,950);
         backButton.setSize(100,100);

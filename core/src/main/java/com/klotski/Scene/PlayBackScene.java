@@ -80,7 +80,7 @@ public class PlayBackScene extends KlotskiScene
         cbc.loadPlayback(mapData, levelArchive);
 
         //进度条
-        StarProgress starProgress = new StarProgress(mapData.getGrades()[0], mapData.getGrades()[1], mapData.getGrades()[2]);
+        StarProgress starProgress = new StarProgress(mapData.getGrades()[0], mapData.getGrades()[1], mapData.getGrades()[2],gameMain.getAssetsPathManager());
         starProgress.setPosition(830, 650);
         starProgress.setStep(levelArchive.getMoveSteps().size());
 
@@ -126,15 +126,14 @@ public class PlayBackScene extends KlotskiScene
         mainTable.add(headerTable).fillX().row();
         mainTable.add(scrollPane).expand().fill().row();
 
-        // 全屏的背景
-        Image background =new Image(new Texture("mainBackground.jpeg"));
+        Image background =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackground));
         background.setSize(1920,1080);
         //几部分组件的半透明灰色圆角矩形背景
-        Image directionBackground =new Image(new Texture("directionBackground.png"));
+        Image directionBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainDirectionBackground));
         directionBackground.setPosition(826,48);
-        Image stepBackground =new Image(new Texture("stepBackground.png"));
+        Image stepBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainStepBackground));
         stepBackground.setPosition(826,635);
-        Image recordBackground =new Image(new Texture("recordBackground.png"));
+        Image recordBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRecordBackground));
         recordBackground.setPosition(1414,47);
         //将棋盘恢复到初始状态，同时存储步数
         while(cbc.getSteps()>0)
@@ -214,7 +213,7 @@ public class PlayBackScene extends KlotskiScene
 
         //返回按钮 Back Button
         Button.ButtonStyle backbs = new Button.ButtonStyle();
-        backbs.up = new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\backButton.png")));
+        backbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackButton));
         Button backButtonn = new Button(backbs);
         backButtonn.setPosition(50, 950);
         backButtonn.setSize(100, 100);

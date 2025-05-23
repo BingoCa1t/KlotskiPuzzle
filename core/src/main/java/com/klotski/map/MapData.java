@@ -10,21 +10,23 @@ import java.util.ArrayList;
 @JsonSerialize(using= MapDataSerializer.class)
 public class MapData
 {
+    /** 地图ID，此为唯一标识符 */
     private int mapID;
+    /** 地图类型，分为不限时和倒计时等*/
     private int mapType;
-    //关卡名字
+    /** 地图名字 */
     private String mapName;
-    //关卡得分，比如10步以内3颗星，15步以内两颗星，20步以内一颗星，则数组应为[10,15,20]
+    /** 关卡得分，比如10步以内3颗星，15步以内两颗星，20步以内一颗星，则数组应为[10,15,20] */
     private int[] grades;
-    //棋盘宽度
+    /** 棋盘宽度*/
     private int width;
-    //棋盘高度
+    /** 棋盘高度 */
     private int height;
-    //棋子
+    /** 棋子数组 */
     private ArrayList<Chess> chesses;
-    //棋盘出口
+    /** 棋盘出口 */
     private ArrayList<Pos> exit;
-    //主棋子（曹操）
+    /** 主棋子（曹操）下标 */
     private int mainIndex;
 
     public ArrayList<Chess> getChesses()
@@ -120,6 +122,11 @@ public class MapData
     {
 
     }
+
+    /**
+     * 复制mapData
+     * @param mapData 要复制的mapData
+     */
     public MapData(MapData mapData)
     {
 

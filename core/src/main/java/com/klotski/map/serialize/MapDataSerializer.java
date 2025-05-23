@@ -9,6 +9,11 @@ import com.klotski.polygon.Chess;
 
 import java.io.IOException;
 
+/**
+ * 自定义地图数据序列化器
+ *
+ * @author BingoCAT
+ */
 public class MapDataSerializer extends JsonSerializer<MapData>
 {
 

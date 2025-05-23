@@ -1,12 +1,5 @@
 package com.klotski.user;
 
-import com.klotski.archive.LevelArchive;
-import com.klotski.logic.LevelInfo;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-
 /**
  * 存储用户信息
  * @author BingoCAT

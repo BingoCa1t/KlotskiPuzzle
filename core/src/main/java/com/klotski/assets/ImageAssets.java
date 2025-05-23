@@ -5,12 +5,36 @@ package com.klotski.assets;
  */
 public enum ImageAssets
 {
-    pbBackButton("playbackScene\\pbBackButton.png"),
-    pbBackKButton("playbackScene\\pbBackKButton.png"),
-    pbNextButton("playbackScene\\pbNextButton.png"),
-    pbNextTButton("playbackScene\\pbNextTButton.png"),
-    pbPlayButton("playbackScene\\pbPlayButton.png"),
-    pbPauseButton("playbackScene\\pbPauseButton.png"),
+    ChessBoardFrame("gameMainScene\\chessBoard.png"),
+    ChessBoardBackground("gameMainScene\\chessBoardBackground.png"),
+    LevelSelectBackground("levelSelect\\levelSelectBackground.png"),
+    SelectLevelText("levelSelect\\selectLevelText.png"),
+    GameMainRestartButton("gameMainButton\\restart.png"),
+    GameMainUndoButton("gameMainButton\\undo.png"),
+    GameMainHintButton("gameMainButton\\hint.png"),
+    GameMainBackButton("gameMainButton\\backButton.png"),
+    GameMainUpButton("gameMainButton\\upButton.png"),
+    GameMainDownButton("gameMainButton\\downButton.png"),
+    GameMainLeftButton("gameMainButton\\leftButton.png"),
+    GameMainRightButton("gameMainButton\\rightButton.png"),
+    GameMainSettingButton("gameMainButton\\settingButton.png"),
+    GameMainBackground("gameMainScene\\mainBackground.jpeg"),
+    GameMainRecordBackground("gameMainScene\\recordBackground.png"),
+    GameMainStepBackground("gameMainScene\\stepBackground.png"),
+    GameMainDirectionBackground("gameMainScene\\directionBackground.png"),
+    GameMainStarProgress("gameMainScene\\starProgress.png"),
+    GameMainStepRectangle("gameMainScene\\stepRectangle.png"),
+    RegisterBackButton("registerScene/left_arrow.png"),
+    RegisterScene("registerScene/RegisterScene.png"),
+    LoginButton("registerScene/loginButton.png"),
+    StartSceneBackground("startScene\\startBackground.png"),
+    StartButton("startScene\\startButton.png"),
+    WatchButton("startScene\\watchButton.png"),
+    White("gameMainScene\\white.png"),
+    OneStar("levelSelect\\1star.png"),
+    TwoStar("levelSelect\\2star.png"),
+    ThreeStar("levelSelect\\3star.png"),
+    OneStarInGame("gameMainScene\\oneStar.png"),
     // 曹操
     cc("chess\\cc.png"),
     ccS("chess\\ccS.png"),
@@ -41,7 +65,14 @@ public enum ImageAssets
     zfH("chess\\zfH.png"),
     zfW("chess\\zfW.png"),
     zfHS("chess\\zfHS.png"),
-    zfWS("chess\\zfWS.png");
+    zfWS("chess\\zfWS.png"),
+    pbBackButton("playbackScene\\pbBackButton.png"),
+    pbBackKButton("playbackScene\\pbBackKButton.png"),
+    pbNextButton("playbackScene\\pbNextButton.png"),
+    pbNextTButton("playbackScene\\pbNextTButton.png"),
+    pbPlayButton("playbackScene\\pbPlayButton.png"),
+    pbPauseButton("playbackScene\\pbPauseButton.png"),
+    ;
     private final String alias;
 
     ImageAssets(String alias)

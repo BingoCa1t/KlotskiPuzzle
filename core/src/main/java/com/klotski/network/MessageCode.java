@@ -1,5 +1,10 @@
 package com.klotski.network;
 
+/**
+ * 网络通信代码
+ *
+ * @author BingoCAT
+ */
 public enum MessageCode
 {
     /**

@@ -11,7 +11,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-// 客户端线程类，实现 Runnable 接口
+/**
+ * 全局网络管理器，使用消息队列发送消息
+ * 并通知所有实现了NetworkMessageObserver接口的类
+ *
+ * @author BingoCAT
+ */
 public class NetManager implements Runnable
 {
     private final String serverAddress;
@@ -42,7 +47,7 @@ public class NetManager implements Runnable
         )
         {
             this.out = out;
-            System.out.println("已连接到服务器：" + serverAddress + ":" + port);
+            Logger.info("Connected to server : " + serverAddress + " : " + port);
 
             // 启动一个线程处理接收服务器消息
             Thread receiveThread = new Thread(() ->
@@ -52,7 +57,7 @@ public class NetManager implements Runnable
                     String response;
                     while ((response = in.readLine()) != null)
                     {
-                        System.out.println("服务器响应：" + response);
+                        Logger.info("Server Response : " + response);
                         try
                         {
                             MessageCode mc = MessageCode.fromCode(response.substring(0, 5));
@@ -75,7 +80,7 @@ public class NetManager implements Runnable
                     }
                 }
             });
-            //设置为守护线程
+            // 设置为守护线程
             receiveThread.setDaemon(true);
             receiveThread.start();
 
@@ -86,6 +91,7 @@ public class NetManager implements Runnable
                 {
                     String message = messageQueue.poll();
                     out.println(message);
+                    Logger.info("NetworkManager","Send Message : " + message);
                 }
                 Thread.sleep(100);
             }
