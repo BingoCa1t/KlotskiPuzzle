@@ -2,15 +2,14 @@ package com.klotski.polygon;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
-import com.klotski.logic.LevelInfo;
-import com.klotski.utils.logger.Logger;
+import com.klotski.Scene.ObstacleGameScene;
+import com.klotski.assets.ImageAssets;
 
 import java.util.ArrayList;
 
@@ -55,24 +54,24 @@ public class LevelGroup extends Group
         switch(star)
         {
             case 0:
-                starImage=new Image(new TextureRegion(new Texture("levelSelect\\1star.png")));
+                starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.OneStar));
                 starImage.setVisible(false);
                 break;
                 case 1:
-                    starImage=new Image(new TextureRegion(new Texture("levelSelect\\1star.png")));
+                    starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.OneStar));
                     s=65f;
                     starImage.setScale(0.45f);
                     break;
                     case 2:
-                        starImage=new Image(new TextureRegion(new Texture("levelSelect\\2star.png")));
+                        starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.TwoStar));
                         starImage.setScale(0.5f);
                         break;
                         case 3:
-                            starImage=new Image(new TextureRegion(new Texture("levelSelect\\3star.png")));
+                            starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.ThreeStar));
 
                             break;
                             default:
-                                starImage=new Image(new TextureRegion(new Texture("levelSelect\\1star.png")));
+                                starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.OneStar));
                                 starImage.setVisible(false);
                                 break;
 
@@ -134,7 +133,7 @@ public class LevelGroup extends Group
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,la.getMapID()));
+                gameMain.getScreenManager().setScreen(new ObstacleGameScene(gameMain));
                 currentLevel=levels.indexOf(mapID);
             }
         });
@@ -165,5 +164,10 @@ public class LevelGroup extends Group
     public void returnLevel()
     {
         gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(currentLevel)));
+    }
+
+    public void setCurrentLevel(int currentLevel)
+    {
+        this.currentLevel = currentLevel;
     }
 }

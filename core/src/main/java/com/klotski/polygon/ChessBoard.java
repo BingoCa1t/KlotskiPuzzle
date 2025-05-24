@@ -46,13 +46,6 @@ public class ChessBoard extends Group
         return virtualChess;
     }
 
-    public void init()
-    {
-        //chessBoardImagePath=new HashMap<>();
-        //chesses=new ArrayList<>();
-
-    }
-
     public ChessBoard()
     {
         super();
@@ -114,7 +107,6 @@ public class ChessBoard extends Group
         chess.setXYWithoutChangingState(p);
 
     }
-
 
     /**
      * 选中棋子的绘制动作

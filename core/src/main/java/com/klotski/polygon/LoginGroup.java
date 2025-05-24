@@ -18,8 +18,6 @@ public class LoginGroup extends Group
 {
     private TextField usernameTextField;
     private TextField passwordTextField;
-    // 文本框背景纹理
-    private Texture bgTexture;
     public static final int TEXT_FIELD_WIDTH = 450;
     public static final int TEXT_FIELD_HEIGHT = 50;
     // 文本框中的光标纹理
@@ -33,7 +31,6 @@ public class LoginGroup extends Group
         super();
         cursorImage = new Image(new Texture(Gdx.files.internal("zuhe2.png")));
         cursorImage.setPosition(-300,0);
-        bgTexture=new Texture("field.png");
         bitmapFont=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),40);
         TextField.TextFieldStyle textFieldStyle=new TextField.TextFieldStyle();
         textFieldStyle.font = bitmapFont;
@@ -55,7 +52,6 @@ public class LoginGroup extends Group
         passwordTextField.setPasswordMode(true);
         // 显示密码时用 * 号代替密码字符
         passwordTextField.setPasswordCharacter('*');
-        loginButton = new Button(new TextureRegionDrawable(bgTexture));
         addActor(cursorImage);
         addActor(usernameTextField);
         addActor(passwordTextField);

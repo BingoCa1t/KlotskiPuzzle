@@ -20,6 +20,7 @@ import com.klotski.Main;
 import com.klotski.aigo.Solver;
 import com.klotski.aigo2.Game;
 import com.klotski.archive.LevelArchive;
+import com.klotski.assets.ImageAssets;
 import com.klotski.logic.ChessBoardControl;
 import com.klotski.logic.MoveStep;
 import com.klotski.logic.Pos;
@@ -77,8 +78,6 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     private TimerW tw;
     private JsonManager jsonManager = new JsonManager();
     /** 音效 */
-    Sound selectedSound;
-    Sound moveSound;
 
     /**
      * 测试时候的默认MapData（已弃用）
@@ -152,7 +151,6 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     {
         super.init();
         gameMain.getMusicManager().play(MusicManager.MusicAudio.GameMusic,true);
-
         gameMain.getNetManager().addObserver(this);
         // 棋步记录表
         dataTable = new Table();
@@ -186,7 +184,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         cbc.getChessBoard().addListener(new MyInputListener());
 
         //星星进度条
-        starProgress = new StarProgress(mapData.getGrades()[0], mapData.getGrades()[1], mapData.getGrades()[2]);
+        starProgress = new StarProgress(mapData.getGrades()[0], mapData.getGrades()[1], mapData.getGrades()[2],gameMain.getAssetsPathManager());
         starProgress.setPosition(830, 650);
 
         //标题Label
@@ -235,8 +233,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //重置按钮 Restart Button
         Button.ButtonStyle rbs = new Button.ButtonStyle();
-        rbs.up = new TextureRegionDrawable(new TextureRegion(new Texture("restart.png")));
-        rbs.down = new TextureRegionDrawable(new TextureRegion(new Texture("restart.png")));
+        rbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRestartButton));
+        rbs.down = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRestartButton));
         Button restartButton = new Button(rbs);
         restartButton.setPosition(830, 500);
         restartButton.setSize(200, 100);
@@ -254,7 +252,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //撤销按钮 Undo Button
         Button.ButtonStyle ubs = new Button.ButtonStyle();
-        ubs.up = new TextureRegionDrawable(new TextureRegion(new Texture("undo.png")));
+        ubs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainUndoButton));
         Button undoButton = new Button(ubs);
         undoButton.setPosition(1100, 500);
         undoButton.setSize(200, 100);
@@ -271,7 +269,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //提示按钮 Hint Button
         Button.ButtonStyle hbs = new Button.ButtonStyle();
-        hbs.up = new TextureRegionDrawable(new TextureRegion(new Texture("hint.png")));
+        hbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainHintButton));
         Button hintButton = new Button(hbs);
         hintButton.setPosition(830, 350);
         hintButton.setSize(200, 100);
@@ -297,7 +295,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //上移按钮 Up Button
         Button.ButtonStyle upbs = new Button.ButtonStyle();
-        upbs.up = new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\upButton.png")));
+        upbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainUpButton));
         Button upButton = new Button(upbs);
         upButton.setPosition(1000, 200);
         upButton.setSize(120, 120);
@@ -312,7 +310,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //下移按钮 Down Button
         Button.ButtonStyle downbs = new Button.ButtonStyle();
-        downbs.up = new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\downButton.png")));
+        downbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainDownButton));
         Button downButton = new Button(downbs);
         downButton.setPosition(1000, 60);
         downButton.setSize(120, 120);
@@ -327,7 +325,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //左移按钮 Left Button
         Button.ButtonStyle leftbs = new Button.ButtonStyle();
-        leftbs.up = new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\leftButton.png")));
+        leftbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainLeftButton));
         Button leftButton = new Button(leftbs);
         leftButton.setPosition(860, 60);
         leftButton.setSize(120, 120);
@@ -342,7 +340,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //右移按钮 Right Button
         Button.ButtonStyle rightbs = new Button.ButtonStyle();
-        rightbs.up = new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\rightButton.png")));
+        rightbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRightButton));
         Button rightButton = new Button(rightbs);
         rightButton.setPosition(1140, 60);
         rightButton.setSize(120, 120);
@@ -357,7 +355,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //返回按钮 Back Button
         Button.ButtonStyle backbs = new Button.ButtonStyle();
-        backbs.up = new TextureRegionDrawable(new TextureRegion(new Texture("gameMainButton\\backButton.png")));
+        backbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackButton));
         Button backButton = new Button(backbs);
         backButton.setPosition(50, 950);
         backButton.setSize(100, 100);
@@ -415,14 +413,14 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         mainTable.add(scrollPane).expand().fill().row();
 
         // 全屏的背景
-        Image background =new Image(new Texture("mainBackground.jpeg"));
+        Image background =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackground));
         background.setSize(1920,1080);
         //几部分组件的半透明灰色圆角矩形背景
-        Image directionBackground =new Image(new Texture("directionBackground.png"));
+        Image directionBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainDirectionBackground));
         directionBackground.setPosition(826,48);
-        Image stepBackground =new Image(new Texture("stepBackground.png"));
+        Image stepBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainStepBackground));
         stepBackground.setPosition(826,635);
-        Image recordBackground =new Image(new Texture("recordBackground.png"));
+        Image recordBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRecordBackground));
         recordBackground.setPosition(1414,47);
 
         //将所有演员添加到舞台
@@ -574,8 +572,10 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 LevelArchive l = jsonManager.parseJsonToObject(str[1], LevelArchive.class);
                 cbc.setSecond(l.getSeconds());
                 if (moveStep == null) return;
+
                 //如果是正常移动
-                if(Objects.equals(str[3], "0"))
+
+                if(str.length<4||Objects.equals(str[3], "0"))
                 {
                     if (!cbc.move(cbc.getChessByPosition(moveStep.origin), moveStep.destination))
                     {

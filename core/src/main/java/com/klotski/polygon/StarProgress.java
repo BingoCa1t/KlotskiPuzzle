@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.klotski.assets.AssetsPathManager;
+import com.klotski.assets.ImageAssets;
 import com.klotski.utils.SmartBitmapFont;
 
 public class StarProgress extends Group
@@ -31,17 +33,17 @@ public class StarProgress extends Group
     {
         recActor.setSteps(steps);
     }
-    public StarProgress(int n1, int n2, int n3)
+    public StarProgress(int n1, int n2, int n3, AssetsPathManager assetsPathManager)
     {
         super();
         shapeRenderer = new ShapeRenderer();
         recActor = new RoundRecActor(n1, n2, n3);
-        rec = new Image(new TextureRegion(new Texture("stepRectangle.png")));
+        rec = new Image(assetsPathManager.get(ImageAssets.GameMainStepRectangle));
 
         //三颗星星 Star Image
-        star1 = new Image(new TextureRegion(new Texture("OneStar.png")));
-        star2 = new Image(new TextureRegion(new Texture("OneStar.png")));
-        star3 = new Image(new TextureRegion(new Texture("OneStar.png")));
+        star1 = new Image(assetsPathManager.get(ImageAssets.OneStarInGame));
+        star2 = new Image(assetsPathManager.get(ImageAssets.OneStarInGame));
+        star3 = new Image(assetsPathManager.get(ImageAssets.OneStarInGame));
         star1.setPosition(80, 5);
         star2.setPosition(225, 5);
         star3.setPosition(370, 5);

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.klotski.Main;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.archive.LevelArchive;
+import com.klotski.assets.ImageAssets;
 import com.klotski.music.MusicManager;
 import com.klotski.network.MessageCode;
 import com.klotski.network.NetworkMessageObserver;
@@ -76,7 +77,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         gameMain.getMusicManager().play(MusicManager.MusicAudio.MainBGM,true);
         gameMain.getNetManager().addObserver(this);
         //背景图片 Background Image
-        Image background = new Image(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("startScene\\startBackGround.png")))));
+        Image background = new Image(gameMain.getAssetsPathManager().get(ImageAssets.StartSceneBackground));
         background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         background.setPosition(0, 0);
 
@@ -89,7 +90,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         //玩法组
 
         Button.ButtonStyle sStyle = new Button.ButtonStyle();
-        sStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("startScene\\startButton.png"))));
+        sStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.StartButton));
         Button startButton = new Button(sStyle);
         startButton.setPosition(1000, 50);
         startButton.addListener(new ClickListener()
@@ -107,7 +108,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
             }
         });
         Button.ButtonStyle watchStyle = new Button.ButtonStyle();
-        watchStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("startScene\\watchButton.png"))));
+        watchStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.WatchButton));
         Button watchButton = new Button(watchStyle);
         watchButton.setPosition(1350, 50);
         watchButton.addListener(new ClickListener()
@@ -120,37 +121,10 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         });
         //用户头像组
 
-        upTexture = new Texture(Gdx.files.internal("login.png"));
-        downTexture = new Texture(Gdx.files.internal("login.png"));
-        Button.ButtonStyle style = new Button.ButtonStyle();
-
-        // 设置 style 的 弹起 和 按下 状态的纹理区域
-        style.up = new TextureRegionDrawable(new TextureRegion(upTexture));
-        style.down = new TextureRegionDrawable(new TextureRegion(downTexture));
-
-
-        tempentry = new Button(style);
-        tempentry.setPosition(500, 500);
-        tempentry.addListener(new ClickListener()
-        {
-            @Override
-            public void clicked(InputEvent event, float x, float y)
-            {
-                ArrayList<Integer> tem = new ArrayList<>();
-                tem.add(1);
-                tem.add(2);
-                tem.add(3);
-                tem.add(4);
-                tem.add(5);
-                screenManager.setScreen(new LevelSelectScene(gameMain, tem));
-            }
-        });
-
         stage.addActor(background);
         stage.addActor(userInfoGroup);
         stage.addActor(startButton);
         stage.addActor(watchButton);
-        //stage.addActor(tempentry);
 
     }
 
@@ -175,7 +149,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
     @Override
     public void render(float delta)
     {
-        //ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         super.render(delta);
     }
     //此为临时方法

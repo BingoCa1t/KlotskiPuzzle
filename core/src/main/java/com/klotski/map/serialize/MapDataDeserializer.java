@@ -12,8 +12,12 @@ import com.klotski.polygon.Chess;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * 自定义地图数据反序列化器
+ *
+ * @author BingoCAT
+ */
 public class MapDataDeserializer extends JsonDeserializer<MapData>
 {
     @Override

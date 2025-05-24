@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.klotski.Main;
 import com.klotski.archive.LevelArchive;
+import com.klotski.assets.ImageAssets;
 import com.klotski.network.MessageCode;
 import com.klotski.network.NetworkMessageObserver;
 import com.klotski.utils.SmartBitmapFont;
@@ -165,7 +166,7 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
             }
         }, 0, 3);
 
-        ImageButton backButton=new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("registerScene/left_arrow.png"))));
+        ImageButton backButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.RegisterBackButton)));
         backButton.setPosition(100,900);
         backButton.addListener(new ClickListener(){
             @Override
@@ -212,7 +213,7 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
 
         // 添加分隔线到表头
         Table separator = new Table();
-        separator.setBackground(new TextureRegionDrawable(new Texture("startScene/startBackGround.png")));
+        separator.setBackground(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.White)));
         headerTable.add(separator).height(1).colspan(3).fillX().padBottom(5);
         headerTable.row();
 

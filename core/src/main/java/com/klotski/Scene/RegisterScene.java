@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
+import com.klotski.assets.ImageAssets;
 import com.klotski.network.MessageCode;
 import com.klotski.network.NetworkMessageObserver;
 import com.klotski.utils.ImageButtonStyleHelper;
@@ -89,7 +90,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
         passwordTextField.setPosition(810, 510);
         verifyCodeField.setPosition(810, 370);
         // 背景图片
-        registImage = new Image(new TextureRegion(new Texture("registerScene\\RegisterScene.png")));
+        registImage = new Image(gameMain.getAssetsPathManager().get(ImageAssets.RegisterScene));
         registImage.setPosition(400, 200);
         // 两个按钮的初始化
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
@@ -142,7 +143,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
             }
         });
 
-        backButton=new ImageButton(new TextureRegionDrawable(new Texture("registerScene/left_arrow.png")));
+        backButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.RegisterBackButton)));
         backButton.setPosition(100,900);
         backButton.addListener(new ClickListener(){
             @Override

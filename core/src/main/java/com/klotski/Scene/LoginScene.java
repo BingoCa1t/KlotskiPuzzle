@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
+import com.klotski.assets.ImageAssets;
 import com.klotski.polygon.LoginGroup;
 import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
@@ -66,7 +67,7 @@ public class LoginScene extends KlotskiScene
     public void init()
     {
         super.init();
-        backButton=new ImageButton(new TextureRegionDrawable(new Texture("registerScene/left_arrow.png")));
+        backButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.RegisterBackButton)));
         backButton.setPosition(100,900);
         backButton.addListener(new ClickListener(){
             @Override
@@ -85,8 +86,8 @@ public class LoginScene extends KlotskiScene
         infoLabel.setPosition(880,900);
 
         Button.ButtonStyle buttonStyle=new Button.ButtonStyle();
-        buttonStyle.up=new TextureRegionDrawable(new Texture("login.png"));
-        buttonStyle.down=new TextureRegionDrawable(new Texture("login.png"));
+        buttonStyle.up=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.LoginButton));
+        buttonStyle.down=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.LoginButton));
 
         Button loginButton=new Button(buttonStyle);
         loginButton.setPosition(850,300);

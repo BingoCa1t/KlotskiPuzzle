@@ -55,6 +55,8 @@ public class Chess extends Actor
     //棋子是否被选中
     private boolean isSelected = false;
 
+    private boolean isMovable = true;
+
 
     public void setSelected(boolean isSelected)
     {
@@ -198,12 +200,14 @@ public class Chess extends Actor
         this.disSelectedImage=new TextureRegion(apm.get(ImageAssets.valueOf(s1+s2)));
         this.selectedImage=new TextureRegion(apm.get(ImageAssets.valueOf(s1+s2+s3)));
         this.region=this.disSelectedImage;
+        if(this.chessName.equals("fixed")) this.setMovable(false);
         setOrigin(this.getWidth()/2, this.getHeight()/2);
         //将图片素材按照棋子大小缩放
         setScale((squareHW * chessWidth-5) / region.getRegionWidth(), (squareHW * chessHeight-5) / this.region.getRegionHeight());
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
     }
+
     /**
      * 创建chess的副本
      *
@@ -216,6 +220,7 @@ public class Chess extends Actor
         this.chessName=chess.getChessName();
         this.chessWidth=chess.getChessWidth();
         this.chessHeight=chess.getChessHeight();
+        this.isMovable=chess.isMovable();
     }
 
     /**
@@ -360,5 +365,15 @@ public class Chess extends Actor
     public void setSelectedImage(TextureRegion selectedImage)
     {
         this.selectedImage = selectedImage;
+    }
+
+    public boolean isMovable()
+    {
+        return isMovable;
+    }
+
+    public void setMovable(boolean movable)
+    {
+        isMovable = movable;
     }
 }

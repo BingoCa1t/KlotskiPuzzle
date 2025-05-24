@@ -2,6 +2,11 @@ package com.klotski.logic;
 
 import java.util.Objects;
 
+/**
+ * 坐标类，记录坐标
+ *
+ * @author BingoCAT
+ */
 public class Pos
 {
     private int x;
@@ -49,14 +54,15 @@ public class Pos
         this.y = y;
         this.z = 0;
     }
-    //序列化、反序列化需要
+    /**
+     * 无参构造函数，序列化、反序列化需要
+     */
     public Pos()
     {
         this.x = 0;
         this.y = 0;
         this.z = 0;
     }
-
 
     /**
      * 坐标加法
@@ -84,18 +90,19 @@ public class Pos
      * @return 是否相等
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         // 如果 obj 类型确实为 Pos 类
-        if (obj instanceof Pos) {
+        if (obj instanceof Pos anotherPos)
+        {
             // 将类型对象转换为 Pos 类
-            Pos anotherPos = (Pos) obj;
-
             if (x != anotherPos.x) return false;
             if (y != anotherPos.y) return false;
             if (z != anotherPos.z) return false;
             return true;
-        } else {
-            // 如果类型不是 Pos 类，这两个对象肯定不一样
+        }
+        else
+        {
             return false;
         }
     }

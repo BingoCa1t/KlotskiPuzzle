@@ -94,7 +94,7 @@ public class WelcomeScene extends KlotskiScene
         player.setLooping(true);
         try
         {
-            player.load(Gdx.files.getFileHandle("D:\\FFOutput\\1.webm", Files.FileType.Absolute));
+            player.load(Gdx.files.internal("background.webm"));
             player.setVolume(0);
             VideoActor v=new VideoActor(player);
             v.setSize(1920,1080);

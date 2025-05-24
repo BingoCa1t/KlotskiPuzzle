@@ -21,6 +21,8 @@ import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.archive.LevelArchive;
+import com.klotski.assets.AssetsPathManager;
+import com.klotski.assets.ImageAssets;
 import com.klotski.map.MapData;
 import com.klotski.network.MessageCode;
 import com.klotski.polygon.Chess;
@@ -38,37 +40,45 @@ import java.util.*;
  */
 public class ChessBoardControl
 {
-
+    /** 棋步记录表的Label数组 */
+    ArrayList<Label> dataLabels = new ArrayList<>();
+    /** 传入的前端棋步记录表，如果不传入则弃用*/
     private Table dataTable;
-    private ArrayList<String> stepsData= new ArrayList<>();
+    /** JSON处理器 */
     private JsonManager jsonManager;
-    private boolean isLoadArchive=true;
-    private boolean isWatch=false;
+    /**用户是否选择载入存档 */
+    private boolean isLoadArchive = true;
+    /** 是否处于观战模式 */
+    private boolean isWatch = false;
+    /** 游戏主句柄*/
     private Main gameMain;
+    /** 存档管理器 */
     private ArchiveManager archiveManager;
-    private LevelArchive levelArchive=new LevelArchive();
+    /** 当前关卡的存档 */
+    private LevelArchive levelArchive = new LevelArchive();
+    /** 步数记录栈 */
     private Stack<MoveStep> moveSteps = new Stack<>();
-    private int second=0;
+    /** 棋局进行时间 */
+    private int second = 0;
+    /** 关卡地图数据 */
     private MapData mapData;
-    /**前端*/
+    /** 前端 */
     private ChessBoard chessBoard;
-    /**后端*/
+    /** 后端 */
     private ChessBoardArray chessBoardArray;
-    //当前棋盘上选中的棋子
+    /** 当前棋盘上选中的棋子 */
     private Chess selectingChess;
-    private Chess mainChess;
+    /** 棋盘出口 */
     private ArrayList<Pos> exits;
-    private boolean isPlayback=false;
-    public ArrayList<String> getStepsData()
-    {
-        return stepsData;
-    }
+    /** 是否处于回放状态 */
+    private boolean isPlayback = false;
 
+    @Deprecated
     public ChessBoardControl(Main gameMain)
     {
         this.archiveManager = gameMain.getUserManager().getArchiveManager();
         this.gameMain = gameMain;
-        this.jsonManager=new JsonManager();
+        this.jsonManager = new JsonManager();
         dataTable = new Table();
     }
 
@@ -76,24 +86,17 @@ public class ChessBoardControl
     {
         this.archiveManager = gameMain.getUserManager().getArchiveManager();
         this.gameMain = gameMain;
-        this.jsonManager=new JsonManager();
-        this.dataTable=dataTable;
+        this.jsonManager = new JsonManager();
+        this.dataTable = dataTable;
     }
-    public ChessBoardControl(Main gameMain, Table dataTable,int countdownSecond)
-    {
-        this.archiveManager = gameMain.getUserManager().getArchiveManager();
-        this.gameMain = gameMain;
-        this.jsonManager=new JsonManager();
-        this.dataTable=dataTable;
-        this.second=countdownSecond;
-    }
-    //获取棋盘
+
+    /** 获取棋盘 */
     public ChessBoard getChessBoard()
     {
         return chessBoard;
     }
 
-    //获取选中的棋子
+    /** 获取选中的棋子 */
     public Chess getSelectingChess()
     {
         return selectingChess;
@@ -156,111 +159,124 @@ public class ChessBoardControl
         chessBoard.addChess(c8);
         chessBoard.addChess(c9);
         chessBoard.addChess(c10);
-        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), 4, 5,null,0);
+        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), 4, 5, null, 0);
         chessBoard.setPosition(100, 100);
     }
-    public void loadPlayback(MapData mapData,LevelArchive levelArchive)
+
+    /**
+     * 在回放界面载入棋盘
+     *
+     * @param mapData      地图数据
+     * @param levelArchive 存档数据
+     */
+    public void loadPlayback(MapData mapData, LevelArchive levelArchive)
     {
-        isPlayback=true;
-        this.mapData=new MapData(mapData);
-        this.levelArchive=new LevelArchive(levelArchive);
-        this.second=levelArchive.getSeconds();
-        chessBoard=new ChessBoard();
+        isPlayback = true;
+        this.mapData = new MapData(mapData);
+        this.levelArchive = new LevelArchive(levelArchive);
+        this.second = levelArchive.getSeconds();
+        chessBoard = new ChessBoard();
         Image background;
         Image chessBoardImage;
-        chessBoardImage = new Image(new Sprite(new Texture("chessBoard.png")));
+        chessBoardImage = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardFrame));
         chessBoardImage.setPosition(-16, -16);
-        background = new Image(new Sprite(new Texture("background.png")));
+        background = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardBackground));
         background.setPosition(-10, -10);
-        background.setHeight(5 * Chess.squareHW + 20);
-        background.setWidth(4 * Chess.squareHW + 20);
+        background.setHeight(mapData.getHeight() * Chess.squareHW + 20);
+        background.setWidth(mapData.getWidth() * Chess.squareHW + 20);
         chessBoard.addActor(background);
         chessBoard.addActor(chessBoardImage);
-        for(Chess c:this.mapData.getChesses())
+        for (Chess c : this.mapData.getChesses())
         {
             c.init(gameMain.getAssetsPathManager());
         }
         chessBoard.addChessArray(this.mapData.getChesses());
         chessBoard.setPosition(100, 100);
-        exits=mapData.getExit();
-        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(),exits, mapData.getMainIndex());
+        exits = mapData.getExit();
+        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(), exits, mapData.getMainIndex());
 
-            //存档里的移动记录栈
-            Stack<MoveStep> s = levelArchive.getMoveSteps();
-            //栈后进先出，所以使用新栈，将顺序反转后再弹出
-            Stack<MoveStep> s2 = new Stack<>();
-            while (!s.isEmpty())
+        //存档里的移动记录栈
+        Stack<MoveStep> s = levelArchive.getMoveSteps();
+        //栈后进先出，所以使用新栈，将顺序反转后再弹出
+        Stack<MoveStep> s2 = new Stack<>();
+        while (!s.isEmpty())
+        {
+            s2.push(s.pop()); // 将栈中的元素弹出并添加到新栈中
+        }
+        while (!s2.isEmpty())
+        {
+            MoveStep moveStep = s2.pop();
+            //移动棋子
+            if (getChessByPosition(moveStep.origin) == null)
             {
-                s2.push(s.pop()); // 将栈中的元素弹出并添加到新栈中
+                levelArchive.setMoveSteps(moveSteps);
             }
-            while (!s2.isEmpty())
-            {
-                MoveStep moveStep = s2.pop();
-                //移动棋子
-                if(getChessByPosition(moveStep.origin)==null)
-                {
-                    levelArchive.setMoveSteps(moveSteps);
-                }
-                moveInArchive(getChessByPosition(moveStep.origin),moveStep.destination);
-                //不要重复添加
-                //moveSteps.push(moveStep);
-            }
-            levelArchive.setMoveSteps(moveSteps);
+            moveInArchive(getChessByPosition(moveStep.origin), moveStep.destination);
+            //不要重复添加
+            //moveSteps.push(moveStep);
+        }
+        levelArchive.setMoveSteps(moveSteps);
     }
+
     /**
      * 加载棋盘（更新了加载存档）
      * 此方法从存档管理器里加载存档
+     *
      * @param mapData 地图数据
      */
     public void load(MapData mapData)
     {
-        load(mapData,archiveManager.getActiveArchive().get(mapData.getMapID()),false);
+        load(mapData, archiveManager.getActiveArchive().get(mapData.getMapID()), false);
         //loadDefault();
     }
-    public void load(MapData mapData,LevelArchive levelArchive,boolean isWatch)
+
+    /**
+     * 在观战时载入存档
+     *
+     * @param mapData
+     * @param levelArchive
+     * @param isWatch
+     */
+    public void load(MapData mapData, LevelArchive levelArchive, boolean isWatch)
     {
-
-
-        this.isWatch=isWatch;
+        this.isWatch = isWatch;
         //创建MapData的副本，不要更改MapDataManager里的数据
-        this.mapData=new MapData(mapData);
-        this.levelArchive=levelArchive;
-        this.second=levelArchive.getSeconds();
+        this.mapData = new MapData(mapData);
+        this.levelArchive = levelArchive;
+        this.second = levelArchive.getSeconds();
         //后补（算了其实不需要）
         /*if(levelArchive==null)
         {
             levelArchive=new LevelArchive();
         }
          */
-
-
         //archiveManager.getActiveArchive().replace(mapData.getMapID(),levelArchive);
-        chessBoard=new ChessBoard();
+        chessBoard = new ChessBoard();
         Image background;
         Image chessBoardImage;
-        chessBoardImage = new Image(new Sprite(new Texture("chessBoard.png")));
+        chessBoardImage = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardFrame));
         chessBoardImage.setPosition(-16, -16);
-        background = new Image(new Sprite(new Texture("background.png")));
+        background = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardBackground));
         background.setPosition(-10, -10);
-        background.setHeight(5 * Chess.squareHW + 20);
-        background.setWidth(4 * Chess.squareHW + 20);
+        background.setHeight(mapData.getHeight() * Chess.squareHW + 20);
+        background.setWidth(mapData.getWidth() * Chess.squareHW + 20);
         chessBoard.addActor(background);
         chessBoard.addActor(chessBoardImage);
-        for(Chess c:this.mapData.getChesses())
+        for (Chess c : this.mapData.getChesses())
         {
             c.init(gameMain.getAssetsPathManager());
         }
         chessBoard.addChessArray(this.mapData.getChesses());
         chessBoard.setPosition(100, 100);
-        exits=mapData.getExit();
-        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(),exits, mapData.getMainIndex());
+        exits = mapData.getExit();
+        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(), exits, mapData.getMainIndex());
         //如果存档是null或empty，则将存档的moveSteps设置为当前的moveSteps
-        if(levelArchive.getMoveSteps()==null||levelArchive.getMoveSteps().isEmpty()||levelArchive.getLevelStatus()==LevelStatus.Succeed)
+        if (levelArchive.getMoveSteps() == null || levelArchive.getMoveSteps().isEmpty() || levelArchive.getLevelStatus() == LevelStatus.Succeed)
         {
             levelArchive.setMoveSteps(moveSteps);
         }
         //如果存在存档，且用户选择载入存档<br>（逻辑后补）</br>，则载入存档
-        else if(this.isWatch||isLoadArchive)
+        else if (this.isWatch || isLoadArchive)
         {
             try
             {
@@ -285,74 +301,88 @@ public class ChessBoardControl
                     //moveSteps.push(moveStep);
                 }
                 levelArchive.setMoveSteps(moveSteps);
-            }
-            catch(Exception e)
+            } catch (Exception e)
             {
-                Logger.warning("Chess archive load error: ",e.getMessage()+", will not load archive");
+                Logger.warning("Chess archive load error: ", e.getMessage() + ", will not load archive");
                 moveSteps.clear();
-                chessBoard=new ChessBoard();
+                chessBoard = new ChessBoard();
                 Image background2;
                 Image chessBoardImage2;
-                chessBoardImage2 = new Image(new Sprite(new Texture("chessBoard.png")));
+                chessBoardImage2 = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardFrame));
                 chessBoardImage2.setPosition(-16, -16);
-                background2 = new Image(new Sprite(new Texture("background.png")));
+                background2 = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardBackground));
                 background2.setPosition(-10, -10);
                 background2.setHeight(5 * Chess.squareHW + 20);
                 background2.setWidth(4 * Chess.squareHW + 20);
                 chessBoard.addActor(background2);
                 chessBoard.addActor(chessBoardImage2);
-                for(Chess c:this.mapData.getChesses())
+                for (Chess c : this.mapData.getChesses())
                 {
                     c.init(gameMain.getAssetsPathManager());
                 }
                 chessBoard.addChessArray(this.mapData.getChesses());
                 chessBoard.setPosition(100, 100);
-                exits=mapData.getExit();
-                chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(),exits, mapData.getMainIndex());
+                exits = mapData.getExit();
+                chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(), exits, mapData.getMainIndex());
                 levelArchive.setMoveSteps(moveSteps);
             }
         }
-        if(!isWatch)
+        if (!isWatch)
         {
-            if(!gameMain.getUserManager().getActiveUser().isGuest())
+            if (!gameMain.getUserManager().getActiveUser().isGuest())
             {
                 gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch, gameMain.getUserManager().getActiveUser().getEmail(), jsonManager.getJsonString(levelArchive), moveSteps.isEmpty() ? "0" : jsonManager.getJsonString(moveSteps.peek()));
             }
         }
 
     }
-    public String getStepsString(Pos delta,Chess chess)
+
+    /**
+     * 获得呈现在棋步记录表里的字符串
+     *
+     * @param delta 移动的向量
+     * @param chess 移动的棋子
+     * @return 返回的字符串
+     */
+    public String getStepsString(Pos delta, Chess chess)
     {
-        String direction="";
-        int num=0;
-        if(delta.getX()==0)
+        String direction = "";
+        int num = 0;
+        if (delta.getX() == 0)
         {
-            if(delta.getY()>0)
+            if (delta.getY() > 0)
             {
-                direction="上";
+                direction = "上";
+            } else
+            {
+                direction = "下";
             }
-            else{
-                direction="下";
-            }
-            num=Math.abs(delta.getY());
-        }
-        else
+            num = Math.abs(delta.getY());
+        } else
         {
-            if(delta.getX()>0)
+            if (delta.getX() > 0)
             {
-                direction="右";
+                direction = "右";
+            } else
+            {
+                direction = "左";
             }
-            else{
-                direction="左";
-            }
-            num=Math.abs(delta.getX());
+            num = Math.abs(delta.getX());
         }
-        return (String.format("棋子 [%s] 向 %s 移动了 %s 格",chess.getChessName(),direction,num));
+        return (String.format("棋子 [%s] 向 %s 移动了 %s 格", chess.getChessName(), direction, num));
     }
+
+    /**
+     * 移动棋子
+     *
+     * @param moveStep 棋步记录
+     * @return 移动是否成功
+     */
     public boolean move(MoveStep moveStep)
     {
-        return move(getChessByPosition(moveStep.origin),moveStep.destination);
+        return move(getChessByPosition(moveStep.origin), moveStep.destination);
     }
+
     /**
      * 移动棋子
      *
@@ -361,49 +391,57 @@ public class ChessBoardControl
      */
     public boolean move(Chess chess, Pos p)
     {
-        return move(chess,p,false);
+        return move(chess, p, false);
     }
-    public boolean move(Chess chess,Pos p,boolean isBack)
+
+    /**
+     * 移动棋子
+     *
+     * @param chess  要移动的棋子
+     * @param p      目标坐标
+     * @param isBack 是否是悔棋（差别在于向服务器发送的内容）
+     * @return 移动是否成功
+     */
+    public boolean move(Chess chess, Pos p, boolean isBack)
     {
-        Pos pp=new Pos(p.getX(),p.getY());
-        if(chess==null)
+        Pos pp = new Pos(p.getX(), p.getY());
+        if (chess == null)
         {
             return false;
         }
         if (chessBoardArray.isChessCanMove(chess, pp))
         {
-            if(!isBack)
+            if (!isBack)
             {
                 moveSteps.push(new MoveStep(chess.getPosition(), pp));
             }
             //stepsData.add(getStepsString(pp,chess));
-            BitmapFont font=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),30);
-            Label.LabelStyle ls=new Label.LabelStyle();
+            BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 30);
+            Label.LabelStyle ls = new Label.LabelStyle();
             ls.font = font;
             ls.fontColor = Color.WHITE;
-            Label l=new Label(getStepsString(pp.sub(chess.getPosition()),chess),ls);
+            Label l = new Label(getStepsString(pp.sub(chess.getPosition()), chess), ls);
             dataTable.add(l).width(300).pad(5);
             dataLabels.add(l);
             dataTable.row();
             levelArchive.setLevelStatus(LevelStatus.InProgress);
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             levelArchive.setSeconds(second);
-            if(!isWatch&&!isPlayback)
+            if (!isWatch && !isPlayback &&!gameMain.getUserManager().getActiveUser().isGuest())
             {
                 //存档
                 archiveManager.saveByNetwork();
                 //所有客户端一直向服务器发送LevelArchive和最近一次移动：0015|email|{LevelArchive}|{MoveStep}
-                gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch,gameMain.getUserManager().getActiveUser().getEmail(),jsonManager.getJsonString(levelArchive),moveSteps.isEmpty()?"0":jsonManager.getJsonString(moveSteps.peek()),isBack?"1":"0");
-            }
-            else
+                gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch, gameMain.getUserManager().getActiveUser().getEmail(), jsonManager.getJsonString(levelArchive), moveSteps.isEmpty() ? "0" : jsonManager.getJsonString(moveSteps.peek()), isBack ? "1" : "0");
+            } else
             {
 
             }
             chessBoard.move(chess, pp);
 
-            if(!isPlayback&&isWin())
+            if (!isPlayback && isWin())
             {
-                chess.clearActions();
+
                 chessBoard.setTouchable(Touchable.disabled);
                 Logger.debug("Win");
                 int steps = moveSteps.size();
@@ -412,7 +450,7 @@ public class ChessBoardControl
                 else if (steps <= mapData.getGrades()[1]) star = 2;
                 else if (steps <= mapData.getGrades()[2]) star = 1;
                 else star = 0;
-                if(!isWatch)
+                if (!isWatch)
                 {
                     levelArchive.setLevelStatus(LevelStatus.Succeed);
                     //levelArchive.setMoveSteps(levelArchive.getMoveSteps().size() < steps ? levelArchive.getMoveSteps() : moveSteps);
@@ -421,68 +459,86 @@ public class ChessBoardControl
                     archiveManager.saveByNetwork();
                 }
 
-                if(gameMain.getScreenManager().getCurrentScreen() instanceof GameMainScene gms)
+                if (gameMain.getScreenManager().getCurrentScreen() instanceof GameMainScene gms)
                 {
-                    MoveToAction action = Actions.moveTo((p.getX()) * Chess.squareHW, (p.getY()-2) * Chess.squareHW, 1.3f, Interpolation.smoother);
-                    AlphaAction a= Actions.fadeOut(1.3f, Interpolation.smoother);
-                    chess.addAction(Actions.parallel(action, a));
+                    Timer.schedule(new Timer.Task()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            MoveToAction action = Actions.moveTo((p.getX()) * Chess.squareHW, (p.getY() - 2) * Chess.squareHW, 1.3f, Interpolation.smoother);
+                            AlphaAction a = Actions.fadeOut(0.8f, Interpolation.smoother);
+                            chess.addAction(Actions.parallel(action, a));
+                        }
+                    },0.7f);
+
                     final int finalStar = star;
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
                         public void run()
                         {
-                            gms.settle(finalStar,second,moveSteps.size());
+                            gms.settle(finalStar, second, moveSteps.size());
 
                         }
-                    },1.3f);
+                    }, 1.5f);
                 }
             }
             return true;
-        }
-        else
+        } else
         {
             Logger.debug(chess.toString() + " Illegal Movement" + pp.toString());
             return false;
         }
     }
-    ArrayList<Label> dataLabels=new ArrayList<>();
+
+    /**
+     * 读取存档时的移动棋子
+     *
+     * @param chess 要移动的棋子
+     * @param p     目标位置
+     */
     public void moveInArchive(Chess chess, Pos p)
     {
-        Pos pp=new Pos(p.getX(),p.getY());
+        Pos pp = new Pos(p.getX(), p.getY());
 
         if (chessBoardArray.isChessCanMove(chess, pp))
         {
             moveSteps.push(new MoveStep(chess.getPosition(), pp));
             //stepsData.add(getStepsString(pp.sub(chess.getPosition()),chess));
-            BitmapFont font=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),30);
-            Label.LabelStyle ls=new Label.LabelStyle();
+            BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 30);
+            Label.LabelStyle ls = new Label.LabelStyle();
             ls.font = font;
             ls.fontColor = Color.WHITE;
-            Label l=new Label(getStepsString(pp.sub(chess.getPosition()),chess),ls);
+            Label l = new Label(getStepsString(pp.sub(chess.getPosition()), chess), ls);
             dataTable.add(l).width(300).pad(5);
             dataLabels.add(l);
             dataTable.row();
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             chessBoard.move(chess, pp);
-        }
-        else
+        } else
         {
             Logger.debug(chess.toString() + " Illegal Movement" + pp.toString());
         }
     }
+
+    /**
+     * 刷新dataTable里面的内容
+     */
     public void refreshDataTable()
     {
         dataTable.clearChildren(true);
-        for(Label l:dataLabels)
+        for (Label l : dataLabels)
         {
             dataTable.add(l).width(300).pad(5);
             dataTable.row();
         }
 
     }
+
     /**
      * 返回步数
+     *
      * @return 返回步数记录栈的长度
      */
     public int getSteps()
@@ -492,6 +548,7 @@ public class ChessBoardControl
 
     /**
      * 回退，弹出移动记录栈最顶层的元素并反向移动
+     *
      * @return 被弹出的元素
      */
     public MoveStep moveBack()
@@ -499,7 +556,7 @@ public class ChessBoardControl
         if (!moveSteps.isEmpty())
         {
             MoveStep ms = moveSteps.pop();
-            move(getChessByPosition(ms.destination), ms.origin,true);
+            move(getChessByPosition(ms.destination), ms.origin, true);
             dataLabels.removeLast();
             dataLabels.removeLast();
             refreshDataTable();
@@ -510,7 +567,8 @@ public class ChessBoardControl
 
     /**
      * 获取指定坐标的棋子（判断点击某个棋子用）
-     *包括棋子覆盖的位置
+     * 包括棋子覆盖的位置
+     *
      * @param p 给定坐标
      * @return 位置上的棋子
      */
@@ -554,6 +612,7 @@ public class ChessBoardControl
 
     /**
      * 判断当前是否胜利
+     *
      * @return true为胜利
      */
     public boolean isWin()
@@ -567,16 +626,18 @@ public class ChessBoardControl
      */
     public void restart()
     {
-        while(!moveSteps.isEmpty())
+        while (!moveSteps.isEmpty())
         {
             moveBack();
         }
         setSecond(0);
     }
+
     public int getBoardWidth()
     {
         return chessBoardArray.getBoardWidth();
     }
+
     public int getBoardHeight()
     {
         return chessBoardArray.getBoradHeight();
@@ -585,14 +646,15 @@ public class ChessBoardControl
     /**
      * 读取存档用，因不能直接序列化Chess，则只记录MoveSteps中的origin和destination
      * 只匹配棋子左下角坐标
+     *
      * @param p 棋子的左下角坐标
      * @return Chess，如找不到则返回null
      */
     public Chess getChessByPosition(Pos p)
     {
-        for(Chess c : chessBoard.getChesses())
+        for (Chess c : chessBoard.getChesses())
         {
-            if(c.getPosition().getX() == p.getX() && c.getPosition().getY() == p.getY())
+            if (c.getPosition().getX() == p.getX() && c.getPosition().getY() == p.getY())
             {
                 return c;
             }
@@ -602,6 +664,7 @@ public class ChessBoardControl
 
     /**
      * 获取棋局进行时间
+     *
      * @return 已进行时间
      */
     public int getSecond()
