@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
 import com.klotski.archive.LevelArchive;
+import com.klotski.assets.AssetsPathManager;
 import com.klotski.assets.ImageAssets;
 import com.klotski.logic.ChessBoardControl;
 import com.klotski.logic.MoveStep;
@@ -54,6 +55,8 @@ public class PlayBackScene extends KlotskiScene
     private Stack<MoveStep> backSteps=new Stack<>();
     /** 自动播放定时任务 */
     ScheduledTask autoPlay=new ScheduledTask(200,1300, TimeUnit.MILLISECONDS);
+    /** 是否为障碍模式 */
+    private boolean isObstacle=false;
     /**
      * 基类初始化，需要传入 gameMain
      *
@@ -76,6 +79,7 @@ public class PlayBackScene extends KlotskiScene
         cbc = new ChessBoardControl(gameMain, dataTable);
         //从地图管理器获取地图
         mapData = gameMain.getMapDataManager().getMapDataList().get(mapID);
+        if(mapData.getMapType()==2) isObstacle=true;
         //载入存档
         cbc.loadPlayback(mapData, levelArchive);
 
@@ -91,11 +95,12 @@ public class PlayBackScene extends KlotskiScene
         ls.fontColor = Color.WHITE;
         Label stepLabel = new Label(String.format("%02d",levelArchive.getMoveSteps().size()), ls);
         stepLabel.setPosition(1200, 800);
-
+        if(isObstacle) stepLabel.setPosition(1200,600);
         //计时器
         TimerW tw = new TimerW();
         tw.setPosition(850, 750);
         tw.setTime(cbc.getSecond());
+        if(isObstacle) tw.setPosition(1170,750);
 
         // 步数列表功能
         Label.LabelStyle ls2 = new Label.LabelStyle();
@@ -129,12 +134,19 @@ public class PlayBackScene extends KlotskiScene
         Image background =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackground));
         background.setSize(1920,1080);
         //几部分组件的半透明灰色圆角矩形背景
-        Image directionBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainDirectionBackground));
-        directionBackground.setPosition(826,48);
+
         Image stepBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainStepBackground));
         stepBackground.setPosition(826,635);
+        if(isObstacle)
+        {
+            stepBackground=new Image(gameMain.getAssetsPathManager().get(ImageAssets.ObstacleStepBackground));
+            stepBackground.setPosition(1150,614);
+        }
         Image recordBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRecordBackground));
         recordBackground.setPosition(1414,47);
+        Image buttonBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.pbButtonBackground));
+        buttonBackground.setPosition(1150,47);
+        if(!isObstacle) buttonBackground.setVisible(false);
         //将棋盘恢复到初始状态，同时存储步数
         while(cbc.getSteps()>0)
         {
@@ -151,14 +163,22 @@ public class PlayBackScene extends KlotskiScene
                     {
                         cbc.move(backSteps.pop());
                     }
+
                     else {
                         isPlaying=false;
+                        autoPlay.pause();
+                        backKButton.setTouchable(Touchable.enabled);
+                        nextTButton.setTouchable(Touchable.enabled);
+                        nextButton.setTouchable(Touchable.enabled);
+                        backButton.setTouchable(Touchable.enabled);
+                        playButton.getStyle().imageChecked=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton));
                     }
                 });
             }
         );
         autoPlay.start();
         autoPlay.pause();
+
         /*
         播放：开始定时任务，点击后图标切换为”暂停“，同时禁用其他按钮
         暂停：暂停定时任务，点击后图标切换为“播放”，同时启用其他按钮
@@ -188,10 +208,23 @@ public class PlayBackScene extends KlotskiScene
         playButton.setPosition(140,0);
         nextButton.setPosition(210,0);
         nextTButton.setPosition(280,0);
+        group.setPosition(825,400);
+        if(isObstacle)
+        {
+            group.setPosition(1200,150);
+            backKButton.setPosition(0,0);
+            backButton.setPosition(0,70);
+            playButton.setPosition(0,140);
+            nextButton.setPosition(0,210);
+            nextTButton.setPosition(0,280);
+            starProgress.setVisible(false);
+            stepLabel.setPosition(1230,670);
+            tw.setPosition(1170,750);
+        }
         stage.addActor(background);
-        stage.addActor(directionBackground);
         stage.addActor(stepBackground);
         stage.addActor(recordBackground);
+        stage.addActor(buttonBackground);
         stage.addActor(starProgress);
         stage.addActor(tw);
         stage.addActor(mainTable);
@@ -202,7 +235,7 @@ public class PlayBackScene extends KlotskiScene
         group.addActor(nextTButton);
         group.addActor(playButton);
 
-        group.setPosition(825,400);
+
 
         Label titleLabel;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -276,15 +309,25 @@ public class PlayBackScene extends KlotskiScene
                    if(!backSteps.isEmpty())
                    {
                         autoPlay.resume();
+                        playButton.getStyle().imageDown=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPauseButton));
                         nextButton.setTouchable(Touchable.disabled);
                         nextTButton.setTouchable(Touchable.disabled);
                         backButton.setTouchable(Touchable.disabled);
                         backKButton.setTouchable(Touchable.disabled);
                    }
+                   else
+                   {
+                       playButton.getStyle().imageChecked=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton));
+                       nextButton.setTouchable(Touchable.enabled);
+                       nextTButton.setTouchable(Touchable.enabled);
+                       backButton.setTouchable(Touchable.enabled);
+                       backKButton.setTouchable(Touchable.enabled);
+                   }
                 }
                 else
                 {
                     autoPlay.pause();
+                    playButton.getStyle().imageChecked=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton));
                     nextButton.setTouchable(Touchable.enabled);
                     nextTButton.setTouchable(Touchable.enabled);
                     backButton.setTouchable(Touchable.enabled);
@@ -293,7 +336,6 @@ public class PlayBackScene extends KlotskiScene
                 isPlaying =!isPlaying;
             }
         });
-        stage.addActor(directionBackground);
         stage.addActor(stepBackground);
         stage.addActor(recordBackground);
         stage.addActor(titleLabel);

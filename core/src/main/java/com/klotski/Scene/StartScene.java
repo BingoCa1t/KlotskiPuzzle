@@ -104,6 +104,11 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
                 tem.add(3);
                 tem.add(4);
                 tem.add(5);
+                tem.add(6);
+                tem.add(7);
+                tem.add(8);
+                tem.add(9);
+                tem.add(10);
                 screenManager.setScreen(new LevelSelectScene(gameMain, tem));
             }
         });

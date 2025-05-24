@@ -19,6 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
+import com.klotski.aigo2.Game;
+import com.klotski.aigo2.Move;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.archive.LevelArchive;
 import com.klotski.assets.AssetsPathManager;
@@ -72,7 +74,8 @@ public class ChessBoardControl
     private ArrayList<Pos> exits;
     /** 是否处于回放状态 */
     private boolean isPlayback = false;
-
+    /** 实时计算的AI下一步（Hint）*/
+    ArrayList<MoveStep> hints=new ArrayList<>();
     @Deprecated
     public ChessBoardControl(Main gameMain)
     {
@@ -117,7 +120,9 @@ public class ChessBoardControl
         chessBoard = new ChessBoard();
         Image background;
         Image chessBoardImage;
+
         chessBoardImage = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardFrame));
+        if(mapData.getMapType()==2) chessBoardImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.ObstacleChessBoardFrame));
         chessBoardImage.setPosition(-16, -16);
         background = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardBackground));
         background.setPosition(-10, -10);
@@ -194,6 +199,7 @@ public class ChessBoardControl
         Image background;
         Image chessBoardImage;
         chessBoardImage = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardFrame));
+        if(mapData.getMapType()==2) chessBoardImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.ObstacleChessBoardFrame));
         chessBoardImage.setPosition(-16, -16);
         background = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardBackground));
         background.setPosition(-10, -10);
@@ -248,6 +254,7 @@ public class ChessBoardControl
                 Image background2;
                 Image chessBoardImage2;
                 chessBoardImage2 = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardFrame));
+                if(mapData.getMapType()==2) chessBoardImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.ObstacleChessBoardFrame));
                 chessBoardImage2.setPosition(-16, -16);
                 background2 = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardBackground));
                 background2.setPosition(-10, -10);
@@ -285,6 +292,7 @@ public class ChessBoardControl
      */
     public String getStepsString(Pos delta, Chess chess)
     {
+        if(delta.equals(new Pos(0,0))) return "炸毁了一个障碍物";
         String direction = "";
         int num = 0;
         if (delta.getX() == 0)
@@ -348,12 +356,42 @@ public class ChessBoardControl
         {
             return false;
         }
+        if(chess.getPosition().equals(pp))
+        {
+            chess.explode();
+            deleteChess(chess);
+
+            moveSteps.push(new MoveStep(chess.getPosition(), pp));
+            BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 30);
+            Label.LabelStyle ls = new Label.LabelStyle();
+            ls.font = font;
+            ls.fontColor = Color.WHITE;
+            Label l = new Label(getStepsString(pp.sub(chess.getPosition()), chess), ls);
+            dataTable.add(l).width(300).pad(5);
+            dataLabels.add(l);
+            dataTable.row();
+            levelArchive.setLevelStatus(LevelStatus.InProgress);
+            Logger.debug("Boom a obstacle");
+            levelArchive.setSeconds(second);
+            if (!isWatch && !isPlayback && !gameMain.getUserManager().getActiveUser().isGuest())
+            {
+                //存档
+                archiveManager.saveByNetwork();
+                //所有客户端一直向服务器发送LevelArchive和最近一次移动：0015|email|{LevelArchive}|{MoveStep}
+                gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch, gameMain.getUserManager().getActiveUser().getEmail(), jsonManager.getJsonString(levelArchive), moveSteps.isEmpty() ? "0" : jsonManager.getJsonString(moveSteps.peek()), isBack ? "1" : "0");
+            }
+
+
+            return true;
+        }
         if (chessBoardArray.isChessCanMove(chess, pp))
         {
             if (!isBack)
             {
                 moveSteps.push(new MoveStep(chess.getPosition(), pp));
             }
+            //开始计算AI
+
             //stepsData.add(getStepsString(pp,chess));
             BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 30);
             Label.LabelStyle ls = new Label.LabelStyle();
@@ -377,7 +415,7 @@ public class ChessBoardControl
 
             }
             chessBoard.move(chess, pp);
-
+            hints=Game.gameSolver(getChessBoard().getChesses());
             if (!isPlayback && isWin())
             {
 
@@ -392,6 +430,11 @@ public class ChessBoardControl
                 if (!isWatch)
                 {
                     levelArchive.setLevelStatus(LevelStatus.Succeed);
+                    LevelArchive levelArchive2 = archiveManager.getActiveArchive().get(levelArchive.getMapID()+1);
+                    if(levelArchive2 != null && levelArchive2.getLevelStatus() == LevelStatus.Closed)
+                    {
+                        levelArchive2.setLevelStatus(LevelStatus.UpComing);
+                    }
                     //levelArchive.setMoveSteps(levelArchive.getMoveSteps().size() < steps ? levelArchive.getMoveSteps() : moveSteps);
                     levelArchive.setStars(star);
                     levelArchive.setSeconds(second);
@@ -441,6 +484,21 @@ public class ChessBoardControl
     {
         Pos pp = new Pos(p.getX(), p.getY());
 
+        if(chess.getPosition().equals(pp))
+        {
+            deleteChess(chess);
+            moveSteps.push(new MoveStep(chess.getPosition(), pp));
+            BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 30);
+            Label.LabelStyle ls = new Label.LabelStyle();
+            ls.font = font;
+            ls.fontColor = Color.WHITE;
+            Label l = new Label(getStepsString(pp.sub(chess.getPosition()), chess), ls);
+            dataTable.add(l).width(300).pad(5);
+            dataLabels.add(l);
+            dataTable.row();
+            Logger.debug("Boom a obstacle");
+            return;
+        }
         if (chessBoardArray.isChessCanMove(chess, pp))
         {
             moveSteps.push(new MoveStep(chess.getPosition(), pp));
@@ -495,6 +553,13 @@ public class ChessBoardControl
         if (!moveSteps.isEmpty())
         {
             MoveStep ms = moveSteps.pop();
+            if(ms.destination.equals(ms.origin))
+            {
+                getChessByPosition(ms.destination).setAppear(true);
+                dataLabels.removeLast();
+                refreshDataTable();
+                return ms;
+            }
             move(getChessByPosition(ms.destination), ms.origin, true);
             dataLabels.removeLast();
             dataLabels.removeLast();
@@ -531,7 +596,8 @@ public class ChessBoardControl
      */
     public void select(Chess chess)
     {
-        if (chess == null) return;
+        if (chess == null ) return;
+
         chessBoard.select(chess);
         selectingChess = chess;
     }
@@ -626,8 +692,17 @@ public class ChessBoardControl
 
     public void deleteChess(Chess chess)
     {
-        mapData.getChesses().remove(chess);
-        chessBoard.deleteChess(chess);
+        //mapData.getChesses().remove(chess);
+        chess.setAppear(false);
+        //chessBoard.deleteChess(chess);
         chessBoardArray.deleteChess(chess);
+    }
+    public ArrayList<MoveStep> getHints()
+    {
+        return hints;
+    }
+    public void calculateHints()
+    {
+        hints=Game.gameSolver(getChessBoard().getChesses());
     }
 }

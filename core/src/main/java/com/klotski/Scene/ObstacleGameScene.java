@@ -1,18 +1,31 @@
 package com.klotski.Scene;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
 import com.klotski.logic.ChessBoardControl;
 import com.klotski.logic.Pos;
+import com.klotski.map.MapData;
 import com.klotski.polygon.Chess;
 import com.klotski.polygon.ChessBoard;
+import com.klotski.utils.SmartBitmapFont;
 import com.klotski.utils.logger.Logger;
 
 public class ObstacleGameScene extends KlotskiScene
 {
+    /** 地图数据 */
+    private MapData mapData;
+    /** 步数Label */
+    private Label stepLabel;
+    /** 关卡标题Label */
+    private Label titleLabel;
     private ChessBoardControl cbc;
     /**
      * 基类初始化，需要传入 gameMain
@@ -29,10 +42,26 @@ public class ObstacleGameScene extends KlotskiScene
         super.init();
         cbc=new ChessBoardControl(gameMain);
         cbc.load(gameMain.getMapDataManager().getMapDataList().get(6));
+        mapData = gameMain.getMapDataManager().getMapDataList().get(6);
         stage.addActor(cbc.getChessBoard());
         cbc.getChessBoard().setPosition(100,40);
         stage.addListener(new ChessBoardListener());
         cbc.getChessBoard().addListener(new MyInputListener());
+        //标题Label
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("furore.ttf")), 80);
+        labelStyle.fontColor = Color.WHITE;
+        titleLabel = new Label(mapData.getMapName(), labelStyle);
+        titleLabel.setPosition(700, 970);
+
+
+        BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 75);
+        Label.LabelStyle ls = new Label.LabelStyle();
+        ls.font = font;
+        ls.fontColor = Color.WHITE;
+        stepLabel = new Label("00", ls);
+        stepLabel.setPosition(1200, 800);
+
     }
     @Override
     public void input()
@@ -169,9 +198,12 @@ public class ObstacleGameScene extends KlotskiScene
                         if(cbc.getSelectingChess()!=null)
                         {
                             cbc.getSelectingChess().explode();
-                            //cbc.deleteChess(cbc.getSelectingChess());
+                            cbc.move(cbc.getSelectingChess(), cbc.getSelectingChess().getPosition());
                         }
                         break;
+                        case Input.Keys.A:
+                            cbc.moveBack();
+                            break;
                 default:
                     break;
             }

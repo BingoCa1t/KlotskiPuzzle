@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.klotski.Main;
 import com.klotski.archive.ArchiveManager;
 import com.klotski.assets.ImageAssets;
+import com.klotski.logic.LevelStatus;
 import com.klotski.polygon.LevelGroup;
 import com.klotski.utils.ImageButtonStyleHelper;
 
@@ -36,6 +37,7 @@ public class LevelSelectScene extends KlotskiScene
         super(gameMain);
         this.mapIDs = mapIDs;
         stage=new Stage();
+        this.archiveManager=gameMain.getUserManager().getArchiveManager();
     }
     @Override
     public void init()
@@ -53,7 +55,7 @@ public class LevelSelectScene extends KlotskiScene
         lg = new LevelGroup(gameMain);
         for(int i : mapIDs)
         {
-            lg.addLevel(i,true);
+            lg.addLevel(i,archiveManager.getActiveArchive().get(i).getLevelStatus()!=LevelStatus.Closed);
         }
 
         //返回按钮
@@ -90,6 +92,7 @@ public class LevelSelectScene extends KlotskiScene
         stage.addActor(selectLevelText);
         stage.addActor(lg);
         stage.addActor(backButton);
+        stage.setDebugAll(true);
     }
     @Override
     public void input()
@@ -123,11 +126,11 @@ public class LevelSelectScene extends KlotskiScene
     {
         super.show();
         int currentID=lg.getCurrentLevel();
-        lg=new LevelGroup(gameMain);
+
         for(int i : mapIDs)
         {
             lg.addLevel(i,true);
         }
-        lg.setCurrentLevel(++currentID);
+        lg.setCurrentLevel(currentID);
     }
 }

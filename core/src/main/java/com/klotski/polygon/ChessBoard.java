@@ -82,13 +82,8 @@ public class ChessBoard extends Group
      */
     public void deleteChess(Chess chess)
     {
-        if (!chesses.contains(chess))
-        {
-            Logger.warning("Chess does not exist:" + chess.toString());
-            return;
-        }
-        chesses.remove(chess);
-        removeActor(chess);
+        chess.setAppear(false);
+        //removeActor(chess);
         //getChildren().removeValue(chess,false);
     }
 

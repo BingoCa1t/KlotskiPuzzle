@@ -24,6 +24,8 @@ public enum ImageAssets
     GameMainDirectionBackground("gameMainScene\\directionBackground.png"),
     GameMainStarProgress("gameMainScene\\starProgress.png"),
     GameMainStepRectangle("gameMainScene\\stepRectangle.png"),
+    ObstacleChessBoardFrame("gameMainScene\\obstacleChessBoard.png"),
+    ObstacleStepBackground("gameMainScene\\obstacleStepBackground.png"),
     RegisterBackButton("registerScene/left_arrow.png"),
     RegisterScene("registerScene/RegisterScene.png"),
     LoginButton("registerScene/loginButton.png"),
@@ -66,12 +68,14 @@ public enum ImageAssets
     zfW("chess\\zfW.png"),
     zfHS("chess\\zfHS.png"),
     zfWS("chess\\zfWS.png"),
+    pbButtonBackground("playbackScene\\pbButtonBackground.png"),
     pbBackButton("playbackScene\\pbBackButton.png"),
     pbBackKButton("playbackScene\\pbBackKButton.png"),
     pbNextButton("playbackScene\\pbNextButton.png"),
     pbNextTButton("playbackScene\\pbNextTButton.png"),
     pbPlayButton("playbackScene\\pbPlayButton.png"),
     pbPauseButton("playbackScene\\pbPauseButton.png"),
+    BoomButton("gameMainScene\\boom.png"),
     ;
     private final String alias;
 

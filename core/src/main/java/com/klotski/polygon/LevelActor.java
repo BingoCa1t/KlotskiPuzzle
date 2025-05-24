@@ -37,10 +37,11 @@ public class LevelActor extends Actor
         Button.ButtonStyle style = new Button.ButtonStyle();
         if(isOpen)
         {
-            style.up=new TextureRegionDrawable(new Texture(Gdx.files.internal("level"+String.valueOf(order+1)+".png")));
+
+            /*
             Pixmap pixmap = new Pixmap(Gdx.files.internal("level1.png"));
             Pixmap p1=createPressedPixmap(pixmap);
-            style.down=new TextureRegionDrawable(new Texture(p1));
+            style.down=new TextureRegionDrawable(new Texture(p1));*/
         }
         else{
             style.up=new TextureRegionDrawable(new Texture(Gdx.files.internal("levelclosed.png")));
@@ -55,12 +56,13 @@ public class LevelActor extends Actor
         //this.levelID=levelInfo.getLevelID();
         //this.stars=levelInfo.getStars();
         this.isOpen=isOpen;
-        if(!isOpen)
+        if(order>4)
         {
-            region = new TextureRegion(new Texture(Gdx.files.internal("levelclosed.png")));
+            region=new TextureRegion(new Texture(Gdx.files.internal("levelclosed.png")));
         }
-        else {
-            region = new TextureRegion(new Texture(Gdx.files.internal("level"+String.valueOf(order+1)+".png")));
+        else
+        {
+            region = new TextureRegion(new Texture(Gdx.files.internal("level" + String.valueOf(order + 1) + ".png")));
         }
         //将图片素材按照棋子大小缩放
         setScale(140f / region.getRegionWidth(), 140f / this.region.getRegionHeight());

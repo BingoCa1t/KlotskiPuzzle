@@ -44,9 +44,16 @@ public class WelcomeScene extends KlotskiScene
         super(gameMain);
     }
     @Override
+    public void hide()
+    {
+        super.hide();
+        player.pause();
+    }
+    @Override
     public void show()
     {
         super.show();
+        player.play();
     }
     @Override
     public void init()

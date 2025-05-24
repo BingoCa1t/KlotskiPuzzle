@@ -155,6 +155,8 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
     {
 
         super.init();
+
+
         gameMain.getNetManager().addObserver(this);
         Timer.schedule(new Timer.Task()
         {
@@ -272,6 +274,7 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
 
         // 将主表格添加到舞台
         stage.addActor(mainTable);
+        stage.addActor(backButton);
         mainTable.setFillParent(false);
         mainTable.setPosition(150, 100);
         mainTable.setSize(1600, 800);

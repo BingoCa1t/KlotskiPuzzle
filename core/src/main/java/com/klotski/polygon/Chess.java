@@ -61,6 +61,8 @@ public class Chess extends Actor
 
     private boolean isMovable = true;
 
+    private boolean isAppear=true;
+
 
     public void setSelected(boolean isSelected)
     {
@@ -293,7 +295,7 @@ public class Chess extends Actor
     public void draw(Batch batch, float parentAlpha)
     {
         // 如果没有爆炸，正常绘制Actor
-        if (!isExploding) {
+        if (particles.isEmpty() && isAppear) {
             batch.setColor(getColor().r, getColor().g, getColor().b, getColor().a * parentAlpha);
             batch.draw(region,
                 getX(), getY(),
@@ -333,9 +335,8 @@ public class Chess extends Actor
 
     }
     public void explode() {
-        if (isExploding) return;
+        if (!particles.isEmpty()) return;
 
-        isExploding = true;
          // 隐藏原始Actor
 
         // 将Actor分割成粒子
@@ -490,5 +491,13 @@ public class Chess extends Actor
         pixmap.dispose(); // 释放Pixmap资源
 
         return texture;
+    }
+    public boolean isAppear()
+    {
+        return isAppear;
+    }
+    public void setAppear(boolean appear)
+    {
+        isAppear = appear;
     }
 }

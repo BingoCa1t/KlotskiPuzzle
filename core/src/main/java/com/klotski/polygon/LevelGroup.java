@@ -1,5 +1,6 @@
 package com.klotski.polygon;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -54,24 +55,25 @@ public class LevelGroup extends Group
         switch(star)
         {
             case 0:
-                starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.OneStar));
+                starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
                 starImage.setVisible(false);
                 break;
                 case 1:
-                    starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.OneStar));
+                    starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
                     s=65f;
                     starImage.setScale(0.45f);
                     break;
                     case 2:
-                        starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.TwoStar));
+                        starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.TwoStar)));
                         starImage.setScale(0.5f);
                         break;
                         case 3:
-                            starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.ThreeStar));
-
+                            starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.ThreeStar)));
+                            starImage.setScale(0.45f);
+                            s=-65f;
                             break;
                             default:
-                                starImage=new Image(gameMain.getAssetsPathManager().get(ImageAssets.OneStar));
+                                starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
                                 starImage.setVisible(false);
                                 break;
 
@@ -79,6 +81,7 @@ public class LevelGroup extends Group
         //starImage.setSize(80,30);
 
         starImage.setOrigin(starImage.getWidth()/2,starImage.getHeight()/2);
+
         /*图片140f，左下角为坐标原点，第三排y=50，第二排y=300，第一排y=550*/
         switch (levels.size() / 5)
         {
@@ -133,7 +136,7 @@ public class LevelGroup extends Group
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                gameMain.getScreenManager().setScreen(new ObstacleGameScene(gameMain));
+                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,mapID));
                 currentLevel=levels.indexOf(mapID);
             }
         });
@@ -152,8 +155,8 @@ public class LevelGroup extends Group
     {
         if(currentLevel<levels.size()-1)
         {
-            gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(currentLevel + 1)));
-            currentLevel++;
+            gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(++currentLevel)));
+
         }
         else
         {
@@ -169,5 +172,10 @@ public class LevelGroup extends Group
     public void setCurrentLevel(int currentLevel)
     {
         this.currentLevel = currentLevel;
+    }
+    public void refresh()
+    {
+        clearChildren();
+
     }
 }

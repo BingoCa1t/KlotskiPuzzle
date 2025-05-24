@@ -53,7 +53,7 @@ public class ChessBoardArray
         }
         for (Chess c : chessPositions)
         {
-
+            if(!c.isAppear()) continue;
             Pos p = c.getPosition();
             for (int x = 1; x < c.getChessWidth() + 1; x++)
             {

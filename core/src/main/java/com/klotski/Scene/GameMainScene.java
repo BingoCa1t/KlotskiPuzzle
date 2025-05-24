@@ -77,6 +77,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     /** 计时器组件 */
     private TimerW tw;
     private JsonManager jsonManager = new JsonManager();
+    /** 是否处于障碍赛模式*/
+    private boolean isObstacle = false;
     /** 音效 */
 
     /**
@@ -161,6 +163,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //如果处于游戏中，则使cbc加载地图及存档（存档从存档管理器获得），并通知服务器开始游戏
         if(mapData.getMapType()==0) isTimeAttack=false;
         if(mapData.getMapType()==1) isTimeAttack=true;
+        if(mapData.getMapType()==2) isObstacle=true;
         if (!isWatch)
         {
             cbc.load(mapData);
@@ -186,6 +189,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //星星进度条
         starProgress = new StarProgress(mapData.getGrades()[0], mapData.getGrades()[1], mapData.getGrades()[2],gameMain.getAssetsPathManager());
         starProgress.setPosition(830, 650);
+        if(isObstacle) starProgress.setVisible(false);
 
         //标题Label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -194,13 +198,14 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         titleLabel = new Label(mapData.getMapName(), labelStyle);
         titleLabel.setPosition(700, 970);
 
-
+        // 步数Label
         BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 75);
         Label.LabelStyle ls = new Label.LabelStyle();
         ls.font = font;
         ls.fontColor = Color.WHITE;
         stepLabel = new Label("00", ls);
         stepLabel.setPosition(1200, 800);
+        if(isObstacle) stepLabel.setPosition(1200,600);
 
         //向舞台添加键盘移动棋子监听器
         stage.addListener(new ChessBoardListener());
@@ -209,6 +214,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //可以改成记录开始和结束的UTC时间，不过会比较麻烦
         tw = new TimerW(isTimeAttack,90);
         tw.setPosition(850, 750);
+
         tw.setTime(cbc.getSecond());
         if(cbc.getSecond()<=0)
         {
@@ -236,7 +242,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         rbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRestartButton));
         rbs.down = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRestartButton));
         Button restartButton = new Button(rbs);
-        restartButton.setPosition(830, 500);
+        restartButton.setPosition(1100, 500);
         restartButton.setSize(200, 100);
         restartButton.addListener(new ClickListener()
         {
@@ -249,12 +255,14 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 starProgress.setStep(cbc.getSteps());
             }
         });
+        if(isObstacle) restartButton.setPosition(1170,350);
+        if(isObstacle) tw.setPosition(1170,750);
 
         //撤销按钮 Undo Button
         Button.ButtonStyle ubs = new Button.ButtonStyle();
         ubs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainUndoButton));
         Button undoButton = new Button(ubs);
-        undoButton.setPosition(1100, 500);
+        undoButton.setPosition(830, 500);
         undoButton.setSize(200, 100);
         undoButton.addListener(new ClickListener()
         {
@@ -266,6 +274,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 stepLabel.setText(String.format("%02d", cbc.getSteps()));
             }
         });
+        if(isObstacle) undoButton.setPosition(1170,500);
 
         //提示按钮 Hint Button
         Button.ButtonStyle hbs = new Button.ButtonStyle();
@@ -278,20 +287,21 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                ArrayList<MoveStep> s= Game.gameSolver(cbc.getChessBoard().getChesses());
-                Iterator<MoveStep> iterator = s.iterator();
-                Timer.schedule(new Timer.Task(){
-                    @Override
-                    public void run()
-                    {
-                        if(iterator.hasNext()) cbc.move(iterator.next());
-                    }
-                }, 0f, 0.6f);
+             if(cbc.getHints()!=null && !cbc.getHints().isEmpty())
+             {
+                 cbc.move(cbc.getHints().getFirst());
+             }
+             else {
+                    cbc.calculateHints();
+                 if(cbc.getHints()!=null && !cbc.getHints().isEmpty())
+                 {
+                     cbc.move(cbc.getHints().getFirst());
+                 }
+             }
 
             }
         });
-
-
+        if(isObstacle) hintButton.setVisible(false);
 
         //上移按钮 Up Button
         Button.ButtonStyle upbs = new Button.ButtonStyle();
@@ -423,6 +433,32 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         Image recordBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRecordBackground));
         recordBackground.setPosition(1414,47);
 
+        Button.ButtonStyle boombs = new Button.ButtonStyle();
+        boombs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.BoomButton));
+        Button boomButton = new Button(boombs);
+        boomButton.setPosition(1170, 60);
+        boomButton.setSize(120, 120);
+        boomButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                if(cbc.getSelectingChess()!=null)
+                {
+                    cbc.move(cbc.getSelectingChess(), cbc.getSelectingChess().getPosition());
+                }
+            }
+        });
+
+        if(isObstacle)
+        {
+            upButton.setVisible(false);
+            downButton.setVisible(false);
+            leftButton.setVisible(false);
+            rightButton.setVisible(false);
+            directionBackground.setVisible(false);
+        }
+
         //将所有演员添加到舞台
         stage.addActor(background);
         stage.addActor(stepBackground);
@@ -442,6 +478,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         stage.addActor(rightButton);
         stage.addActor(backButton);
         stage.addActor(mainTable);
+        if(isObstacle) stage.addActor(boomButton);
+
 
         //如果处于观战中，禁用所有输入
         if (isWatch)
@@ -607,10 +645,10 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             int xx = (int) (x / 160f);
             int yy = (int) (y / 160f);
             Chess c = cbc.getChess(new Pos(xx, yy));
-            if (c == null)
+            if (c == null || !c.isAppear())
             {
                 Logger.debug("Selected chess is null: " + xx + " " + yy);
-                if (cbc.getSelectingChess() != null)
+                if (cbc.getSelectingChess() != null && cbc.getSelectingChess().isMovable())
                 {
                     Pos pp = new Pos(xx, yy);
                     if (cbc.getSelectingChess().getChessWidth() > 1 || cbc.getSelectingChess().getChessHeight() > 1)
