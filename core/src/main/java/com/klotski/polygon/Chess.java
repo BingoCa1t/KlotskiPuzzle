@@ -1,10 +1,14 @@
 package com.klotski.polygon;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Array;
 import com.klotski.Main;
 import com.klotski.assets.AssetsPathManager;
 import com.klotski.assets.ImageAssets;
@@ -162,6 +166,8 @@ public class Chess extends Actor
         this.chessName = chessName;
         this.chessWidth = chessWidth;
         this.chessHeight = chessHeight;
+        this.particles = new Array<>();
+        this.isExploding = false;
 
         //将图片素材按照棋子大小缩放
         setScale(squareHW * chessWidth / region.getRegionWidth(), squareHW * chessHeight / this.region.getRegionHeight());
@@ -184,6 +190,8 @@ public class Chess extends Actor
         this.chessName = chessName;
         this.chessWidth = chessWidth;
         this.chessHeight = chessHeight;
+        this.particles = new Array<>();
+        this.isExploding = false;
     }
 
     /**
@@ -206,6 +214,8 @@ public class Chess extends Actor
         setScale((squareHW * chessWidth-5) / region.getRegionWidth(), (squareHW * chessHeight-5) / this.region.getRegionHeight());
         //这里的size是图片素材的大小，并非棋子显示的大小，棋子显示大小=图片素材大小*缩放比
         setSize(this.region.getRegionWidth(), this.region.getRegionHeight());
+        particleTexture=new TextureRegion(createParticleTexture(16));
+
     }
 
     /**
@@ -221,6 +231,7 @@ public class Chess extends Actor
         this.chessWidth=chess.getChessWidth();
         this.chessHeight=chess.getChessHeight();
         this.isMovable=chess.isMovable();
+        this.particles=new Array<>();
     }
 
     /**
@@ -236,6 +247,7 @@ public class Chess extends Actor
         this.chessHeight = chess.getChessHeight();
         this.setXY(chess.getPosition());
         this.chessName = chess.getChessName();
+        this.particles=new Array<>();
     }
 
     /**
@@ -280,41 +292,72 @@ public class Chess extends Actor
     @Override
     public void draw(Batch batch, float parentAlpha)
     {
-        // 如果 region 为 null 或者 演员不可见, 则直接不绘制
-        if (region == null || !isVisible())
-        {
-            return;
+        // 如果没有爆炸，正常绘制Actor
+        if (!isExploding) {
+            batch.setColor(getColor().r, getColor().g, getColor().b, getColor().a * parentAlpha);
+            batch.draw(region,
+                getX(), getY(),
+                getOriginX(), getOriginY(),
+                getWidth(), getHeight(),
+                getScaleX(), getScaleY(),
+                getRotation());
+            batch.setColor(1, 1, 1, 1); // 重置颜色
         }
-        super.draw(batch, parentAlpha);
 
-		/* 这里选择一个较为复杂的绘制方法进行绘制
-		batch.draw(
-				region,
-				x, y,
-				originX, originY,
-				width, height,
-				scaleX, scaleY,
-				rotation
-		);*/
+        // 更新并绘制粒子（如果正在爆炸）
+        if (!particles.isEmpty()) {
+            for (int i = particles.size - 1; i >= 0; i--) {
+                Particle p = particles.get(i);
+                p.update(Gdx.graphics.getDeltaTime());
+                if (!p.isAlive()) {
+                    particles.removeIndex(i);
+                }
+            }
+
+            // 绘制所有粒子
+            batch.setColor(1, 1, 1, parentAlpha);
+            for (Particle p : particles) {
+                batch.setColor(1, 1, 1, p.alpha * parentAlpha);
+                batch.draw(particleTexture,
+                    p.position.x - p.size / 2,
+                    p.position.y - p.size / 2,
+                    p.size, p.size);
+            }
+            batch.setColor(1, 1, 1, 1); // 重置颜色
+        }
         /*
          * 绘制纹理区域
          * 将演员中的 位置(position, 即 X, Y 坐标), 缩放和旋转支点(origin), 宽高尺寸, 缩放比, 旋转角度 应用到绘制中,
          * 最终 batch 会将综合结果绘制到屏幕上
          */
-        Color color = getColor();
 
-        // 设置 Batch 的颜色，将当前 Actor 的透明度与父元素透明度相乘
-        batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
-        batch.draw(
-            region,
-            getX(), getY(),
-            getOriginX(), getOriginY(),
-            getWidth(), getHeight(),
-            getScaleX(), getScaleY(),
-            getRotation()
-        );
     }
+    public void explode() {
+        if (isExploding) return;
 
+        isExploding = true;
+         // 隐藏原始Actor
+
+        // 将Actor分割成粒子
+        int particleCount = 100;
+        float particleSize = Math.max(getWidth()*getScaleX(), getHeight()*getScaleY()) / 10f;
+
+        // 获取Actor在舞台上的位置
+        float stageX = getX();
+        float stageY = getY();
+
+        for (int i = 0; i < particleCount; i++) {
+            // 在Actor区域内随机位置生成粒子
+            float x = stageX + MathUtils.random(0, getWidth()*getScaleX());
+            float y = stageY + MathUtils.random(0, getHeight()*getScaleY());
+
+            particles.add(new Particle(x, y, particleSize));
+        }
+    }
+    public boolean isExplosionFinished()
+    {
+      return isExploding && particles.isEmpty();
+    }
     /**
      * Chess类的toString方法
      *
@@ -375,5 +418,77 @@ public class Chess extends Actor
     public void setMovable(boolean movable)
     {
         isMovable = movable;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if(o instanceof Chess chess)
+        {
+            if(this.chessName.equals(chess.getChessName())&&this.chessWidth==chess.getChessWidth()&&this.chessHeight==chess.getChessHeight()&&this.getPosition().equals(chess.getPosition()))
+                return true;
+        }
+        return false;
+    }
+
+    private TextureRegion particleTexture;
+
+    // 粒子数组
+    private Array<Particle> particles;
+    private boolean isExploding;
+
+    // 粒子类
+    private class Particle
+    {
+        Vector2 position;
+        Vector2 velocity;
+        float size;
+        float alpha;
+        float life;
+        float maxLife;
+
+        public Particle(float x, float y, float size)
+        {
+            this.position = new Vector2(x, y);
+            this.size = size;
+            this.alpha = 1f;
+            this.maxLife = MathUtils.random(0.5f, 1.5f);
+            this.life = 0f;
+
+            // 随机速度向量，使粒子四散
+            float angle = MathUtils.random(0, 360);
+            float speed = MathUtils.random(50, 200);
+            this.velocity = new Vector2(
+                MathUtils.cosDeg(angle) * speed,
+                MathUtils.sinDeg(angle) * speed
+            );
+        }
+
+        public void update(float deltaTime) {
+            life += deltaTime;
+            alpha = 1f - (life / maxLife);
+
+            // 更新位置
+            position.add(velocity.x * deltaTime, velocity.y * deltaTime);
+
+            // 添加重力效果
+            velocity.y -= 100 * deltaTime;
+        }
+
+        public boolean isAlive() {
+            return life < maxLife;
+        }
+    }
+    private static Texture createParticleTexture(int size) {
+        com.badlogic.gdx.graphics.Pixmap pixmap = new com.badlogic.gdx.graphics.Pixmap(size, size, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+
+        // 创建一个白色圆点
+        pixmap.setColor(1, 1, 1, 1); // 设置为白色
+        pixmap.fillCircle(size / 2, size / 2, size / 2); // 填充圆形
+
+        Texture texture = new Texture(pixmap);
+        pixmap.dispose(); // 释放Pixmap资源
+
+        return texture;
     }
 }

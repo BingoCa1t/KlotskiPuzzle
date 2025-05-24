@@ -176,7 +176,8 @@ public class ChessBoardArray
 
     public void deleteChess(Chess chess)
     {
-
+        //重新初始化即可
+        init();
     }
 
     public boolean isPosEmpty(Pos p)

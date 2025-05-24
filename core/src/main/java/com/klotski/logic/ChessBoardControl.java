@@ -103,67 +103,6 @@ public class ChessBoardControl
     }
 
     /**
-     * 测试时候使用的。默认构造棋盘（已弃用）
-     */
-    @Deprecated
-    private void loadDefault()
-    {
-        chessBoard = new ChessBoard();
-
-        Chess c1, c2, c3, c4, c5, c6, c7, c8, c9, c10;
-        Sprite t1, t2, t3, t4;
-        t1 = new Sprite(new Texture("Caoc.png"));
-        t2 = new Sprite(new Texture("Caoc.png"));
-        t3 = new Sprite(new Texture("Caoc.png"));
-        t4 = new Sprite(new Texture("Caoc.png"));
-        t1.setOrigin(0, 0);
-        //t1.setSize(160f,160f);
-        Image background;
-
-        background = new Image(new Sprite(new Texture("background.png")));
-        background.setPosition(-10, -10);
-        background.setHeight(5 * Chess.squareHW + 20);
-        background.setWidth(4 * Chess.squareHW + 20);
-
-
-        c1 = new Chess(t1, "曹操", 2, 2);
-        c1.setXY(new Pos(1, 2));
-        c2 = new Chess(t2, "关羽", 2, 1);
-        c2.setXY(new Pos(1, 4));
-        c3 = new Chess(t3, "张飞", 1, 2);
-        c3.setXY(new Pos(3, 0));
-        c4 = new Chess(t4, "赵云", 1, 2);
-        c4.setXY(new Pos(0, 2));
-        c5 = new Chess(t1, "黄忠", 1, 2);
-        c5.setXY(new Pos(3, 2));
-        c6 = new Chess(t2, "马超", 1, 2);
-        c6.setXY(new Pos(0, 0));
-        c7 = new Chess(t3, "卒", 1, 1);
-        c7.setXY(new Pos(0, 4));
-        c8 = new Chess(t3, "卒", 1, 1);
-        c8.setXY(new Pos(1, 1));
-        c9 = new Chess(t3, "卒", 1, 1);
-        c9.setXY(new Pos(3, 4));
-        c10 = new Chess(t3, "卒", 1, 1);
-        c10.setXY(new Pos(2, 1));
-        chessBoard = new ChessBoard();
-        chessBoard.addActor(background);
-
-        chessBoard.addChess(c1);
-        chessBoard.addChess(c2);
-        chessBoard.addChess(c3);
-        chessBoard.addChess(c4);
-        chessBoard.addChess(c5);
-        chessBoard.addChess(c6);
-        chessBoard.addChess(c7);
-        chessBoard.addChess(c8);
-        chessBoard.addChess(c9);
-        chessBoard.addChess(c10);
-        chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), 4, 5, null, 0);
-        chessBoard.setPosition(100, 100);
-    }
-
-    /**
      * 在回放界面载入棋盘
      *
      * @param mapData      地图数据
@@ -683,5 +622,12 @@ public class ChessBoardControl
     public void addSecond()
     {
         second++;
+    }
+
+    public void deleteChess(Chess chess)
+    {
+        mapData.getChesses().remove(chess);
+        chessBoard.deleteChess(chess);
+        chessBoardArray.deleteChess(chess);
     }
 }

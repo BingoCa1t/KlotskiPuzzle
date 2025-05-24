@@ -89,6 +89,7 @@ public class ChessBoard extends Group
         }
         chesses.remove(chess);
         removeActor(chess);
+        //getChildren().removeValue(chess,false);
     }
 
     /**

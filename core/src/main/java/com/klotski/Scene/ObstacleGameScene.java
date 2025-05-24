@@ -165,6 +165,13 @@ public class ObstacleGameScene extends KlotskiScene
                 case Input.Keys.RIGHT:
                     move(new Pos(1, 0));
                     break;
+                    case Input.Keys.W:
+                        if(cbc.getSelectingChess()!=null)
+                        {
+                            cbc.getSelectingChess().explode();
+                            //cbc.deleteChess(cbc.getSelectingChess());
+                        }
+                        break;
                 default:
                     break;
             }
