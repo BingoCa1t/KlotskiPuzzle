@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
+import com.klotski.Scene.ObstacleGameScene;
 import com.klotski.assets.ImageAssets;
 
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class LevelGroup extends Group
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,la.getMapID()));
+                gameMain.getScreenManager().setScreen(new ObstacleGameScene(gameMain));
                 currentLevel=levels.indexOf(mapID);
             }
         });
@@ -163,5 +164,10 @@ public class LevelGroup extends Group
     public void returnLevel()
     {
         gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(currentLevel)));
+    }
+
+    public void setCurrentLevel(int currentLevel)
+    {
+        this.currentLevel = currentLevel;
     }
 }

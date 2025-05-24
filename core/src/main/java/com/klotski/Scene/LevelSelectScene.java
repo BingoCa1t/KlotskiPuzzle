@@ -68,26 +68,7 @@ public class LevelSelectScene extends KlotskiScene
                 gameMain.getScreenManager().returnPreviousScreen();
             }
         });
-        /*
-        li=new LevelInfo();
-        li.setMapID(0);
-        lg.addLevel(li,true);
-        LevelInfo li2=new LevelInfo();
-        li2.setMapID(1);
-        lg.addLevel(li2,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,true);
-        lg.addLevel(li,false);
-        lg.addLevel(li,false);
-        lg.addLevel(li,false);
-        lg.addLevel(li,false);
-        lg.addLevel(li,false);
-        lg.addLevel(li,false);
-        lg.addLevel(li,false);
-        lg.addLevel(li,false);
 
-         */
         /*
         lg.addListener(new ClickListener()
         {
@@ -141,10 +122,12 @@ public class LevelSelectScene extends KlotskiScene
     public void show()
     {
         super.show();
+        int currentID=lg.getCurrentLevel();
         lg=new LevelGroup(gameMain);
         for(int i : mapIDs)
         {
             lg.addLevel(i,true);
         }
+        lg.setCurrentLevel(++currentID);
     }
 }

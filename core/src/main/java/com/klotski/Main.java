@@ -7,6 +7,7 @@ import com.klotski.assets.MusicAssets;
 import com.klotski.map.MapDataManager;
 import com.klotski.music.MusicManager;
 import com.klotski.network.NetManager;
+import com.klotski.settings.SettingManager;
 import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
 import com.klotski.utils.json.JsonManager;
@@ -19,10 +20,11 @@ public class Main extends Game
     private NetManager netManager;
     private MusicManager musicManager;
     private ScreenManager screenManager;
-    private JsonManager jsonManager;
     private MapDataManager mapDataManager;
     private AssetsPathManager assetsPathManager;
+    private SettingManager settingManager;
     private Thread netManagerThread;
+
     /*
     先在主程序里加载所有MapData
     然后再初始化levelInfo
@@ -35,6 +37,12 @@ public class Main extends Game
     在用户登录（or guest）之后初始化LevelInfo
      */
 
+    public Main(SettingManager settingManager)
+    {
+        super();
+        this.settingManager = settingManager;
+    }
+
     @Override
     public void create()
     {
@@ -45,7 +53,6 @@ public class Main extends Game
         netManagerThread = new Thread(netManager);
         netManagerThread.setDaemon(true);
         netManagerThread.start();
-        jsonManager=new JsonManager();
         screenManager=new ScreenManager(this);
         userManager=new UserManager(this,netManager,screenManager);
         netManager.addObserver(userManager);
@@ -56,19 +63,19 @@ public class Main extends Game
         musicManager.loadMusic(MusicManager.MusicAudio.GameMusic, MusicAssets.GameMusic);
         musicManager.loadMusic(MusicManager.MusicAudio.MainBGM, MusicAssets.MainBGM);
         screenManager.setScreen(new WelcomeScene(this));
+
     }
 
     @Override
     public void render()
     {
-        //ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         super.render();
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         super.dispose();
-
     }
 
     public AssetsPathManager getAssetsPathManager()
@@ -86,12 +93,6 @@ public class Main extends Game
         return screenManager;
     }
 
-    public JsonManager getJsonManager()
-    {
-        return jsonManager;
-    }
-
-
     public MapDataManager getMapDataManager()
     {
         return mapDataManager;
@@ -105,5 +106,10 @@ public class Main extends Game
     public MusicManager getMusicManager()
     {
         return musicManager;
+    }
+
+    public SettingManager getSettingManager()
+    {
+        return settingManager;
     }
 }

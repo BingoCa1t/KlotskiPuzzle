@@ -42,7 +42,7 @@ public class AssetsPathManager
      */
     public AssetsPathManager(Main gameMain)
     {
-        //usingMipMap = gameMain.getSettingManager().gameSettings.graphics.mipmap;
+        usingMipMap = gameMain.getSettingManager().gameSettings.graphics.mipmap;
     }
 
     /**
@@ -166,8 +166,6 @@ public class AssetsPathManager
         return get(resourceEnum.getAlias(), Music.class);
     }
 
-
-
     /**
      * 获得资源对象
      *
@@ -204,21 +202,6 @@ public class AssetsPathManager
             Gdx.files.internal(vertexFileName),
             Gdx.files.internal(fragmentFileName)
         );
-    }
-
-    public static Skin skinLoad(String skinJsonFile)
-    {
-        return new Skin(Gdx.files.internal(skinJsonFile));
-    }
-
-    public static Sound soundLoad(String soundFile)
-    {
-        return Gdx.audio.newSound(Gdx.files.internal(soundFile));
-    }
-
-    public static TextureAtlas textureAtlasLoad(String testureAtlasFile)
-    {
-        return new TextureAtlas(Gdx.files.internal(testureAtlasFile));
     }
 
     public FileHandle fileObj(String filePath)

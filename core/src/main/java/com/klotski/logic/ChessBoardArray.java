@@ -65,10 +65,7 @@ public class ChessBoardArray
         }
     }
 
-    //public void change()
-    //{
-    //  init();
-    //}
+
     public boolean isChessCanMove(Chess chess, Pos destination)
     {
         Pos origin = chess.getPosition();

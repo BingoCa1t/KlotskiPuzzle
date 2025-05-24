@@ -182,8 +182,8 @@ public class ChessBoardControl
         chessBoardImage.setPosition(-16, -16);
         background = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardBackground));
         background.setPosition(-10, -10);
-        background.setHeight(5 * Chess.squareHW + 20);
-        background.setWidth(4 * Chess.squareHW + 20);
+        background.setHeight(mapData.getHeight() * Chess.squareHW + 20);
+        background.setWidth(mapData.getWidth() * Chess.squareHW + 20);
         chessBoard.addActor(background);
         chessBoard.addActor(chessBoardImage);
         for (Chess c : this.mapData.getChesses())
@@ -258,8 +258,8 @@ public class ChessBoardControl
         chessBoardImage.setPosition(-16, -16);
         background = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardBackground));
         background.setPosition(-10, -10);
-        background.setHeight(5 * Chess.squareHW + 20);
-        background.setWidth(4 * Chess.squareHW + 20);
+        background.setHeight(mapData.getHeight() * Chess.squareHW + 20);
+        background.setWidth(mapData.getWidth() * Chess.squareHW + 20);
         chessBoard.addActor(background);
         chessBoard.addActor(chessBoardImage);
         for (Chess c : this.mapData.getChesses())
@@ -427,7 +427,7 @@ public class ChessBoardControl
             levelArchive.setLevelStatus(LevelStatus.InProgress);
             Logger.debug(chess.toString() + " Move to" + pp.toString());
             levelArchive.setSeconds(second);
-            if (!isWatch && !isPlayback)
+            if (!isWatch && !isPlayback &&!gameMain.getUserManager().getActiveUser().isGuest())
             {
                 //存档
                 archiveManager.saveByNetwork();

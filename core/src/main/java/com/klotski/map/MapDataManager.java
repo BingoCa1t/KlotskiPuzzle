@@ -49,7 +49,10 @@ public class MapDataManager
                     mapDataList.put(i, mapData);
                     Logger.info("Map Manager","Loaded map "+i+" from "+mapFile);
                 }
-                Logger.warning("Map Manager","Cannot Load map "+i+" from "+mapFile);
+                else
+                {
+                    Logger.warning("Map Manager","Cannot Load map "+i+" from "+mapFile);
+                }
             }
         }
     }
