@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
 import com.klotski.aigo.Solver;
+import com.klotski.aigo2.Game;
 import com.klotski.archive.LevelArchive;
 import com.klotski.logic.ChessBoardControl;
 import com.klotski.logic.MoveStep;
@@ -36,6 +37,7 @@ import com.klotski.utils.logger.Logger;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -273,20 +275,25 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         Button hintButton = new Button(hbs);
         hintButton.setPosition(830, 350);
         hintButton.setSize(200, 100);
-       /* hintButton.addListener(new ClickListener()
+        hintButton.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                ArrayList<MoveStep> s=Solver.getSolution(cbc.getChessBoard().getChesses(),4,5);
-                for(MoveStep ms:s)
-                {
-                    cbc.move(ms);
-                }
+                ArrayList<MoveStep> s= Game.gameSolver(cbc.getChessBoard().getChesses());
+                Iterator<MoveStep> iterator = s.iterator();
+                Timer.schedule(new Timer.Task(){
+                    @Override
+                    public void run()
+                    {
+                        if(iterator.hasNext()) cbc.move(iterator.next());
+                    }
+                }, 0f, 0.6f);
+
             }
         });
 
-        */
+
 
         //上移按钮 Up Button
         Button.ButtonStyle upbs = new Button.ButtonStyle();
