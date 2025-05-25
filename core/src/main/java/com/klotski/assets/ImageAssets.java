@@ -5,6 +5,12 @@ package com.klotski.assets;
  */
 public enum ImageAssets
 {
+    Level1("levelSelect/level1.png"),
+    Level2("levelSelect/level2.png"),
+    Level3("levelSelect/level3.png"),
+    Level4("levelSelect/level4.png"),
+    Level5("levelSelect/level5.png"),
+    LevelClosed("levelSelect/levelclosed.png"),
     ChessBoardFrame("gameMainScene\\chessBoard.png"),
     ChessBoardBackground("gameMainScene\\chessBoardBackground.png"),
     LevelSelectBackground("levelSelect\\levelSelectBackground.png"),

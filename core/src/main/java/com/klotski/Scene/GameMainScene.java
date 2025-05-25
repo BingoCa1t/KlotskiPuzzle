@@ -144,7 +144,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         mapData.setMapName("Default");
         return mapData;
     }
-
+    Button restartButton;Button undoButton;Button leftButton;Button rightButton;
     /**
      * 初始化GameMainScene
      */
@@ -241,7 +241,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         Button.ButtonStyle rbs = new Button.ButtonStyle();
         rbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRestartButton));
         rbs.down = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRestartButton));
-        Button restartButton = new Button(rbs);
+
+        restartButton = new Button(rbs);
         restartButton.setPosition(1100, 500);
         restartButton.setSize(200, 100);
         restartButton.addListener(new ClickListener()
@@ -261,7 +262,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //撤销按钮 Undo Button
         Button.ButtonStyle ubs = new Button.ButtonStyle();
         ubs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainUndoButton));
-        Button undoButton = new Button(ubs);
+
+        undoButton = new Button(ubs);
         undoButton.setPosition(830, 500);
         undoButton.setSize(200, 100);
         undoButton.addListener(new ClickListener()
@@ -290,12 +292,15 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
              if(cbc.getHints()!=null && !cbc.getHints().isEmpty())
              {
                  cbc.move(cbc.getHints().getFirst());
+                 refreshWidget();
              }
              else {
                     cbc.calculateHints();
                  if(cbc.getHints()!=null && !cbc.getHints().isEmpty())
                  {
                      cbc.move(cbc.getHints().getFirst());
+                     refreshWidget();
+
                  }
              }
 
@@ -336,7 +341,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //左移按钮 Left Button
         Button.ButtonStyle leftbs = new Button.ButtonStyle();
         leftbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainLeftButton));
-        Button leftButton = new Button(leftbs);
+
+        leftButton = new Button(leftbs);
         leftButton.setPosition(860, 60);
         leftButton.setSize(120, 120);
         leftButton.addListener(new ClickListener()
@@ -351,7 +357,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //右移按钮 Right Button
         Button.ButtonStyle rightbs = new Button.ButtonStyle();
         rightbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRightButton));
-        Button rightButton = new Button(rightbs);
+
+        rightButton = new Button(rightbs);
         rightButton.setPosition(1140, 60);
         rightButton.setSize(120, 120);
         rightButton.addListener(new ClickListener()
@@ -446,6 +453,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 if(cbc.getSelectingChess()!=null)
                 {
                     cbc.move(cbc.getSelectingChess(), cbc.getSelectingChess().getPosition());
+                    refreshWidget();
                 }
             }
         });
@@ -844,5 +852,12 @@ public void settleFail()
     public void setTimeAttack(boolean isTimeAttack)
     {
         this.isTimeAttack=isTimeAttack;
+    }
+    public void stopInput()
+    {
+        for(Actor actor : stage.getActors())
+        {
+            actor.setTouchable(Touchable.disabled);
+        }
     }
 }

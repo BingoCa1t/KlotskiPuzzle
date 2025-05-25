@@ -98,7 +98,7 @@ public class ScreenManager
         currentScreen.hide();
         currentScreen.dispose();
         currentScreen = screenStack.pop();
-        currentScreen.show();
+
         gameMain.setScreen(currentScreen);
         /*
         currentScreen.getStage().addAction(Actions.sequence(
