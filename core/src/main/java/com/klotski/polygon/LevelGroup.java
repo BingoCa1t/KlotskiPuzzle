@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.klotski.Main;
@@ -44,6 +45,7 @@ public class LevelGroup extends Group
     public void addLevel(int mapID, boolean isOpen)
     {
         float s = 0;
+        float y=0;
         //LevelActor la = new LevelActor(levelInfo, isOpen,levelInfos.size()+1);
         LevelActor la = new LevelActor(mapID, levels.size(), isOpen,gameMain.getAssetsPathManager());
         int star = 0;
@@ -71,6 +73,7 @@ public class LevelGroup extends Group
                 starImage = new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.ThreeStar)));
                 starImage.setScale(0.45f);
                 s = -45f;
+                y = 25f;
                 break;
             default:
                 starImage = new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
@@ -87,15 +90,15 @@ public class LevelGroup extends Group
         {
             case 0:
                 la.setY(Y1);
-                starImage.setY(Y1 + 80);
+                starImage.setY(Y1 + 80-y);
                 break;
             case 1:
                 la.setY(Y2);
-                starImage.setY(Y2 + 80);
+                starImage.setY(Y2 + 80-y);
                 break;
             case 2:
                 la.setY(Y3);
-                starImage.setY(Y3 + 80);
+                starImage.setY(Y3 + 80-y);
                 break;
             default:
                 la.setY(-10000f);
@@ -140,6 +143,7 @@ public class LevelGroup extends Group
                 currentLevel = levels.indexOf(mapID);
             }
         });
+        if(!isOpen) la.setTouchable(Touchable.disabled);
         this.addActor(la);
         this.addActor(starImage);
     }
