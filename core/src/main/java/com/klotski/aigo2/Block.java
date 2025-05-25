@@ -1,7 +1,7 @@
 package com.klotski.aigo2;
-import java.math.BigInteger;
+
 import java.util.Comparator;
-import java.util.HashMap;
+
 
 public class Block {
     public BlockPrototype getPrototype() {

@@ -1,6 +1,5 @@
 package com.klotski.aigo2;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -12,8 +11,6 @@ public class Board implements Cloneable{
 	Block[] blocks; // in sorted order
 
 	HashSet<Board>  connectedBoards = new HashSet<Board>();
-	Board previousBoard;
-	Board nextBoard;
 	private String hashString;
 	private int hashCode;
 	private boolean hashCodeCalculated;
@@ -23,8 +20,6 @@ public class Board implements Cloneable{
 	int stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
 	int stepNumberToSolution = Integer.MAX_VALUE;
 	boolean isNewBoard = true;
-	boolean isBorderLineNode = false;
-	GameSolverData gameSolverData = null;
 
 
 	public Board(Block[] blocks) {
@@ -50,24 +45,6 @@ public class Board implements Cloneable{
 		Arrays.sort(blocks, Block.blockComparator);
 	}
 
-
-
-	public boolean isValid() {
-		for (int i = 0; i < blocks.length; i++) {
-			if (!isValidblock(blocks[i])) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-
-	private boolean isValidblock (Block a) {
-		return isValidMove(a, a);
-
-	}
-
 	boolean isValidMove (Block oldBlock, int deltaXPos, int deltaYPos) {
 
 		// The block is within the board boundary
@@ -85,37 +62,6 @@ public class Board implements Cloneable{
 		return true;
 	}
 
-
-	/**
-	 *
-	 * @param oldBlock
-	 * @param newBlock
-	 * @return
-	 *
-	 * Check whether the move from oldBlockPlacment to newBlock is a valid move
-	 * The newBlock should be within the board boundary and does not overlap with any
-	 * other blocks.
-	 */
-
-	private boolean isValidMove (Block oldBlock, Block newBlock) {
-
-		assert newBlock != null;
-		// The block is within the board boundary
-		assert isblockInBoundary(newBlock.prototype, newBlock.xPos, newBlock.yPos);
-
-		// No overlapping block placements
-		for (int i = 0; i < blocks.length; i++) {
-			if (blocks[i] != oldBlock) {
-				if (areOverlappingblocks(blocks[i], newBlock)) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-
 	static boolean isblockInBoundary(BlockPrototype block, int xPos, int yPos) {
 		return (xPos >= MINPOS
 				&& xPos + block.width - 1 <= MAXXPOS
@@ -129,17 +75,6 @@ public class Board implements Cloneable{
 	 * xPos overlapping = a overlaps b from left or right
 	 * yPos overlapping = a overlaps b from up or down
 	 */
-
-	static private boolean areOverlappingblocks(Block a, Block b) {
-		return (b.xPos >= a.xPos
-				&& b.xPos <= a.xPos + a.prototype.width - 1
-				|| a.xPos >= b.xPos
-					&& a.xPos <= b.xPos + b.prototype.width - 1)
-			&& (b.yPos >= a.yPos
-			    && b.yPos <= a.yPos + a.prototype.height - 1
-					|| a.yPos >= b.yPos
-						&&a.yPos <= b.yPos + b.prototype.height - 1);
-	}
 
 
 	static private boolean areOverlappingblocks(Block a, Block b, int deltaXPos, int deltaYPos) {
@@ -169,18 +104,6 @@ public class Board implements Cloneable{
 			}
 			hashString = hashStringBuilder.toString();
 		}
-		return hashString;
-
-	}
-
-	@Deprecated
-	private static String hashString(Block[] blocks) {
-		String hashString;
-		StringBuilder hashStringBuilder = new StringBuilder();
-		for (int i = 0; i < blocks.length; i++) {
-			hashStringBuilder.append(blocks[i].hashString());
-		}
-		hashString = hashStringBuilder.toString();
 		return hashString;
 
 	}
@@ -220,18 +143,7 @@ public class Board implements Cloneable{
 				}
 			}
 		}
-		return;
 	}
-
-
-	/**
-	 *
-	 * @param nextNode
-	 * @return
-	 *
-	 * Calculated the move that takes the current Board to the nextNode
-	 */
-
 
 	 Move calculcateMove(Board nextNode) {
 		Move move;

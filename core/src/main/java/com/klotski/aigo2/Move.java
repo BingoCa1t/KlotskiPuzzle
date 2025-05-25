@@ -1,10 +1,5 @@
 package com.klotski.aigo2;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashMap;
-
 public class Move {
 	public Board oldBoard;
 	public Block oldBlock;
@@ -14,80 +9,6 @@ public class Move {
 	public int deltaYPos;
 
 
-
-
-    public Move (Board boardConfig, Block block, MoveType moveType) {
-		this.oldBlock = block;
-		this.moveType = moveType;
-		switch (moveType) {
-			case UP:
-				deltaXPos = 0;
-				deltaYPos = -1;
-				break;
-			case DOWN:
-				deltaXPos = 0;
-				deltaYPos = 1;
-				break;
-			case LEFT:
-				deltaXPos = -1;
-				deltaYPos = 0;
-				break;
-			case RIGHT:
-				deltaXPos = 1;
-				deltaYPos = 0;
-				break;
-			case UP2:
-				deltaXPos = 0;
-				deltaYPos = -2;
-				break;
-			case DOWN2:
-				deltaXPos = 0;
-				deltaYPos = 2;
-				break;
-			case LEFT2:
-				deltaXPos = -2;
-				deltaYPos = 0;
-				break;
-			case RIGHT2:
-				deltaXPos = 2;
-				deltaYPos = 0;
-				break;
-			case UPLEFT:
-				deltaXPos = -1;
-				deltaYPos = -1;
-				break;
-			case UPRIGHT:
-				deltaXPos = 1;
-				deltaYPos = -1;
-				break;
-			case DOWNLEFT:
-				deltaXPos = -1;
-				deltaYPos = 1;
-				break;
-			case DOWNRIGHT:
-				deltaXPos = 1;
-				deltaYPos = 1;
-				break;
-			case LEFTUP:
-				deltaXPos = -1;
-				deltaYPos = -1;
-				break;
-			case LEFTDOWN:
-				deltaXPos = -1;
-				deltaYPos = 1;
-				break;
-			case RIGHTUP:
-				deltaXPos = 1;
-				deltaYPos = -1;
-				break;
-			case RIGHTDOWN:
-				deltaXPos = 1;
-				deltaYPos = 1;
-				break;
-			default:
-				assert false;
-		}
-    }
 
 
 	public Move(Board oldBoard, Block oldBlock, int deltaXPos, int deltaYPos) {

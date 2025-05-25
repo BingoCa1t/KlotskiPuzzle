@@ -35,7 +35,7 @@ public class GameSolver {
 					Block newBlock = calcNewBlock(currentBoard, currentBoard.blocks[i], moveType);
 					if (newBlock == null) continue; // Invalid move
 					Board nextBoard = getNextBoard(currentBoard, currentBoard.blocks[i], newBlock);
-					PrintUtility.printTestMove(currentBoard, i, currentBoard.blocks[i], moveType, nextBoard);
+
 					if (nextBoard.stepNumberToSolution < Integer.MAX_VALUE) {
 						solutionNode = nextBoard; //The first solution we reach is the fastest solution.
 						return;

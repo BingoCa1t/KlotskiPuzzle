@@ -1,7 +1,5 @@
 package com.klotski.aigo2;
 
-import java.math.BigInteger;
-
 public class BlockPrototype {
     public String getName() {
         return name;
@@ -24,9 +22,6 @@ public class BlockPrototype {
         return blockType;
     }
 
-    public void setBlockType(BlockType blockType) {
-        this.blockType = blockType;
-    }
 
     public BlockType blockType;
 
