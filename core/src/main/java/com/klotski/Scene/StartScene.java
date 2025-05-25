@@ -92,7 +92,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         Button.ButtonStyle sStyle = new Button.ButtonStyle();
         sStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.StartButton));
         Button startButton = new Button(sStyle);
-        startButton.setPosition(1000, 50);
+        startButton.setPosition(300, 50);
         startButton.addListener(new ClickListener()
         {
             @Override
@@ -112,6 +112,43 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
                 screenManager.setScreen(new LevelSelectScene(gameMain, tem));
             }
         });
+
+
+        Button.ButtonStyle ssStyle = new Button.ButtonStyle();
+        ssStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.StartButton));
+        Button sstartButton = new Button(sStyle);
+        sstartButton.setPosition(650, 50);
+        sstartButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                ArrayList<Integer> tem = new ArrayList<>();
+                tem.add(6);
+                tem.add(7);
+                tem.add(8);
+                tem.add(9);
+                tem.add(10);
+                screenManager.setScreen(new LevelSelectScene(gameMain, tem));
+            }
+        });
+
+        Button.ButtonStyle sssStyle = new Button.ButtonStyle();
+        sssStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.StartButton));
+        Button ssstartButton = new Button(sStyle);
+        ssstartButton.setPosition(1000, 50);
+        ssstartButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                ArrayList<Integer> tem = new ArrayList<>();
+                tem.add(11);
+                screenManager.setScreen(new LevelSelectScene(gameMain, tem));
+            }
+        });
+
+
         Button.ButtonStyle watchStyle = new Button.ButtonStyle();
         watchStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.WatchButton));
         Button watchButton = new Button(watchStyle);
@@ -130,7 +167,8 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         stage.addActor(userInfoGroup);
         stage.addActor(startButton);
         stage.addActor(watchButton);
-
+        stage.addActor(sstartButton);
+stage.addActor(ssstartButton);
     }
 
     @Override

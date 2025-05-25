@@ -20,8 +20,8 @@ public class LevelGroup extends Group
      * 最大15个
      */
     public Main gameMain;
-    ArrayList<Integer> levels=new ArrayList<>();
-    private int currentLevel=0;
+    ArrayList<Integer> levels = new ArrayList<>();
+    private int currentLevel = 0;
 
     private final float levelHW = 140f;
     private final float Y1 = 550f;
@@ -43,59 +43,59 @@ public class LevelGroup extends Group
 
     public void addLevel(int mapID, boolean isOpen)
     {
-        float s=0;
+        float s = 0;
         //LevelActor la = new LevelActor(levelInfo, isOpen,levelInfos.size()+1);
-        LevelActor la=new LevelActor(mapID,levels.size(),isOpen);
-        int star=0;
+        LevelActor la = new LevelActor(mapID, levels.size(), isOpen,gameMain.getAssetsPathManager());
+        int star = 0;
         Image starImage;
-        if(gameMain.getUserManager().getArchiveManager()!=null)
+        if (gameMain.getUserManager().getArchiveManager() != null)
         {
-            star=gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).getStars();
+            star = gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).getStars();
         }
-        switch(star)
+        switch (star)
         {
             case 0:
-                starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
+                starImage = new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
                 starImage.setVisible(false);
                 break;
-                case 1:
-                    starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
-                    s=65f;
-                    starImage.setScale(0.45f);
-                    break;
-                    case 2:
-                        starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.TwoStar)));
-                        starImage.setScale(0.5f);
-                        break;
-                        case 3:
-                            starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.ThreeStar)));
-                            starImage.setScale(0.45f);
-                            s=-65f;
-                            break;
-                            default:
-                                starImage=new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
-                                starImage.setVisible(false);
-                                break;
+            case 1:
+                starImage = new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
+                s = 65f;
+                starImage.setScale(0.45f);
+                break;
+            case 2:
+                starImage = new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.TwoStar)));
+                starImage.setScale(0.5f);
+                break;
+            case 3:
+                starImage = new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.ThreeStar)));
+                starImage.setScale(0.45f);
+                s = -45f;
+                break;
+            default:
+                starImage = new Image(new TextureRegion(gameMain.getAssetsPathManager().get(ImageAssets.OneStar)));
+                starImage.setVisible(false);
+                break;
 
         }
         //starImage.setSize(80,30);
 
-        starImage.setOrigin(starImage.getWidth()/2,starImage.getHeight()/2);
+        starImage.setOrigin(starImage.getWidth() / 2, starImage.getHeight() / 2);
 
         /*图片140f，左下角为坐标原点，第三排y=50，第二排y=300，第一排y=550*/
         switch (levels.size() / 5)
         {
             case 0:
                 la.setY(Y1);
-                starImage.setY(Y1+80);
+                starImage.setY(Y1 + 80);
                 break;
             case 1:
                 la.setY(Y2);
-                starImage.setY(Y2+80);
+                starImage.setY(Y2 + 80);
                 break;
             case 2:
                 la.setY(Y3);
-                starImage.setY(Y3+80);
+                starImage.setY(Y3 + 80);
                 break;
             default:
                 la.setY(-10000f);
@@ -106,23 +106,23 @@ public class LevelGroup extends Group
         {
             case 0:
                 la.setX(X1);
-                starImage.setX(X1-60+s);
+                starImage.setX(X1 - 60 + s);
                 break;
             case 1:
                 la.setX(X2);
-                starImage.setX(X2-60+s);
+                starImage.setX(X2 - 60 + s);
                 break;
             case 2:
                 la.setX(X3);
-                starImage.setX(X3-60+s);
+                starImage.setX(X3 - 60 + s);
                 break;
             case 3:
                 la.setX(X4);
-                starImage.setX(X4-60+s);
+                starImage.setX(X4 - 60 + s);
                 break;
             case 4:
                 la.setX(X5);
-                starImage.setX(X5-60+s);
+                starImage.setX(X5 - 60 + s);
                 break;
             default:
                 la.setX(-10000f);
@@ -136,34 +136,37 @@ public class LevelGroup extends Group
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain,mapID));
-                currentLevel=levels.indexOf(mapID);
+                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, mapID));
+                currentLevel = levels.indexOf(mapID);
             }
         });
         this.addActor(la);
         this.addActor(starImage);
     }
+
     public ArrayList<Integer> getLevels()
     {
         return levels;
     }
+
     public int getCurrentLevel()
     {
         return currentLevel;
     }
+
     public void nextLevel()
     {
-        if(currentLevel<levels.size()-1)
+        if (currentLevel < levels.size() - 1)
         {
             gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(++currentLevel)));
 
-        }
-        else
+        } else
         {
             gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.getFirst()));
-            currentLevel=0;
+            currentLevel = 0;
         }
     }
+
     public void returnLevel()
     {
         gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(currentLevel)));
@@ -173,9 +176,5 @@ public class LevelGroup extends Group
     {
         this.currentLevel = currentLevel;
     }
-    public void refresh()
-    {
-        clearChildren();
 
-    }
 }

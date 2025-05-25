@@ -1,6 +1,7 @@
 package com.klotski.polygon;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.klotski.assets.AssetsPathManager;
+import com.klotski.assets.ImageAssets;
 
 public class LevelActor extends Actor
 {
@@ -30,39 +33,19 @@ public class LevelActor extends Actor
     }
 
 
-    public LevelActor(int mapID,int order,boolean isOpen)
+    public LevelActor(int mapID, int order, boolean isOpen, AssetsPathManager apm)
     {
         super();
         this.mapID=mapID;
-        Button.ButtonStyle style = new Button.ButtonStyle();
-        if(isOpen)
-        {
-
-            /*
-            Pixmap pixmap = new Pixmap(Gdx.files.internal("level1.png"));
-            Pixmap p1=createPressedPixmap(pixmap);
-            style.down=new TextureRegionDrawable(new Texture(p1));*/
-        }
-        else{
-            style.up=new TextureRegionDrawable(new Texture(Gdx.files.internal("levelclosed.png")));
-            Pixmap pixmap = new Pixmap(Gdx.files.internal("levelclosed.png"));
-            Pixmap p1=createPressedPixmap(pixmap);
-            style.down=new TextureRegionDrawable(new Texture(p1));
-        }
         this.order=order;
-
-        //this.button=new Button(style);
-        //this.levelInfo = levelInfo;
-        //this.levelID=levelInfo.getLevelID();
-        //this.stars=levelInfo.getStars();
         this.isOpen=isOpen;
-        if(order>4)
+        if(order>4 || !isOpen)
         {
-            region=new TextureRegion(new Texture(Gdx.files.internal("levelclosed.png")));
+            region=new TextureRegion(apm.get(ImageAssets.LevelClosed));
         }
         else
         {
-            region = new TextureRegion(new Texture(Gdx.files.internal("level" + String.valueOf(order + 1) + ".png")));
+            region = new TextureRegion(apm.get(ImageAssets.valueOf("Level"+(order+1))));
         }
         //将图片素材按照棋子大小缩放
         setScale(140f / region.getRegionWidth(), 140f / this.region.getRegionHeight());

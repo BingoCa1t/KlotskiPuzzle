@@ -309,7 +309,7 @@ public class PlayBackScene extends KlotskiScene
                    if(!backSteps.isEmpty())
                    {
                         autoPlay.resume();
-                        playButton.getStyle().imageDown=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPauseButton));
+                        playButton.getStyle().imageUp=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPauseButton));
                         nextButton.setTouchable(Touchable.disabled);
                         nextTButton.setTouchable(Touchable.disabled);
                         backButton.setTouchable(Touchable.disabled);
@@ -317,7 +317,7 @@ public class PlayBackScene extends KlotskiScene
                    }
                    else
                    {
-                       playButton.getStyle().imageChecked=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton));
+                       playButton.getStyle().imageUp=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton));
                        nextButton.setTouchable(Touchable.enabled);
                        nextTButton.setTouchable(Touchable.enabled);
                        backButton.setTouchable(Touchable.enabled);
@@ -327,7 +327,7 @@ public class PlayBackScene extends KlotskiScene
                 else
                 {
                     autoPlay.pause();
-                    playButton.getStyle().imageChecked=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton));
+                    playButton.getStyle().imageUp=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton));
                     nextButton.setTouchable(Touchable.enabled);
                     nextTButton.setTouchable(Touchable.enabled);
                     backButton.setTouchable(Touchable.enabled);

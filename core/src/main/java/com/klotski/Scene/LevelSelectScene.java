@@ -92,7 +92,7 @@ public class LevelSelectScene extends KlotskiScene
         stage.addActor(selectLevelText);
         stage.addActor(lg);
         stage.addActor(backButton);
-        stage.setDebugAll(true);
+
     }
     @Override
     public void input()
@@ -125,12 +125,9 @@ public class LevelSelectScene extends KlotskiScene
     public void show()
     {
         super.show();
-        int currentID=lg.getCurrentLevel();
-
-        for(int i : mapIDs)
-        {
-            lg.addLevel(i,true);
-        }
-        lg.setCurrentLevel(currentID);
+        stage=new Stage();
+        int currentLevelID=lg.getCurrentLevel();
+        init();
+        lg.setCurrentLevel(currentLevelID);
     }
 }

@@ -390,7 +390,6 @@ public class ChessBoardControl
             {
                 moveSteps.push(new MoveStep(chess.getPosition(), pp));
             }
-            //开始计算AI
 
             //stepsData.add(getStepsString(pp,chess));
             BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 30);
@@ -420,6 +419,10 @@ public class ChessBoardControl
             {
 
                 chessBoard.setTouchable(Touchable.disabled);
+                if(gameMain.getScreenManager().getCurrentScreen() instanceof GameMainScene gms)
+                {
+                    gms.stopInput();
+                }
                 Logger.debug("Win");
                 int steps = moveSteps.size();
                 int star;
