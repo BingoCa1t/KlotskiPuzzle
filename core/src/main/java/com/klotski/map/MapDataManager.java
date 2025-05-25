@@ -36,7 +36,7 @@ public class MapDataManager
     /** 加载所有地图数据 */
     public void load()
     {
-        for(int i = 1; i < 15; i++)
+        for(int i = 1; i < 50; i++)
         {
             FileHandle mapFile = Gdx.files.internal("mapData/"+i+".map");
             if(mapFile.exists())

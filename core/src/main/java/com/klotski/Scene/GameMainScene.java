@@ -193,10 +193,10 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         //标题Label
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("furore.ttf")), 80);
+        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 80);
         labelStyle.fontColor = Color.WHITE;
         titleLabel = new Label(mapData.getMapName(), labelStyle);
-        titleLabel.setPosition(700, 970);
+        titleLabel.setPosition(700, 950);
 
         // 步数Label
         BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 75);

@@ -104,11 +104,13 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
                 tem.add(3);
                 tem.add(4);
                 tem.add(5);
-                tem.add(6);
-                tem.add(7);
-                tem.add(8);
-                tem.add(9);
-                tem.add(10);
+                /*
+                tem.add(2);
+                tem.add(4);
+                tem.add(3);
+                tem.add(5);
+                tem.add(2);
+                 */
                 screenManager.setScreen(new LevelSelectScene(gameMain, tem));
             }
         });
@@ -124,11 +126,11 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
             public void clicked(InputEvent event, float x, float y)
             {
                 ArrayList<Integer> tem = new ArrayList<>();
-                tem.add(6);
-                tem.add(7);
-                tem.add(8);
-                tem.add(9);
-                tem.add(10);
+                tem.add(21);
+                tem.add(22);
+                tem.add(23);
+                tem.add(24);
+                tem.add(25);
                 screenManager.setScreen(new LevelSelectScene(gameMain, tem));
             }
         });
@@ -143,7 +145,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
             public void clicked(InputEvent event, float x, float y)
             {
                 ArrayList<Integer> tem = new ArrayList<>();
-                tem.add(11);
+                tem.add(41);
                 screenManager.setScreen(new LevelSelectScene(gameMain, tem));
             }
         });
@@ -168,7 +170,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         stage.addActor(startButton);
         stage.addActor(watchButton);
         stage.addActor(sstartButton);
-stage.addActor(ssstartButton);
+        stage.addActor(ssstartButton);
     }
 
     @Override
