@@ -42,10 +42,11 @@ public class ScreenManager
      */
     public void setScreenWithoutSaving(KlotskiScene screen)
     {
+        KlotskiScene s=currentScreen;
         if (currentScreen != null)
         {
             currentScreen.hide();
-            currentScreen.dispose();
+
         }
         currentScreen = screen;
         currentScreen.show();
@@ -59,6 +60,7 @@ public class ScreenManager
         }
 
          */
+        Gdx.app.postRunnable(()->{if(s!= null) s.dispose();});
         Logger.debug("ScreenManager", "Set screen -> " + currentScreen);
     }
 

@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
-import com.klotski.Scene.ObstacleGameScene;
 import com.klotski.assets.ImageAssets;
 
 import java.util.ArrayList;

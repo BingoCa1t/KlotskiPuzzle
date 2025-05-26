@@ -112,4 +112,18 @@ public class Main extends Game
     {
         return settingManager;
     }
+
+    public void setUserManager(UserManager userManager)
+    {
+        this.userManager = userManager;
+    }
+    public void restartNetManager()
+    {
+        netManager.stopThread();
+        netManagerThread.interrupt();
+        netManager=new NetManager("124.71.34.129",12345);
+        netManagerThread=new Thread(netManager);
+        netManagerThread.setDaemon(true);
+        netManagerThread.start();
+    }
 }

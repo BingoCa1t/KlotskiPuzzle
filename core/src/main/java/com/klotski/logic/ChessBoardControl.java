@@ -708,4 +708,8 @@ public class ChessBoardControl
     {
         hints=Game.gameSolver(getChessBoard().getChesses());
     }
+    public Chess getMainChess()
+    {
+        return chessBoard.getChesses().get(mapData.getMainIndex());
+    }
 }

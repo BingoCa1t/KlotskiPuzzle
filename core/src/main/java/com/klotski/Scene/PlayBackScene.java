@@ -239,10 +239,10 @@ public class PlayBackScene extends KlotskiScene
 
         Label titleLabel;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("furore.ttf")), 80);
+        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 80);
         labelStyle.fontColor = Color.WHITE;
-        titleLabel = new Label("Playback-"+mapData.getMapName(), labelStyle);
-        titleLabel.setPosition(700, 970);
+        titleLabel = new Label("回放-"+mapData.getMapName(), labelStyle);
+        titleLabel.setPosition(640, 970);
 
         //返回按钮 Back Button
         Button.ButtonStyle backbs = new Button.ButtonStyle();

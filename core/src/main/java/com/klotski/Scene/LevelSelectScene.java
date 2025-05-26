@@ -1,6 +1,7 @@
 package com.klotski.Scene;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -59,7 +60,12 @@ public class LevelSelectScene extends KlotskiScene
         }
 
         //返回按钮
-        ImageButton.ImageButtonStyle style = ImageButtonStyleHelper.createFromTexture(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackButton));
+        ImageButton.ImageButtonStyle style = ImageButtonStyleHelper.createStyleFromTexture(
+            gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackButton),
+            0.9f,
+            new Color(0.9f, 0.9f, 0.9f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 0.7f)
+        );
         backButton=new ImageButton(style);
         backButton.setPosition(100,950);
         backButton.setSize(100,100);

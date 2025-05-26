@@ -105,6 +105,8 @@ public class LoginScene extends KlotskiScene
                 }
             }
         });
+
+
         stage.addActor(loginGroup);
         stage.addActor(loginButton);
         stage.addActor(backButton);

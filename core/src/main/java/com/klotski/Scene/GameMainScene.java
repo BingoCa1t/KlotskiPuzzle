@@ -32,6 +32,7 @@ import com.klotski.polygon.Chess;
 import com.klotski.polygon.SettleGroup;
 import com.klotski.polygon.StarProgress;
 import com.klotski.polygon.TimerW;
+import com.klotski.utils.ImageButtonStyleHelper;
 import com.klotski.utils.SmartBitmapFont;
 import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
@@ -60,7 +61,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     /** 是否处于观战模式  */
     private boolean isWatch = false;
     /** 关卡地图的mapID */
-    private int mapID;
+    private final int mapID;
     /** 星星进度条 */
     private StarProgress starProgress;
     /** 棋盘控制器*/
@@ -153,7 +154,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     {
         super.init();
         gameMain.getMusicManager().play(MusicManager.MusicAudio.GameMusic,true);
-        gameMain.getNetManager().addObserver(this);
+
         // 棋步记录表
         dataTable = new Table();
         //初始化棋盘控制器ChessBoardControl
@@ -195,8 +196,18 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 80);
         labelStyle.fontColor = Color.WHITE;
-        titleLabel = new Label(mapData.getMapName(), labelStyle);
-        titleLabel.setPosition(700, 950);
+        if(!isWatch)
+        {
+            titleLabel = new Label(mapData.getMapName(), labelStyle);
+            titleLabel.setPosition(700, 950);
+        }
+
+        else
+        {
+            titleLabel = new Label("观战-"+mapData.getMapName(), labelStyle);
+            titleLabel.setPosition(650, 950);
+        }
+
 
         // 步数Label
         BitmapFont font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 75);
@@ -233,15 +244,12 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 {
                     tw.setTime(0);
                 }
-                if(isTimeAttack&&cbc.getSecond()>=90) settleFail();
+                if(isTimeAttack&&cbc.getSecond()>=90) settleFail(90, cbc.getSteps());
             }
         }, 0f, 1f);
 
         //重置按钮 Restart Button
-        Button.ButtonStyle rbs = new Button.ButtonStyle();
-        rbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRestartButton));
-        rbs.down = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRestartButton));
-
+        Button.ButtonStyle rbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRestartButton));
         restartButton = new Button(rbs);
         restartButton.setPosition(1100, 500);
         restartButton.setSize(200, 100);
@@ -260,8 +268,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         if(isObstacle) tw.setPosition(1170,750);
 
         //撤销按钮 Undo Button
-        Button.ButtonStyle ubs = new Button.ButtonStyle();
-        ubs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainUndoButton));
+        Button.ButtonStyle ubs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.GameMainUndoButton));
 
         undoButton = new Button(ubs);
         undoButton.setPosition(830, 500);
@@ -279,8 +286,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         if(isObstacle) undoButton.setPosition(1170,500);
 
         //提示按钮 Hint Button
-        Button.ButtonStyle hbs = new Button.ButtonStyle();
-        hbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainHintButton));
+        Button.ButtonStyle hbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.GameMainHintButton));
         Button hintButton = new Button(hbs);
         hintButton.setPosition(830, 350);
         hintButton.setSize(200, 100);
@@ -309,8 +315,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         if(isObstacle) hintButton.setVisible(false);
 
         //上移按钮 Up Button
-        Button.ButtonStyle upbs = new Button.ButtonStyle();
-        upbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainUpButton));
+        Button.ButtonStyle upbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.GameMainUpButton));;
         Button upButton = new Button(upbs);
         upButton.setPosition(1000, 200);
         upButton.setSize(120, 120);
@@ -324,8 +329,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         });
 
         //下移按钮 Down Button
-        Button.ButtonStyle downbs = new Button.ButtonStyle();
-        downbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainDownButton));
+        Button.ButtonStyle downbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.GameMainDownButton));
         Button downButton = new Button(downbs);
         downButton.setPosition(1000, 60);
         downButton.setSize(120, 120);
@@ -339,8 +343,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         });
 
         //左移按钮 Left Button
-        Button.ButtonStyle leftbs = new Button.ButtonStyle();
-        leftbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainLeftButton));
+        Button.ButtonStyle leftbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.GameMainLeftButton));
 
         leftButton = new Button(leftbs);
         leftButton.setPosition(860, 60);
@@ -355,8 +358,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         });
 
         //右移按钮 Right Button
-        Button.ButtonStyle rightbs = new Button.ButtonStyle();
-        rightbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRightButton));
+        Button.ButtonStyle rightbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRightButton));;
 
         rightButton = new Button(rightbs);
         rightButton.setPosition(1140, 60);
@@ -371,8 +373,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         });
 
         //返回按钮 Back Button
-        Button.ButtonStyle backbs = new Button.ButtonStyle();
-        backbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackButton));
+        Button.ButtonStyle backbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackButton));
         Button backButton = new Button(backbs);
         backButton.setPosition(50, 950);
         backButton.setSize(100, 100);
@@ -450,7 +451,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                if(cbc.getSelectingChess()!=null)
+                if(cbc.getSelectingChess()!=null && cbc.getSelectingChess() != cbc.getMainChess())
                 {
                     cbc.move(cbc.getSelectingChess(), cbc.getSelectingChess().getPosition());
                     refreshWidget();
@@ -503,6 +504,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         }
         //刷新一下组件
         refreshWidget();
+        gameMain.getNetManager().addObserver(this);
     }
 
     /**
@@ -610,19 +612,29 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //如果更新的是观战存档，且是正在被观战的用户Email
         if (code == MessageCode.UpdateWatch && Objects.equals(str[0], watchEmail))
         {
+            MoveStep moveStep = jsonManager.parseJsonToObject(str[2], MoveStep.class);
+            LevelArchive l = jsonManager.parseJsonToObject(str[1], LevelArchive.class);
+
             //涉及到OpenGL，发送到主线程执行
             Gdx.app.postRunnable(() ->
             {
+                if(l.getMapID()!=this.mapID)
+                {
+                    GameMainScene sb=new GameMainScene(gameMain, new LevelArchive(l),str[0]);
+                    gameMain.getNetManager().removeObserver(this);
+                    gameMain.getScreenManager().setScreenWithoutSaving(sb);
+
+                    return;
+                }
                 // 执行收到的MoveStep
-                MoveStep moveStep = jsonManager.parseJsonToObject(str[2], MoveStep.class);
-                LevelArchive l = jsonManager.parseJsonToObject(str[1], LevelArchive.class);
                 cbc.setSecond(l.getSeconds());
-                if (moveStep == null) return;
+
 
                 //如果是正常移动
 
                 if(str.length<4||Objects.equals(str[3], "0"))
                 {
+                    if (moveStep == null) return;
                     if (!cbc.move(cbc.getChessByPosition(moveStep.origin), moveStep.destination))
                     {
                         //如果移动失败，出现未知错误，重置棋盘
@@ -749,7 +761,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
      */
     public void settle(int star, int second, int step)
     {
-        SettleGroup sg = new SettleGroup(star, String.format("%02d:%02d", second / 60, second % 60), step);
+        SettleGroup sg = new SettleGroup(star, String.format("%02d:%02d", second / 60, second % 60), step,gameMain.getAssetsPathManager());
 
         sg.addBackListener(new ClickListener()
         {
@@ -759,18 +771,21 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 gameMain.getScreenManager().returnPreviousScreen();
             }
         });
-        sg.addNextListener(new ClickListener()
+        if(star>=0)
         {
-            @Override
-            public void clicked(InputEvent event, float x, float y)
+            sg.addNextListener(new ClickListener()
             {
-                gameMain.getScreenManager().returnPreviousScreen();
-                if (gameMain.getScreenManager().getCurrentScreen() instanceof LevelSelectScene lss)
+                @Override
+                public void clicked(InputEvent event, float x, float y)
                 {
-                    lss.nextLevel();
+                    gameMain.getScreenManager().returnPreviousScreen();
+                    if (gameMain.getScreenManager().getCurrentScreen() instanceof LevelSelectScene lss)
+                    {
+                        lss.nextLevel();
+                    }
                 }
-            }
-        });
+            });
+        }
         sg.addReturnListener(new ClickListener()
         {
             @Override
@@ -819,10 +834,10 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         }
         stage.addActor(sg);
     }
-public void settleFail()
-{
-
-}
+    public void settleFail(int second, int step)
+    {
+        settle(-2,second,step);
+    }
     public boolean getIsWatch()
     {
         return isWatch;
@@ -860,4 +875,5 @@ public void settleFail()
             actor.setTouchable(Touchable.disabled);
         }
     }
+
 }

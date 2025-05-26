@@ -34,6 +34,9 @@ public class NetManager implements Runnable
     {
         observers.add(observer);
     }
+    public void removeObserver(NetworkMessageObserver observer){
+        observers.remove(observer);
+    }
     @Override
     public void run()
     {
@@ -91,6 +94,7 @@ public class NetManager implements Runnable
                 {
                     String message = messageQueue.poll();
                     out.println(message);
+
                     Logger.info("NetworkManager","Send Message : " + message);
                 }
                 Thread.sleep(100);

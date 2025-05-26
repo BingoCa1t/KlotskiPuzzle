@@ -149,7 +149,10 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
 
     Table dataTable;
     Label.LabelStyle labelStyle;
+    public void newGameMainScene()
+    {
 
+    }
     @Override
     public void init()
     {
@@ -328,15 +331,15 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
                 u.put(user.split(Pattern.quote("|"))[0],user);
 
             }
+
             if(gameMain.getScreenManager().getCurrentScreen() instanceof GameMainScene gms && gms.getIsWatch())
             {
                 String i=u.get(gms.getWatchEmail());
-                if(gms.getIsWatch()&& !Objects.equals(i.split(Pattern.quote("|"))[2], "2"))
+                if(gms.getIsWatch() && !Objects.equals(i.split(Pattern.quote("|"))[2], "2"))
                 {
                     gms.exitWatch();
                 }
             }
-
             if (dataTable == null) dataTable = new Table();
             dataTable.clear();
             addData(onlineUsers);

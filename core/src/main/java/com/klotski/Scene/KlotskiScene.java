@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.klotski.Main;
+import com.klotski.network.NetworkMessageObserver;
 //import com.klotski.polygon.combine.SokobanCombineObject;
 
 /**
@@ -146,6 +147,8 @@ public abstract class KlotskiScene extends ApplicationAdapter implements Screen 
      */
     @Override
     public void dispose() {
+        if(this instanceof NetworkMessageObserver a)
+            gameMain.getNetManager().removeObserver(a);
         if (stage != null) stage.dispose();
     }
 

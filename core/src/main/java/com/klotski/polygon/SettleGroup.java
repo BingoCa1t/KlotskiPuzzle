@@ -10,6 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.klotski.assets.AssetsPathManager;
+import com.klotski.assets.ImageAssets;
+import com.klotski.utils.ImageButtonStyleHelper;
 import com.klotski.utils.SmartBitmapFont;
 
 public class SettleGroup extends Group
@@ -22,7 +25,8 @@ public class SettleGroup extends Group
     Button homeButton;
     Button nextButton;
     Button returnButton;
-    public SettleGroup(int stars,String time,int step)
+    private AssetsPathManager APM;
+    public SettleGroup(int stars,String time,int step,AssetsPathManager apm)
     {
         super();
         this.stars=stars;
@@ -31,48 +35,44 @@ public class SettleGroup extends Group
         switch(this.stars)
         {
             case 0:
-                image=new Image(new TextureRegion(new Texture(Gdx.files.internal("settle\\0s.png"))));
+                image=new Image(apm.get(ImageAssets.SettleZeroStar));
                 break;
             case 1:
-                image=new Image(new TextureRegion(new Texture(Gdx.files.internal("settle\\1s.png"))));
+                image=new Image(apm.get(ImageAssets.SettleOneStar));
                 break;
             case 2:
-                image=new Image(new TextureRegion(new Texture(Gdx.files.internal("settle\\2s.png"))));
+                image=new Image(apm.get(ImageAssets.SettleTwoStar));
                 break;
             case 3:
-                image=new Image(new TextureRegion(new Texture(Gdx.files.internal("settle\\3s.png"))));
+                image=new Image(apm.get(ImageAssets.SettleThreeStar));
                 break;
             default:
-                image=new Image(new TextureRegion(new Texture(Gdx.files.internal("settle\\3s.png"))));
+                image=new Image(apm.get(ImageAssets.SettleFail));
                 break;
         }
         image.setSize(600,600);
         image.setPosition(20,20);
         int hw=90;
         //返回按钮 Back Button
-        Button.ButtonStyle backbs=new Button.ButtonStyle();
-        backbs.up=new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("settle\\backButton.png"))));
+        Button.ButtonStyle backbs= ImageButtonStyleHelper.createButtonStyle(apm.get(ImageAssets.SettleBackButton));
         backButton=new Button(backbs);
         backButton.setSize(hw,hw);
         backButton.setPosition(130,5);
 
         //主页按钮 Home Button
-        Button.ButtonStyle homebs=new Button.ButtonStyle();
-        homebs.up=new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("settle\\homeButton.png"))));
+        Button.ButtonStyle homebs=ImageButtonStyleHelper.createButtonStyle(apm.get(ImageAssets.SettleHomeButton));
         homeButton=new Button(homebs);
         homeButton.setSize(hw,hw);
         homeButton.setPosition(230,5);
 
         //下一关按钮 Next Button
-        Button.ButtonStyle nextbs=new Button.ButtonStyle();
-        nextbs.up=new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("settle\\nextButton.png"))));
+        Button.ButtonStyle nextbs=ImageButtonStyleHelper.createButtonStyle(apm.get(ImageAssets.SettleNextButton));
         nextButton=new Button(nextbs);
         nextButton.setSize(hw,hw);
         nextButton.setPosition(330,5);
 
         //重来按钮 Return Button
-        Button.ButtonStyle rebs=new Button.ButtonStyle();
-        rebs.up=new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("settle\\returnButton.png"))));
+        Button.ButtonStyle rebs=ImageButtonStyleHelper.createButtonStyle(apm.get(ImageAssets.SettleReturnButton));
         returnButton=new Button(rebs);
         returnButton.setSize(hw,hw);
         returnButton.setPosition(430,5);

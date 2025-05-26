@@ -48,7 +48,7 @@ public class RegisterScene extends KlotskiScene implements NetworkMessageObserve
     TextField emailTextField;
     TextField passwordTextField;
     TextField verifyCodeField;
-    Label infoLabel;
+    private Label infoLabel;
 
     public RegisterScene(Main gameMain)
     {

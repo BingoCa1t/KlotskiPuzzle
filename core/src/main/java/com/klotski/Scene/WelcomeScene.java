@@ -2,6 +2,7 @@ package com.klotski.Scene;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -63,7 +64,12 @@ public class WelcomeScene extends KlotskiScene
         back.setPosition(250,200);
         gameMain.getAssetsPathManager().startAssetsLoading();
 
-        ImageButton.ImageButtonStyle rstyle=ImageButtonStyleHelper.createFromTexture(new Texture(Gdx.files.internal("welcomeScene/regist.png")));
+        ImageButton.ImageButtonStyle rstyle = ImageButtonStyleHelper.createStyleFromTexture(
+            new Texture("welcomeScene/regist.png"),
+            0.9f,
+            new Color(0.9f, 0.9f, 0.9f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 0.7f)
+        );
         registerButton=new ImageButton(rstyle);
         registerButton.setPosition(300,200);
         registerButton.setSize(300,150);
@@ -74,7 +80,12 @@ public class WelcomeScene extends KlotskiScene
                gameMain.getScreenManager().setScreen(new RegisterScene(gameMain));
            }
         });
-        ImageButton.ImageButtonStyle lstyle=ImageButtonStyleHelper.createFromTexture(new Texture(Gdx.files.internal("welcomeScene/login.png")));
+        ImageButton.ImageButtonStyle lstyle = ImageButtonStyleHelper.createStyleFromTexture(
+            new Texture("welcomeScene/login.png"),
+            0.9f,
+            new Color(0.9f, 0.9f, 0.9f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 0.7f)
+        );
         loginButton=new ImageButton(lstyle);
         loginButton.setPosition(700,200);
         loginButton.setSize(300,150);
@@ -85,7 +96,12 @@ public class WelcomeScene extends KlotskiScene
                 gameMain.getScreenManager().setScreen(new LoginScene(gameMain));
             }
         });
-        ImageButton.ImageButtonStyle gstyle=ImageButtonStyleHelper.createFromTexture(new Texture(Gdx.files.internal("welcomeScene/guest.png")));
+        ImageButton.ImageButtonStyle gstyle = ImageButtonStyleHelper.createStyleFromTexture(
+            new Texture("welcomeScene/guest.png"),
+            0.9f,
+            new Color(0.9f, 0.9f, 0.9f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 0.7f)
+        );
         guestButton=new ImageButton(gstyle);
         guestButton.setPosition(1100,200);
         guestButton.setSize(300,150);

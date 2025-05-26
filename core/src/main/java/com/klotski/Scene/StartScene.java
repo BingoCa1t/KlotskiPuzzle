@@ -1,12 +1,15 @@
 package com.klotski.Scene;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
@@ -18,11 +21,15 @@ import com.klotski.archive.LevelArchive;
 import com.klotski.assets.ImageAssets;
 import com.klotski.music.MusicManager;
 import com.klotski.network.MessageCode;
+import com.klotski.network.NetManager;
 import com.klotski.network.NetworkMessageObserver;
 import com.klotski.polygon.UserInfoGroup;
 import com.klotski.user.UserInfo;
+import com.klotski.user.UserManager;
+import com.klotski.utils.SmartBitmapFont;
 import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -163,6 +170,25 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
                 gameMain.getScreenManager().setScreen(new WatchScene(gameMain));
             }
         });
+
+        TextButton.TextButtonStyle logoutStyle = new TextButton.TextButtonStyle();
+        logoutStyle.font=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("fonts/Gabriola.ttf")),40);
+        logoutStyle.fontColor= Color.WHITE;
+        TextButton logoutButton = new TextButton("Logout",logoutStyle);
+        logoutButton.setPosition(450, 1000);
+        logoutButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getNetManager().removeObserver(gameMain.getUserManager());
+                gameMain.restartNetManager();
+                gameMain.setUserManager(new UserManager(gameMain,gameMain.getNetManager(),gameMain.getScreenManager()));
+                gameMain.getScreenManager().clearScreenStack();
+                gameMain.setScreen(new WelcomeScene(gameMain));
+            }
+        });
+
         //用户头像组
 
         stage.addActor(background);
@@ -171,6 +197,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         stage.addActor(watchButton);
         stage.addActor(sstartButton);
         stage.addActor(ssstartButton);
+        stage.addActor(logoutButton);
     }
 
     @Override
