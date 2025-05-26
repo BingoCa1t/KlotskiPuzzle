@@ -1,6 +1,5 @@
 package com.klotski.Scene;
 
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.klotski.Main;
 import com.klotski.network.NetworkMessageObserver;
-//import com.klotski.polygon.combine.SokobanCombineObject;
 
 /**
  * Scene 的统一父类

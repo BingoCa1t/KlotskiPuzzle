@@ -48,6 +48,11 @@ public class ImageButtonStyleHelper
 
         return style;
     }
+
+    public static ImageButton.ImageButtonStyle createStyleFromTexture(Texture texture)
+    {
+        return createStyleFromTexture(texture,0.95f,new Color(0.9f, 0.9f, 0.9f, 1f),new Color(0.5f, 0.5f, 0.5f, 0.7f));
+    }
     /**
      * 从单个纹理创建 ImageButtonStyle
      *
@@ -57,7 +62,6 @@ public class ImageButtonStyleHelper
      * @param disabledTint    禁用状态色调
      * @return 生成的 ImageButtonStyle
      */
-
     public static ImageButton.ImageButtonStyle createStyleFromTexture(
         Texture texture,
         float scaleDownFactor,

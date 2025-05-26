@@ -50,7 +50,7 @@ public class RSEncoder
         for (int j = 0; j < TOTAL_SHARDS; j++) {
             String base64Encoded = Base64.getEncoder().encodeToString(shards[j]);
             result.append(base64Encoded);
-            result.append("|");
+            result.append("*&*&");
         }
 
         return result.toString();

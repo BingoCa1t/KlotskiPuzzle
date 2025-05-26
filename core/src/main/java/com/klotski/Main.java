@@ -7,6 +7,7 @@ import com.klotski.assets.MusicAssets;
 import com.klotski.map.MapDataManager;
 import com.klotski.music.MusicManager;
 import com.klotski.network.NetManager;
+import com.klotski.network.NetworkMessageObserver;
 import com.klotski.settings.SettingManager;
 import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
@@ -16,6 +17,7 @@ import com.klotski.utils.reedSolomon.RSDecoder;
 import com.klotski.utils.reedSolomon.RSEncoder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game
@@ -67,6 +69,7 @@ public class Main extends Game
         musicManager.loadMusic(MusicManager.MusicAudio.GameMusic, MusicAssets.GameMusic);
         musicManager.loadMusic(MusicManager.MusicAudio.MainBGM, MusicAssets.MainBGM);
         screenManager.setScreen(new WelcomeScene(this));
+        //screenManager.setScreen(new SettingScene(this));
 
             String s=RSEncoder.encoder("test123456TEST123456");
             System.out.println(s);
@@ -85,6 +88,8 @@ public class Main extends Game
     public void dispose()
     {
         super.dispose();
+        netManagerThread.interrupt();
+        netManager.close();
     }
 
     public AssetsPathManager getAssetsPathManager()
@@ -128,9 +133,17 @@ public class Main extends Game
     }
     public void restartNetManager()
     {
+
+
+        NetManager newNet=new NetManager("124.71.34.129",12345);
+        for(NetworkMessageObserver nmo : netManager.getObservers())
+        {
+            newNet.addObserver(nmo);
+        }
         netManager.stopThread();
         netManagerThread.interrupt();
-        netManager=new NetManager("124.71.34.129",12345);
+        netManager.close();
+        netManager=newNet;
         netManagerThread=new Thread(netManager);
         netManagerThread.setDaemon(true);
         netManagerThread.start();

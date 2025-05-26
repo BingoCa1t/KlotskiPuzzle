@@ -15,6 +15,7 @@ import com.badlogic.gdx.video.VideoPlayerCreator;
 import com.badlogic.gdx.video.scenes.scene2d.VideoActor;
 import com.klotski.Main;
 import com.badlogic.gdx.video.VideoPlayer;
+import com.klotski.polygon.SettingGroup;
 import com.klotski.utils.ImageButtonStyleHelper;
 import com.klotski.utils.logger.Logger;
 
@@ -134,8 +135,6 @@ public class WelcomeScene extends KlotskiScene
         stage.addActor(registerButton);
         stage.addActor(loginButton);
         stage.addActor(guestButton);
-
-
 
 
 

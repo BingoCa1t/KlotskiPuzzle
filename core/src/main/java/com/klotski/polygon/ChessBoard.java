@@ -6,8 +6,10 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.klotski.settings.SettingManager;
 import com.klotski.utils.logger.Logger;
 import com.klotski.logic.ChessBoardArray;
 import com.klotski.logic.Pos;
@@ -23,6 +25,7 @@ public class ChessBoard extends Group
 {
     //ChessBoardArray为后端，负责维护数组
     //Chess只有X和Y坐标（整数），由ChessBoard负责转换成像素坐标
+    private SettingManager settingManager;
     /** 音效 */
     private Sound selectedSound;
     private Sound moveSound;
@@ -46,11 +49,12 @@ public class ChessBoard extends Group
         return virtualChess;
     }
 
-    public ChessBoard()
+    public ChessBoard(SettingManager settings)
     {
         super();
         moveSound= Gdx.audio.newSound(Gdx.files.internal("music/move.mp3"));
         selectedSound=Gdx.audio.newSound(Gdx.files.internal("music/select.mp3"));
+        this.settingManager = settings;
     }
 
     @Override
@@ -99,7 +103,7 @@ public class ChessBoard extends Group
         MoveToAction action = Actions.moveTo(p.getX() * Chess.squareHW, p.getY() * Chess.squareHW, 0.5F, Interpolation.smoother);
         // 将动作附加在演员身上, 执行动作
         chess.addAction(action);
-        moveSound.play();
+        moveSound.setVolume(moveSound.play(),settingManager.gameSettings.sound.effectsVolume);
         chess.setXYWithoutChangingState(p);
 
     }
@@ -127,7 +131,8 @@ public class ChessBoard extends Group
             chess2.disSelect();
         }
         chess.select();
-        selectedSound.play();
+        selectedSound.setVolume(selectedSound.play(),settingManager.gameSettings.sound.effectsVolume);
+
     }
 
 
