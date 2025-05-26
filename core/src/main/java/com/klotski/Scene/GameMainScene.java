@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
-import com.klotski.aigo.Solver;
 import com.klotski.aigo2.Game;
 import com.klotski.archive.LevelArchive;
 import com.klotski.assets.ImageAssets;
@@ -50,6 +49,7 @@ import java.util.regex.Pattern;
  */
 public class GameMainScene extends KlotskiScene implements NetworkMessageObserver
 {
+    private boolean isLoadArchive = true;
     /** 加入显示步数表的功能 */
     private Table dataTable;
     /** 观战时WatchScene提供的从服务器获取到的存档 */
@@ -158,13 +158,14 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         // 棋步记录表
         dataTable = new Table();
         //初始化棋盘控制器ChessBoardControl
-        cbc = new ChessBoardControl(gameMain, dataTable);
+
         //从地图管理器获取地图
         mapData = gameMain.getMapDataManager().getMapDataList().get(mapID);
         //如果处于游戏中，则使cbc加载地图及存档（存档从存档管理器获得），并通知服务器开始游戏
         if(mapData.getMapType()==0) isTimeAttack=false;
         if(mapData.getMapType()==1) isTimeAttack=true;
         if(mapData.getMapType()==2) isObstacle=true;
+        cbc = new ChessBoardControl(gameMain, dataTable,isLoadArchive,!isObstacle);
         if (!isWatch)
         {
             cbc.load(mapData);
@@ -297,13 +298,16 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             {
              if(cbc.getHints()!=null && !cbc.getHints().isEmpty())
              {
+                 cbc.select(cbc.getChessByPosition(cbc.getHints().getFirst().origin));
                  cbc.move(cbc.getHints().getFirst());
+
                  refreshWidget();
              }
              else {
                     cbc.calculateHints();
                  if(cbc.getHints()!=null && !cbc.getHints().isEmpty())
                  {
+                     cbc.select(cbc.getChessByPosition(cbc.getHints().getFirst().origin));
                      cbc.move(cbc.getHints().getFirst());
                      refreshWidget();
 
@@ -454,6 +458,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 if(cbc.getSelectingChess()!=null && cbc.getSelectingChess() != cbc.getMainChess())
                 {
                     cbc.move(cbc.getSelectingChess(), cbc.getSelectingChess().getPosition());
+                    cbc.getSelectingChess().disSelect();
                     refreshWidget();
                 }
             }
@@ -537,6 +542,12 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     {
         super(gameMain);
         this.mapID = mapID;
+    }
+    public GameMainScene(Main gameMain,int mapID,boolean isLoadArchive)
+    {
+        super(gameMain);
+        this.mapID = mapID;
+        this.isLoadArchive = isLoadArchive;
     }
 
     /**

@@ -158,8 +158,6 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
     {
 
         super.init();
-
-
         gameMain.getNetManager().addObserver(this);
         Timer.schedule(new Timer.Task()
         {
@@ -314,6 +312,7 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
      * 邮箱 -> 信息:邮箱|昵称|状态（|存档）
      */
     private Map<String,String> u=new ConcurrentHashMap<>();
+    private int counter=0;
     @Override
     public void update(MessageCode code, String message)
     {
@@ -337,7 +336,16 @@ public class WatchScene extends KlotskiScene implements NetworkMessageObserver
                 String i=u.get(gms.getWatchEmail());
                 if(gms.getIsWatch() && !Objects.equals(i.split(Pattern.quote("|"))[2], "2"))
                 {
-                    gms.exitWatch();
+                    counter++;
+                    if(counter>=3)
+                    {
+                        gms.exitWatch();
+                        counter=0;
+                    }
+                }
+                else
+                {
+                    counter=0;
                 }
             }
             if (dataTable == null) dataTable = new Table();

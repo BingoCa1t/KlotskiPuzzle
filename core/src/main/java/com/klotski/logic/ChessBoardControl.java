@@ -76,6 +76,7 @@ public class ChessBoardControl
     private boolean isPlayback = false;
     /** 实时计算的AI下一步（Hint）*/
     ArrayList<MoveStep> hints=new ArrayList<>();
+    private boolean enableHint = true;
     @Deprecated
     public ChessBoardControl(Main gameMain)
     {
@@ -91,6 +92,15 @@ public class ChessBoardControl
         this.gameMain = gameMain;
         this.jsonManager = new JsonManager();
         this.dataTable = dataTable;
+    }
+    public ChessBoardControl(Main gameMain, Table dataTable,boolean isLoadArchive,boolean enableHint)
+    {
+        this.archiveManager = gameMain.getUserManager().getArchiveManager();
+        this.gameMain = gameMain;
+        this.jsonManager = new JsonManager();
+        this.dataTable = dataTable;
+        this.isLoadArchive = isLoadArchive;
+        this.enableHint = enableHint;
     }
 
     /** 获取棋盘 */
@@ -358,6 +368,8 @@ public class ChessBoardControl
         }
         if(chess.getPosition().equals(pp))
         {
+            if(!chess.isAppear())
+                return false;
             chess.explode();
             deleteChess(chess);
 
@@ -414,7 +426,8 @@ public class ChessBoardControl
 
             }
             chessBoard.move(chess, pp);
-            hints=Game.gameSolver(getChessBoard().getChesses());
+            if(enableHint) hints=Game.gameSolver(getChessBoard().getChesses());
+
             if (!isPlayback && isWin())
             {
 
@@ -706,7 +719,7 @@ public class ChessBoardControl
     }
     public void calculateHints()
     {
-        hints=Game.gameSolver(getChessBoard().getChesses());
+        if(enableHint) hints=Game.gameSolver(getChessBoard().getChesses());
     }
     public Chess getMainChess()
     {

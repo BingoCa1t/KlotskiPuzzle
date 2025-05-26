@@ -1,16 +1,24 @@
 package com.klotski.polygon;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
+import com.klotski.Scene.LevelSelectScene;
 import com.klotski.assets.ImageAssets;
+import com.klotski.utils.SmartBitmapFont;
 
 import java.util.ArrayList;
 
@@ -22,7 +30,6 @@ public class LevelGroup extends Group
     public Main gameMain;
     ArrayList<Integer> levels = new ArrayList<>();
     private int currentLevel = 0;
-
     private final float levelHW = 140f;
     private final float Y1 = 550f;
     private final float Y2 = 300f;
@@ -138,8 +145,16 @@ public class LevelGroup extends Group
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, mapID));
-                currentLevel = levels.indexOf(mapID);
+                if(!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).getMoveSteps()==null)&&!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).getMoveSteps().isEmpty()))
+                {
+                    if(gameMain.getScreenManager().getCurrentScreen() instanceof LevelSelectScene lss)
+                    {
+                        lss.showDialog(mapID);
+                    }
+                }
+                else {
+                    gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, mapID));
+                }
             }
         });
         if(!isOpen) la.setTouchable(Touchable.disabled);
@@ -179,5 +194,93 @@ public class LevelGroup extends Group
     {
         this.currentLevel = currentLevel;
     }
+    /*
+    private Skin customSkin;
+    private TextButton yesButton, noButton;
+    private Label resultLabel;
+    private boolean dialogResult = false;
+    private boolean dialogVisible = false;
+    private void createCustomSkin() {
+        customSkin = new Skin();
 
+        // 创建简单的白色纹理作为基础
+        Texture whiteTexture = gameMain.getAssetsPathManager().get(ImageAssets.White);
+        customSkin.add("white", whiteTexture);
+
+        // 创建字体
+
+        customSkin.add("default-font", new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),60));
+
+        // 创建按钮样式
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.up = new TextureRegionDrawable(customSkin.getRegion("white"))
+            .tint(new Color(0.4f, 0.4f, 0.4f, 1));
+        buttonStyle.down = new TextureRegionDrawable(customSkin.getRegion("white"))
+            .tint(new Color(0.6f, 0.6f, 0.6f, 1));
+        buttonStyle.checked = new TextureRegionDrawable(customSkin.getRegion("white"))
+            .tint(new Color(0.6f, 0.6f, 0.6f, 1));
+        buttonStyle.over = new TextureRegionDrawable(customSkin.getRegion("white"))
+            .tint(new Color(0.5f, 0.5f, 0.5f, 1));
+        buttonStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),60);
+        customSkin.add("default", buttonStyle);
+
+        // 创建标签样式
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),60);
+        labelStyle.fontColor = Color.BLUE;
+        customSkin.add("default", labelStyle);
+
+        // 创建对话框样式
+        Window.WindowStyle windowStyle = new Window.WindowStyle();
+        windowStyle.titleFont = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),60);
+        windowStyle.background = new TextureRegionDrawable(customSkin.getRegion("white"))
+            .tint(new Color(0.3f, 0.3f, 0.3f, 0.9f));
+        windowStyle.titleFontColor = Color.WHITE;
+        customSkin.add("default", windowStyle);
+    }
+    private Boolean isLoadArchive;
+    private void showLoadSaveDialog(int mapID) {
+        // 创建对话框
+        final Dialog dialog = new Dialog("载入存档", customSkin) {
+            @Override
+            protected void result(Object object) {
+                currentLevel = levels.indexOf(mapID);
+                dialogResult = (Boolean) object;
+                isLoadArchive = dialogResult;
+                dialogVisible = false;
+                if(Boolean.TRUE.equals(isLoadArchive))
+                {
+                    gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, mapID,true));
+                }
+                else if(Boolean.FALSE.equals(isLoadArchive))
+                {
+                    gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, mapID,false));
+                }
+
+            }
+        };
+        dialog.setSize(400, 300);
+        dialog.setPosition(getStage().getWidth() / 2 - dialog.getWidth() / 2,
+            getStage().getHeight() / 2 - dialog.getHeight() / 2);
+        dialog.setMovable(false);
+        dialog.setModal(true);
+        // 添加文本内容
+        dialog.text("是否载入存档？");
+
+        // 添加按钮
+        yesButton = new TextButton("是", customSkin);
+        noButton = new TextButton("否", customSkin);
+
+        // 使用 pad 方法设置按钮之间的间距
+        dialog.button(yesButton, true).padRight(20);
+        dialog.button(noButton, false);
+
+        // 显示对话框
+        dialog.show(this.getStage());
+        dialog.toFront();
+        dialogVisible = true;
+    }
+
+
+     */
 }

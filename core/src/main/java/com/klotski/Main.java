@@ -12,6 +12,10 @@ import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
 import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
+import com.klotski.utils.reedSolomon.RSDecoder;
+import com.klotski.utils.reedSolomon.RSEncoder;
+
+import java.io.IOException;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game
@@ -63,6 +67,11 @@ public class Main extends Game
         musicManager.loadMusic(MusicManager.MusicAudio.GameMusic, MusicAssets.GameMusic);
         musicManager.loadMusic(MusicManager.MusicAudio.MainBGM, MusicAssets.MainBGM);
         screenManager.setScreen(new WelcomeScene(this));
+
+            String s=RSEncoder.encoder("test123456TEST123456");
+            System.out.println(s);
+            System.out.println(RSDecoder.decoder(s));
+
 
     }
 
@@ -126,4 +135,5 @@ public class Main extends Game
         netManagerThread.setDaemon(true);
         netManagerThread.start();
     }
+
 }
