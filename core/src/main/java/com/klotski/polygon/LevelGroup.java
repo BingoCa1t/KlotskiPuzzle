@@ -18,6 +18,7 @@ import com.klotski.Main;
 import com.klotski.Scene.GameMainScene;
 import com.klotski.Scene.LevelSelectScene;
 import com.klotski.assets.ImageAssets;
+import com.klotski.logic.LevelStatus;
 import com.klotski.utils.SmartBitmapFont;
 
 import java.util.ArrayList;
@@ -145,7 +146,7 @@ public class LevelGroup extends Group
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                if(!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).getMoveSteps()==null)&&!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).getMoveSteps().isEmpty()))
+                if(!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).getMoveSteps()==null)&&!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).getMoveSteps().isEmpty())&&gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).getLevelStatus()!= LevelStatus.Succeed)
                 {
                     if(gameMain.getScreenManager().getCurrentScreen() instanceof LevelSelectScene lss)
                     {

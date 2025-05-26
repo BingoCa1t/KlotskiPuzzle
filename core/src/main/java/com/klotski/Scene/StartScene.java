@@ -185,6 +185,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
                 gameMain.setUserManager(new UserManager(gameMain,gameMain.getNetManager(),gameMain.getScreenManager()));
                 gameMain.getScreenManager().clearScreenStack();
                 gameMain.setScreen(new WelcomeScene(gameMain));
+                gameMain.getMusicManager().play(MusicManager.MusicAudio.GameMusic,true);
             }
         });
 

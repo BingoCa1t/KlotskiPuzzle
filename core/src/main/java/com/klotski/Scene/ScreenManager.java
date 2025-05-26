@@ -145,11 +145,10 @@ public class ScreenManager
 
     public void returnRootScreen()
     {
-
         while(screenStack.size()>1)
         {
             screenStack.pop();
         }
-        setScreen(screenStack.pop());
+        setScreenWithoutSaving(screenStack.pop());
     }
 }

@@ -37,6 +37,7 @@ import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
@@ -49,6 +50,7 @@ import java.util.regex.Pattern;
  */
 public class GameMainScene extends KlotskiScene implements NetworkMessageObserver
 {
+    private Timer localTimer = new Timer();
     private boolean isLoadArchive = true;
     /** 加入显示步数表的功能 */
     private Table dataTable;
@@ -234,7 +236,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         }
 
         //每秒更新计时器和时间
-        Timer.schedule(new Timer.Task()
+        localTimer.schedule(new Timer.Task()
         {
             @Override
             public void run()
@@ -859,7 +861,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
      */
     public void exitWatch()
     {
-        Timer.schedule(new Timer.Task()
+        localTimer.schedule(new Timer.Task()
         {
             @Override
             public void run()
@@ -874,6 +876,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     {
         gameMain.getMusicManager().play(MusicManager.MusicAudio.MainBGM,true);
         super.dispose();
+        localTimer.stop();
+
     }
     public void setTimeAttack(boolean isTimeAttack)
     {
