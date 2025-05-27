@@ -382,6 +382,11 @@ public class ChessBoardControl
             {
                 chess.setAppear(true);
                 chessBoardArray.init();
+                //存档
+                archiveManager.saveByNetwork();
+                //所有客户端一直向服务器发送LevelArchive和最近一次移动：0015|email|{LevelArchive}|{MoveStep}
+                gameMain.getNetManager().sendMessage(MessageCode.UpdateWatch, gameMain.getUserManager().getActiveUser().getEmail(), jsonManager.getJsonString(levelArchive), moveSteps.isEmpty() ? "0" : jsonManager.getJsonString(moveSteps.peek()), isBack ? "1" : "0");
+
                 return true;
             }
             chess.explode();
