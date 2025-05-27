@@ -230,6 +230,12 @@ public class ChessBoardControl
         {
             levelArchive.setMoveSteps(moveSteps);
         }
+        if(!isLoadArchive)
+        {
+            levelArchive.setMoveSteps(moveSteps);
+            levelArchive.setLevelStatus(LevelStatus.UpComing);
+            levelArchive.setSeconds(-1);
+        }
         //如果存在存档，且用户选择载入存档<br>（逻辑后补）</br>，则载入存档
         else if (this.isWatch || isLoadArchive)
         {
@@ -283,6 +289,7 @@ public class ChessBoardControl
                 chessBoardArray = new ChessBoardArray(chessBoard.getChesses(), mapData.getWidth(), mapData.getHeight(), exits, mapData.getMainIndex());
                 levelArchive.setMoveSteps(moveSteps);
             }
+
         }
         if (!isWatch)
         {

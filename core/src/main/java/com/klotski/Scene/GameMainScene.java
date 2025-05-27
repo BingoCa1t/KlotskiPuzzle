@@ -242,7 +242,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
                 {
                     tw.setTime(0);
                 }
-                if(isTimeAttack&&cbc.getSecond()>=90) settleFail(90, cbc.getSteps());
+                if(isTimeAttack&&cbc.getSecond()>=90 &&gameMain.getScreenManager().getCurrentScreen()==GameMainScene.this) settleFail(90, cbc.getSteps());
             }
         }, 0f, 1f);
 
@@ -405,8 +405,8 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //设置按钮
         Button.ButtonStyle settingbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.SettingButton));;
         Button settingButton = new Button(settingbs);
-        settingButton.setPosition(1740, 900);
-        settingButton.setSize(120, 120);
+        settingButton.setPosition(1740, 950);
+        settingButton.setSize(100, 100);
         settingButton.addListener(new ClickListener()
         {
             @Override
@@ -452,13 +452,18 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         directionBackground.setPosition(826,48);
         Image stepBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainStepBackground));
         stepBackground.setPosition(826,635);
+
+        Image stepBackground2 =new Image(gameMain.getAssetsPathManager().get(ImageAssets.ObstacleStepBackground));
+        stepBackground2.setPosition(1157,635);
+        stepBackground.setVisible(!isObstacle);
+        stepBackground2.setVisible(isObstacle);
         Image recordBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainRecordBackground));
         recordBackground.setPosition(1414,47);
 
         Button.ButtonStyle boombs = new Button.ButtonStyle();
         boombs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.BoomButton));
         Button boomButton = new Button(boombs);
-        boomButton.setPosition(1170, 60);
+        boomButton.setPosition(1220, 150);
         boomButton.setSize(120, 120);
         boomButton.addListener(new ClickListener()
         {
@@ -476,7 +481,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         if(isObstacle)
         {
-            settingButton.setVisible(false);
+
             downButton.setVisible(false);
             leftButton.setVisible(false);
             rightButton.setVisible(false);
@@ -486,6 +491,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         //将所有演员添加到舞台
         stage.addActor(background);
         stage.addActor(stepBackground);
+        stage.addActor(stepBackground2);
         stage.addActor(directionBackground);
         stage.addActor(recordBackground);
         stage.addActor(tw);
