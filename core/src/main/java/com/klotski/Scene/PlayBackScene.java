@@ -343,8 +343,8 @@ public class PlayBackScene extends KlotskiScene
         //设置按钮
         Button.ButtonStyle settingbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.SettingButton));;
         Button settingButton = new Button(settingbs);
-        settingButton.setPosition(1740, 900);
-        settingButton.setSize(120, 120);
+        settingButton.setPosition(1740, 950);
+        settingButton.setSize(100, 100);
         settingButton.addListener(new ClickListener()
         {
             @Override

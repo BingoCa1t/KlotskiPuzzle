@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.klotski.music.MusicManager;
 import com.klotski.settings.SettingManager;
 import com.klotski.utils.SmartBitmapFont;
 
@@ -58,7 +59,7 @@ public class SettingGroup extends Group {
     Label musicVolumeLabel;
     Label soundVolumeLabel;
 
-    public SettingGroup(SettingManager settingManager)
+    public SettingGroup(SettingManager settingManager, MusicManager musicManager)
     {
         // 创建自定义皮肤
         this.skin = createCustomSkin();
@@ -154,6 +155,7 @@ public class SettingGroup extends Group {
                 mainVolume = mainVolumeSlider.getValue();
                 mainVolumeValueLabel.setText(String.format("%.0f%%", mainVolume * 100));
                 settingManager.gameSettings.sound.masterVolume=mainVolume;
+                musicManager.setVolume(mainVolume*musicVolumeSlider.getValue());
             }
         });
 
@@ -173,6 +175,7 @@ public class SettingGroup extends Group {
                 musicVolume = musicVolumeSlider.getValue();
                 musicVolumeValueLabel.setText(String.format("%.0f%%", musicVolume * 100));
                 settingManager.gameSettings.sound.musicVolume=musicVolume;
+                musicManager.setVolume(musicVolume*mainVolumeSlider.getValue());
             }
         });
 

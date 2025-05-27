@@ -26,7 +26,7 @@ public class SettingScene extends KlotskiScene
     {
         super.init();
         ImageButton backButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.RegisterBackButton)));
-        backButton.setPosition(100,900);
+        backButton.setPosition(100,950);
         backButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y)
@@ -34,9 +34,9 @@ public class SettingScene extends KlotskiScene
                 gameMain.getScreenManager().returnPreviousScreen();
             }
         });
-        group = new SettingGroup(gameMain.getSettingManager());
+        group = new SettingGroup(gameMain.getSettingManager(),gameMain.getMusicManager());
         stage.addActor(group);
-        group.setPosition(200, 200);
+        group.setPosition(250, 300);
         stage.addActor(backButton);
     }
     @Override
