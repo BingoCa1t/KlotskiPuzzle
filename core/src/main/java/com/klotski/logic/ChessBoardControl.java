@@ -376,8 +376,11 @@ public class ChessBoardControl
         }
         if(chess.getPosition().equals(pp))
         {
-            if(!chess.isAppear())
+            if(!chess.isAppear() && !isBack)
                 return false;
+            if(!chess.isAppear() && isBack)
+                chess.setAppear(true);
+                chessBoardArray.init();
             chess.explode();
             deleteChess(chess);
 
@@ -579,7 +582,8 @@ public class ChessBoardControl
             MoveStep ms = moveSteps.pop();
             if(ms.destination.equals(ms.origin))
             {
-                getChessByPosition(ms.destination).setAppear(true);
+                //getChessByPosition(ms.destination).setAppear(true);
+                move(getChessByPosition(ms.destination), ms.origin, true);
                 dataLabels.removeLast();
                 refreshDataTable();
                 return ms;
