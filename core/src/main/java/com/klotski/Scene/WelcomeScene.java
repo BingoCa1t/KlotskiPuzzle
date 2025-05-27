@@ -41,6 +41,7 @@ public class WelcomeScene extends KlotskiScene
     private ImageButton loginButton;
     private ImageButton guestButton;
     private Image back;
+    private Image title;
     public WelcomeScene(Main gameMain)
     {
         super(gameMain);
@@ -62,7 +63,7 @@ public class WelcomeScene extends KlotskiScene
     {
         super.init();
         back=new Image(new Texture(Gdx.files.internal("welcomeScene/back.png")));
-        back.setPosition(250,200);
+        back.setPosition(280,200);
         gameMain.getAssetsPathManager().startAssetsLoading();
 
         ImageButton.ImageButtonStyle rstyle = ImageButtonStyleHelper.createStyleFromTexture(
@@ -72,7 +73,7 @@ public class WelcomeScene extends KlotskiScene
             new Color(0.5f, 0.5f, 0.5f, 0.7f)
         );
         registerButton=new ImageButton(rstyle);
-        registerButton.setPosition(300,200);
+        registerButton.setPosition(400,200);
         registerButton.setSize(300,150);
         registerButton.addListener(new ClickListener(){
            @Override
@@ -88,7 +89,7 @@ public class WelcomeScene extends KlotskiScene
             new Color(0.5f, 0.5f, 0.5f, 0.7f)
         );
         loginButton=new ImageButton(lstyle);
-        loginButton.setPosition(700,200);
+        loginButton.setPosition(800,200);
         loginButton.setSize(300,150);
         loginButton.addListener(new ClickListener(){
             @Override
@@ -103,8 +104,9 @@ public class WelcomeScene extends KlotskiScene
             new Color(0.9f, 0.9f, 0.9f, 1f),
             new Color(0.5f, 0.5f, 0.5f, 0.7f)
         );
+
         guestButton=new ImageButton(gstyle);
-        guestButton.setPosition(1100,200);
+        guestButton.setPosition(1200,200);
         guestButton.setSize(300,150);
         guestButton.addListener(new ClickListener(){
             @Override
@@ -114,6 +116,8 @@ public class WelcomeScene extends KlotskiScene
             }
         });
 
+        title=new Image(new Texture("welcomeScene/klotski.png"));
+        title.setPosition(100,600);
         player = VideoPlayerCreator.createVideoPlayer();
         player.setLooping(true);
         try
@@ -135,6 +139,7 @@ public class WelcomeScene extends KlotskiScene
         stage.addActor(registerButton);
         stage.addActor(loginButton);
         stage.addActor(guestButton);
+        stage.addActor(title);
 
 
 

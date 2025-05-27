@@ -103,7 +103,7 @@ public class ChessBoard extends Group
         MoveToAction action = Actions.moveTo(p.getX() * Chess.squareHW, p.getY() * Chess.squareHW, 0.5F, Interpolation.smoother);
         // 将动作附加在演员身上, 执行动作
         chess.addAction(action);
-        moveSound.setVolume(moveSound.play(),settingManager.gameSettings.sound.effectsVolume);
+        moveSound.setVolume(moveSound.play(),settingManager.gameSettings.sound.effectsVolume*settingManager.gameSettings.sound.masterVolume);
         chess.setXYWithoutChangingState(p);
 
     }
@@ -131,7 +131,7 @@ public class ChessBoard extends Group
             chess2.disSelect();
         }
         chess.select();
-        selectedSound.setVolume(selectedSound.play(),settingManager.gameSettings.sound.effectsVolume);
+        selectedSound.setVolume(selectedSound.play(),settingManager.gameSettings.sound.effectsVolume*settingManager.gameSettings.sound.masterVolume);
 
     }
 

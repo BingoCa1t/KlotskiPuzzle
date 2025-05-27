@@ -111,8 +111,59 @@ public class ArchiveManager
     {
         TypeReference<HashMap<Integer, LevelArchive>> ref = new TypeReference<HashMap<Integer, LevelArchive>>() {};
         archive1=jsonManager.parseJsonToObject(json1, ref);
+        if(archive1==null)
+        {
+            archive1=new HashMap<>();
+            for(int i=1;i<=70;i++)
+            {
+                LevelArchive archive=new LevelArchive();
+                archive.setSeconds(-1);
+                archive.setStars(-1);
+                archive.setMapID(i);
+                archive.setLevelStatus(LevelStatus.Closed);
+                if(i==1||i==21||i==41)
+                {
+                    archive.setLevelStatus(LevelStatus.UpComing);
+                }
+                archive1.put(i, new LevelArchive());
+            }
+        }
         archive2=jsonManager.parseJsonToObject(json2,ref);
+        if(archive2==null)
+        {
+            archive1=new HashMap<>();
+            for(int i=1;i<=70;i++)
+            {
+                LevelArchive archive=new LevelArchive();
+                archive.setSeconds(-1);
+                archive.setStars(-1);
+                archive.setMapID(i);
+                archive.setLevelStatus(LevelStatus.Closed);
+                if(i==1||i==21||i==41)
+                {
+                    archive.setLevelStatus(LevelStatus.UpComing);
+                }
+                archive1.put(i, new LevelArchive());
+            }
+        }
         archive3=jsonManager.parseJsonToObject(json3,ref);
+        if(archive3==null)
+        {
+            archive1=new HashMap<>();
+            for(int i=1;i<=70;i++)
+            {
+                LevelArchive archive=new LevelArchive();
+                archive.setSeconds(-1);
+                archive.setStars(-1);
+                archive.setMapID(i);
+                archive.setLevelStatus(LevelStatus.Closed);
+                if(i==1||i==21||i==41)
+                {
+                    archive.setLevelStatus(LevelStatus.UpComing);
+                }
+                archive1.put(i, new LevelArchive());
+            }
+        }
         switch(active)
         {
             case 1:

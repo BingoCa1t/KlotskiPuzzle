@@ -183,6 +183,10 @@ public class UserManager implements NetworkMessageObserver
             //activeUser.setUserName("");
             //activeUser.setEmail();
             activeUser=jsonManager.parseJsonToObject(message, UserInfo.class);
+            if(activeUser==null)
+            {
+                guestLogin();
+            }
 
         }
         else if(code == MessageCode.SendArchive)
@@ -261,6 +265,7 @@ public class UserManager implements NetworkMessageObserver
         String[] m= Gdx.files.internal("defaultUserArchive.json").readString().split(Pattern.quote("|"));
         archiveManager=new ArchiveManager(activeUser,netManager);
         archiveManager.loadByNetwork(m[0],m[1],m[2],Integer.parseInt(m[3]));
+
 
     }
 }
