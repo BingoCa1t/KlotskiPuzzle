@@ -481,7 +481,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         if(isObstacle)
         {
-
+            upButton.setVisible(false);
             downButton.setVisible(false);
             leftButton.setVisible(false);
             rightButton.setVisible(false);
@@ -509,6 +509,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         stage.addActor(backButton);
         stage.addActor(mainTable);
         stage.addActor(settingButton);
+        stage.addActor(upButton);
         if(isObstacle) stage.addActor(boomButton);
 
 
