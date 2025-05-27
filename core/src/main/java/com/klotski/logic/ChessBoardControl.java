@@ -379,8 +379,11 @@ public class ChessBoardControl
             if(!chess.isAppear() && !isBack)
                 return false;
             if(!chess.isAppear() && isBack)
+            {
                 chess.setAppear(true);
                 chessBoardArray.init();
+                return true;
+            }
             chess.explode();
             deleteChess(chess);
 
