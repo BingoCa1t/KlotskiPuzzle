@@ -127,7 +127,7 @@ public class ChessBoardControl
         this.mapData = new MapData(mapData);
         this.levelArchive = new LevelArchive(levelArchive);
         this.second = levelArchive.getSeconds();
-        chessBoard = new ChessBoard();
+        chessBoard = new ChessBoard(gameMain.getSettingManager());
         Image background;
         Image chessBoardImage;
 
@@ -185,11 +185,11 @@ public class ChessBoardControl
     }
 
     /**
-     * 在观战时载入存档
+     * 载入存档
      *
-     * @param mapData
-     * @param levelArchive
-     * @param isWatch
+     * @param mapData 地图数据
+     * @param levelArchive 存档
+     * @param isWatch 是否为观战模式
      */
     public void load(MapData mapData, LevelArchive levelArchive, boolean isWatch)
     {
@@ -197,7 +197,7 @@ public class ChessBoardControl
         //创建MapData的副本，不要更改MapDataManager里的数据
         this.mapData = new MapData(mapData);
         this.levelArchive = levelArchive;
-        this.second = levelArchive.getSeconds();
+
         //后补（算了其实不需要）
         /*if(levelArchive==null)
         {
@@ -205,7 +205,7 @@ public class ChessBoardControl
         }
          */
         //archiveManager.getActiveArchive().replace(mapData.getMapID(),levelArchive);
-        chessBoard = new ChessBoard();
+        chessBoard = new ChessBoard(gameMain.getSettingManager());
         Image background;
         Image chessBoardImage;
         chessBoardImage = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardFrame));
@@ -256,11 +256,12 @@ public class ChessBoardControl
                     //moveSteps.push(moveStep);
                 }
                 levelArchive.setMoveSteps(moveSteps);
+                this.second = levelArchive.getSeconds();
             } catch (Exception e)
             {
                 Logger.warning("Chess archive load error: ", e.getMessage() + ", will not load archive");
                 moveSteps.clear();
-                chessBoard = new ChessBoard();
+                chessBoard = new ChessBoard(gameMain.getSettingManager());
                 Image background2;
                 Image chessBoardImage2;
                 chessBoardImage2 = new Image(gameMain.getAssetsPathManager().get(ImageAssets.ChessBoardFrame));

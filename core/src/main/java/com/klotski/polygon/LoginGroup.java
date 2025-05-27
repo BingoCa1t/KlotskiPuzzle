@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.klotski.assets.AssetsPathManager;
+import com.klotski.assets.ImageAssets;
 import com.klotski.utils.SmartBitmapFont;
 
 public class LoginGroup extends Group
@@ -26,10 +28,10 @@ public class LoginGroup extends Group
     private BitmapFont bitmapFont;
     private Image cursorImage;
     private Button loginButton;
-    public LoginGroup(String email)
+    public LoginGroup(String email, AssetsPathManager apm)
     {
         super();
-        cursorImage = new Image(new Texture(Gdx.files.internal("zuhe2.png")));
+        cursorImage = new Image(apm.get(ImageAssets.LoginScene));
         cursorImage.setPosition(-300,0);
         bitmapFont=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")),40);
         TextField.TextFieldStyle textFieldStyle=new TextField.TextFieldStyle();

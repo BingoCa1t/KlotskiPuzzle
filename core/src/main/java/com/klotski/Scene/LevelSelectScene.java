@@ -60,7 +60,7 @@ public class LevelSelectScene extends KlotskiScene
         selectLevelText.setPosition(550,900);
 
         // 关卡选择组
-        lg = new LevelGroup(gameMain);
+        lg = new LevelGroup(gameMain,this);
         for(int i : mapIDs)
         {
             lg.addLevel(i,archiveManager.getActiveArchive().get(i).getLevelStatus()!=LevelStatus.Closed);
@@ -146,6 +146,7 @@ public class LevelSelectScene extends KlotskiScene
     }
     public void nextLevel()
     {
+
         lg.nextLevel();
     }
     public void returnLevel()

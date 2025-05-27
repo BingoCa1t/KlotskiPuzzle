@@ -26,6 +26,7 @@ import com.klotski.network.NetworkMessageObserver;
 import com.klotski.polygon.UserInfoGroup;
 import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
+import com.klotski.utils.ImageButtonStyleHelper;
 import com.klotski.utils.SmartBitmapFont;
 import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
@@ -97,8 +98,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         //玩法组
         int buttonWidth=300;
         int buttonHeight=600;
-        Button.ButtonStyle sStyle = new Button.ButtonStyle();
-        sStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.StartButton1));
+        Button.ButtonStyle sStyle = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.StartButton1));
         Button startButton = new Button(sStyle);
         startButton.setPosition(300, 200);
         startButton.setSize(buttonWidth,buttonHeight);
@@ -118,8 +118,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         });
 
 
-        Button.ButtonStyle ssStyle = new Button.ButtonStyle();
-        ssStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.StartButton2));
+        Button.ButtonStyle ssStyle = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.StartButton3));
         Button sstartButton = new Button(ssStyle);
         sstartButton.setPosition(650, 200);
         sstartButton.setSize(buttonWidth,buttonHeight);
@@ -138,8 +137,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
             }
         });
 
-        Button.ButtonStyle sssStyle = new Button.ButtonStyle();
-        sssStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.StartButton3));
+        Button.ButtonStyle sssStyle = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.StartButton2));
         Button ssstartButton = new Button(sssStyle);
         ssstartButton.setSize(buttonWidth,buttonHeight);
         ssstartButton.setPosition(1000, 200);
@@ -156,8 +154,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         });
 
 
-        Button.ButtonStyle watchStyle = new Button.ButtonStyle();
-        watchStyle.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.WatchButton));
+        Button.ButtonStyle watchStyle = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.WatchButton));
         Button watchButton = new Button(watchStyle);
         watchButton.setPosition(1350, 200);
         watchButton.setSize(buttonWidth,buttonHeight);
@@ -174,7 +171,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         logoutStyle.font=new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("fonts/Gabriola.ttf")),70);
         logoutStyle.fontColor= Color.SKY;
         TextButton logoutButton = new TextButton("Logout",logoutStyle);
-        logoutButton.setPosition(450, 980);
+        logoutButton.setPosition(40, 880);
         logoutButton.addListener(new ClickListener()
         {
             @Override
@@ -183,6 +180,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
                 gameMain.getNetManager().removeObserver(gameMain.getUserManager());
                 gameMain.restartNetManager();
                 gameMain.setUserManager(new UserManager(gameMain,gameMain.getNetManager(),gameMain.getScreenManager()));
+                gameMain.getNetManager().addObserver(gameMain.getUserManager());
                 gameMain.getScreenManager().clearScreenStack();
                 gameMain.setScreen(new WelcomeScene(gameMain));
                 gameMain.getMusicManager().play(MusicManager.MusicAudio.GameMusic,true);
@@ -197,6 +195,19 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
             sstartButton.setPosition(800,200);
             ssstartButton.setPosition(1270,200);
         }
+        //设置按钮
+        Button.ButtonStyle settingbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.SettingButton));;
+        Button settingButton = new Button(settingbs);
+        settingButton.setPosition(1740, 900);
+        settingButton.setSize(120, 120);
+        settingButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().setScreen(new SettingScene(gameMain));
+            }
+        });
         stage.addActor(background);
         stage.addActor(userInfoGroup);
         stage.addActor(startButton);
@@ -204,6 +215,7 @@ public class StartScene extends KlotskiScene implements NetworkMessageObserver
         stage.addActor(sstartButton);
         stage.addActor(ssstartButton);
         stage.addActor(logoutButton);
+        stage.addActor(settingButton);
     }
 
     @Override

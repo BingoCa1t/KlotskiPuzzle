@@ -55,6 +55,8 @@ public enum ImageAssets
     SettleNextButton("settle\\nextButton.png"),
     SettleReturnButton("settle\\returnButton.png"),
     IsLoadArchiveDialog("levelSelect\\isLoadArchive.png"),
+    LoginScene("registerScene/loginScene.png"),
+    SettingButton("gameMainButton/settingButton.png"),
     YES("levelSelect\\YES_.png"),
     NO("levelSelect\\NO_.png"),
     f("chess\\y.png"),

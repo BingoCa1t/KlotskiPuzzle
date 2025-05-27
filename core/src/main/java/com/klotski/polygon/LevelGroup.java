@@ -40,12 +40,14 @@ public class LevelGroup extends Group
     private final float X3 = 500f;
     private final float X4 = 750f;
     private final float X5 = 1000f;
+    private LevelSelectScene levelSelectScene;
 
-    public LevelGroup(Main gameMain)
+    public LevelGroup(Main gameMain,LevelSelectScene levelSelectScene)
     {
         super();
         this.setPosition(350, 150);
         this.gameMain = gameMain;
+        this.levelSelectScene = levelSelectScene;
         //this.setSize(800, 1600);
     }
 
@@ -177,12 +179,34 @@ public class LevelGroup extends Group
     {
         if (currentLevel < levels.size() - 1)
         {
-            gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(++currentLevel)));
+            //gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(++currentLevel)));
+            ++currentLevel;
+            if(!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(levels.get(currentLevel)).getMoveSteps()==null)&&!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(levels.get(currentLevel)).getMoveSteps().isEmpty())&&gameMain.getUserManager().getArchiveManager().getActiveArchive().get(levels.get(currentLevel)).getLevelStatus()!= LevelStatus.Succeed)
+            {
+                if(gameMain.getScreenManager().getCurrentScreen() instanceof LevelSelectScene lss)
+                {
+                    lss.showDialog(levels.get(currentLevel));
+                }
+            }
+            else {
+                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(currentLevel)));
+            }
+
 
         } else
         {
-            gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.getFirst()));
             currentLevel = 0;
+            if(!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(levels.get(currentLevel)).getMoveSteps()==null)&&!(gameMain.getUserManager().getArchiveManager().getActiveArchive().get(levels.get(currentLevel)).getMoveSteps().isEmpty())&&gameMain.getUserManager().getArchiveManager().getActiveArchive().get(levels.get(currentLevel)).getLevelStatus()!= LevelStatus.Succeed)
+            {
+                if(gameMain.getScreenManager().getCurrentScreen() instanceof LevelSelectScene lss)
+                {
+                    lss.showDialog(levels.get(currentLevel));
+                }
+            }
+            else {
+                gameMain.getScreenManager().setScreen(new GameMainScene(gameMain, levels.get(currentLevel)));
+            }
+
         }
     }
 

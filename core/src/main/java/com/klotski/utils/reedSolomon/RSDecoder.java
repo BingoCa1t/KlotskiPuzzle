@@ -6,8 +6,11 @@
 
 package com.klotski.utils.reedSolomon;
 
+import com.klotski.utils.logger.Logger;
+
 import java.nio.ByteBuffer;
 import java.util.Base64;
+import java.util.regex.Pattern;
 
 /**
  * Command-line program that decodes data using Reed-Solomon 4+2.
@@ -26,8 +29,9 @@ public class RSDecoder
 
     public static String decoder(String input) {
         // 检查输入是否包含分片分隔符
-        if (!input.contains("|")) {
-            throw new IllegalArgumentException("输入格式错误：缺少分片分隔符 '|'");
+        if (!input.contains("*&*&")) {
+            Logger.error( "输入格式错误：缺少分片分隔符 '*&*&':"+ input );
+            return input;
         }
 
         byte [][] shards = new byte [TOTAL_SHARDS] [];
@@ -36,11 +40,12 @@ public class RSDecoder
         int shardCount = 0;
 
         // 处理 | 分隔的输入
-        String[] shardStrings = input.split("\\|");
+        String[] shardStrings = input.split(Pattern.quote("*&*&"));
 
         // 验证分片数量
         if (shardStrings.length != TOTAL_SHARDS) {
-            throw new IllegalArgumentException("输入分片数量错误，期望 " + TOTAL_SHARDS + " 个分片，实际 " + shardStrings.length);
+            Logger.error("输入分片数量错误，期望 " + TOTAL_SHARDS + " 个分片，实际 " + shardStrings.length);
+            return input;
         }
 
         // 解码Base64分片
@@ -78,7 +83,8 @@ public class RSDecoder
             if (present) presentCount++;
         }
         if (presentCount < DATA_SHARDS) {
-            throw new IllegalArgumentException("可用分片不足，至少需要 " + DATA_SHARDS + " 个分片，实际找到 " + presentCount);
+             Logger.error("可用分片不足，至少需要 " + DATA_SHARDS + " 个分片，实际找到 " + presentCount);
+             return null;
         }
 
         // 为缺失的分片创建空缓冲区
@@ -103,7 +109,7 @@ public class RSDecoder
 
         // 验证文件大小是否合理
         if (fileSize < 0 || fileSize > allBytes.length - BYTES_IN_INT) {
-            throw new IllegalArgumentException("无效的文件大小：" + fileSize);
+            Logger.debug("无效的文件大小：" + fileSize);
         }
 
         // 返回解码后的原始数据

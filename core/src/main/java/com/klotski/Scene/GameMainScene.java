@@ -2,12 +2,10 @@ package com.klotski.Scene;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -17,10 +15,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.klotski.Main;
-import com.klotski.aigo2.Game;
 import com.klotski.archive.LevelArchive;
 import com.klotski.assets.ImageAssets;
 import com.klotski.logic.ChessBoardControl;
+import com.klotski.logic.LevelStatus;
 import com.klotski.logic.MoveStep;
 import com.klotski.logic.Pos;
 import com.klotski.map.MapData;
@@ -36,10 +34,7 @@ import com.klotski.utils.SmartBitmapFont;
 import com.klotski.utils.json.JsonManager;
 import com.klotski.utils.logger.Logger;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -219,7 +214,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         ls.fontColor = Color.WHITE;
         stepLabel = new Label("00", ls);
         stepLabel.setPosition(1200, 800);
-        if(isObstacle) stepLabel.setPosition(1200,600);
+        if(isObstacle) stepLabel.setPosition(1200,645);
 
         //向舞台添加键盘移动棋子监听器
         stage.addListener(new ChessBoardListener());
@@ -407,6 +402,19 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             }
         });
 
+        //设置按钮
+        Button.ButtonStyle settingbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.SettingButton));;
+        Button settingButton = new Button(settingbs);
+        settingButton.setPosition(1740, 900);
+        settingButton.setSize(120, 120);
+        settingButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().setScreen(new SettingScene(gameMain));
+            }
+        });
         // 步数列表功能
         Label.LabelStyle ls2 = new Label.LabelStyle();
         ls2.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 40);
@@ -468,7 +476,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
 
         if(isObstacle)
         {
-            upButton.setVisible(false);
+            settingButton.setVisible(false);
             downButton.setVisible(false);
             leftButton.setVisible(false);
             rightButton.setVisible(false);
@@ -488,12 +496,13 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
         stage.addActor(restartButton);
         stage.addActor(undoButton);
         stage.addActor(hintButton);
-        stage.addActor(upButton);
+        stage.addActor(settingButton);
         stage.addActor(downButton);
         stage.addActor(leftButton);
         stage.addActor(rightButton);
         stage.addActor(backButton);
         stage.addActor(mainTable);
+        stage.addActor(settingButton);
         if(isObstacle) stage.addActor(boomButton);
 
 
@@ -503,7 +512,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             restartButton.setTouchable(Touchable.disabled);
             undoButton.setTouchable(Touchable.disabled);
             hintButton.setTouchable(Touchable.disabled);
-            upButton.setTouchable(Touchable.disabled);
+            settingButton.setTouchable(Touchable.disabled);
             downButton.setTouchable(Touchable.disabled);
             leftButton.setTouchable(Touchable.disabled);
             rightButton.setTouchable(Touchable.disabled);
@@ -631,20 +640,16 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             //涉及到OpenGL，发送到主线程执行
             Gdx.app.postRunnable(() ->
             {
-                if(l.getMapID()!=this.mapID)
+                if(l.getMapID()!=this.mapID || l.getMoveSteps()==null || l.getMoveSteps().isEmpty())
                 {
                     GameMainScene sb=new GameMainScene(gameMain, new LevelArchive(l),str[0]);
                     gameMain.getNetManager().removeObserver(this);
                     gameMain.getScreenManager().setScreenWithoutSaving(sb);
-
                     return;
                 }
                 // 执行收到的MoveStep
                 cbc.setSecond(l.getSeconds());
-
-
                 //如果是正常移动
-
                 if(str.length<4||Objects.equals(str[3], "0"))
                 {
                     if (moveStep == null) return;
@@ -839,6 +844,7 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
             }
         } else
         {
+            sg.setTouchable(Touchable.disabled);
             if(!gameMain.getUserManager().getActiveUser().isGuest())
             {
                 gameMain.getNetManager().sendMessage("0041|" + gameMain.getUserManager().getActiveUser().getEmail());
@@ -849,6 +855,10 @@ public class GameMainScene extends KlotskiScene implements NetworkMessageObserve
     }
     public void settleFail(int second, int step)
     {
+        gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).setLevelStatus(LevelStatus.UpComing);
+        gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).setMoveSteps(null);
+        gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).setSeconds(-1);
+        gameMain.getUserManager().getArchiveManager().getActiveArchive().get(mapID).setStars(-1);
         settle(-2,second,step);
     }
     public boolean getIsWatch()

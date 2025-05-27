@@ -26,6 +26,7 @@ import com.klotski.logic.MoveStep;
 import com.klotski.map.MapData;
 import com.klotski.polygon.StarProgress;
 import com.klotski.polygon.TimerW;
+import com.klotski.utils.ImageButtonStyleHelper;
 import com.klotski.utils.ScheduledTask;
 import com.klotski.utils.SmartBitmapFont;
 
@@ -146,7 +147,10 @@ public class PlayBackScene extends KlotskiScene
         recordBackground.setPosition(1414,47);
         Image buttonBackground =new Image(gameMain.getAssetsPathManager().get(ImageAssets.pbButtonBackground));
         buttonBackground.setPosition(1150,47);
-        if(!isObstacle) buttonBackground.setVisible(false);
+        Image buttonBackground2=new Image(gameMain.getAssetsPathManager().get(ImageAssets.GameMainDirectionBackground));
+        buttonBackground2.setPosition(822,318);
+        buttonBackground.setVisible(isObstacle);
+        buttonBackground2.setVisible(!isObstacle);
         //将棋盘恢复到初始状态，同时存储步数
         while(cbc.getSteps()>0)
         {
@@ -187,44 +191,44 @@ public class PlayBackScene extends KlotskiScene
         快进：到达终局
         快退：到达开始处
          */
-        backButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbBackButton)));
-        backKButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbBackKButton)));
-        nextButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbNextButton)));
-        nextTButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbNextTButton)));
+        backButton=new ImageButton(ImageButtonStyleHelper.createStyleFromTexture(gameMain.getAssetsPathManager().get(ImageAssets.pbBackButton)));
+        backKButton=new ImageButton(ImageButtonStyleHelper.createStyleFromTexture(gameMain.getAssetsPathManager().get(ImageAssets.pbBackKButton)));
+        nextButton=new ImageButton(ImageButtonStyleHelper.createStyleFromTexture(gameMain.getAssetsPathManager().get(ImageAssets.pbNextButton)));
+        nextTButton=new ImageButton(ImageButtonStyleHelper.createStyleFromTexture(gameMain.getAssetsPathManager().get(ImageAssets.pbNextTButton)));
         playDrawable=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton));
-        ImageButton.ImageButtonStyle playStyle=new ImageButton.ImageButtonStyle();
-        playStyle.imageDown = playDrawable;
-        playStyle.imageUp = playDrawable;
-        playButton=new ImageButton(new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPlayButton)));
-        pauseDrawable=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPauseButton));
 
-        backButton.setSize(80,80);
-        backKButton.setSize(80,80);
-        nextButton.setSize(80,80);
-        nextTButton.setSize(80,80);
-        playButton.setSize(80,80);
+        playButton=new ImageButton(playDrawable);;
+        pauseDrawable=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.pbPauseButton));
+        int hw=100;
+        backButton.setSize(hw,hw);
+        backKButton.setSize(hw,hw);
+        nextButton.setSize(hw,hw);
+        nextTButton.setSize(hw,hw);
+        playButton.setSize(hw,hw);
         backKButton.setPosition(0,0);
-        backButton.setPosition(70,0);
-        playButton.setPosition(140,0);
-        nextButton.setPosition(210,0);
-        nextTButton.setPosition(280,0);
-        group.setPosition(825,400);
+        backButton.setPosition(90,0);
+        playButton.setPosition(190,0);
+        nextButton.setPosition(290,0);
+        nextTButton.setPosition(380,0);
+        group.setPosition(845,400);
         if(isObstacle)
         {
             group.setPosition(1200,150);
             backKButton.setPosition(0,0);
-            backButton.setPosition(0,70);
-            playButton.setPosition(0,140);
-            nextButton.setPosition(0,210);
-            nextTButton.setPosition(0,280);
+            backButton.setPosition(0,90);
+            playButton.setPosition(0,180);
+            nextButton.setPosition(0,270);
+            nextTButton.setPosition(0,360);
             starProgress.setVisible(false);
-            stepLabel.setPosition(1230,670);
+            stepLabel.setPosition(1230,645);
             tw.setPosition(1170,750);
         }
+
         stage.addActor(background);
         stage.addActor(stepBackground);
         stage.addActor(recordBackground);
         stage.addActor(buttonBackground);
+        stage.addActor(buttonBackground2);
         stage.addActor(starProgress);
         stage.addActor(tw);
         stage.addActor(mainTable);
@@ -237,16 +241,16 @@ public class PlayBackScene extends KlotskiScene
 
 
 
+
         Label titleLabel;
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 80);
         labelStyle.fontColor = Color.WHITE;
         titleLabel = new Label("回放-"+mapData.getMapName(), labelStyle);
-        titleLabel.setPosition(640, 970);
+        titleLabel.setPosition(640, 950);
 
         //返回按钮 Back Button
-        Button.ButtonStyle backbs = new Button.ButtonStyle();
-        backbs.up = new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackButton));
+        Button.ButtonStyle backbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.GameMainBackButton));
         Button backButtonn = new Button(backbs);
         backButtonn.setPosition(50, 950);
         backButtonn.setSize(100, 100);
@@ -336,6 +340,19 @@ public class PlayBackScene extends KlotskiScene
                 isPlaying =!isPlaying;
             }
         });
+        //设置按钮
+        Button.ButtonStyle settingbs = ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.SettingButton));;
+        Button settingButton = new Button(settingbs);
+        settingButton.setPosition(1740, 900);
+        settingButton.setSize(120, 120);
+        settingButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                gameMain.getScreenManager().setScreen(new SettingScene(gameMain));
+            }
+        });
         stage.addActor(stepBackground);
         stage.addActor(recordBackground);
         stage.addActor(titleLabel);
@@ -345,6 +362,7 @@ public class PlayBackScene extends KlotskiScene
         stage.addActor(tw);
         stage.addActor(mainTable);
         stage.addActor(backButtonn);
+        stage.addActor(settingButton);
     }
     private boolean isPlaying=false;
     @Override

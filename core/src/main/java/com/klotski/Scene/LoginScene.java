@@ -17,6 +17,7 @@ import com.klotski.assets.ImageAssets;
 import com.klotski.polygon.LoginGroup;
 import com.klotski.user.UserInfo;
 import com.klotski.user.UserManager;
+import com.klotski.utils.ImageButtonStyleHelper;
 import com.klotski.utils.SmartBitmapFont;
 import com.klotski.utils.logger.Logger;
 
@@ -77,7 +78,7 @@ public class LoginScene extends KlotskiScene
             }
         });
 
-        loginGroup=new LoginGroup(email);
+        loginGroup=new LoginGroup(email,gameMain.getAssetsPathManager());
         loginGroup.setPosition(700,300);
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = new SmartBitmapFont(new FreeTypeFontGenerator(Gdx.files.internal("STZHONGS.TTF")), 30);
@@ -85,10 +86,7 @@ public class LoginScene extends KlotskiScene
         infoLabel = new Label("", labelStyle);
         infoLabel.setPosition(880,900);
 
-        Button.ButtonStyle buttonStyle=new Button.ButtonStyle();
-        buttonStyle.up=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.LoginButton));
-        buttonStyle.down=new TextureRegionDrawable(gameMain.getAssetsPathManager().get(ImageAssets.LoginButton));
-
+        Button.ButtonStyle buttonStyle= ImageButtonStyleHelper.createButtonStyle(gameMain.getAssetsPathManager().get(ImageAssets.LoginButton));
         Button loginButton=new Button(buttonStyle);
         loginButton.setPosition(850,300);
         loginButton.setTransform(true);

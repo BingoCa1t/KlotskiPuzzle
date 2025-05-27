@@ -8,10 +8,10 @@ import com.klotski.utils.logger.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * 音乐播放管理器
+ * @author Life_Checkpoint
  * @author BingoCAT
  */
 public class MusicManager {
@@ -30,8 +30,8 @@ public class MusicManager {
         musicMap = new HashMap<>();
         this.apManager = gameMain.getAssetsPathManager();
         // 主音量 × 音乐音量
-        //setVolume(gameMain.getSettingManager().gameSettings.sound.masterVolume * gameMain.getSettingManager().gameSettings.sound.musicVolume);
-        setVolume(1f);
+        setVolume(gameMain.getSettingManager().gameSettings.sound.masterVolume * gameMain.getSettingManager().gameSettings.sound.musicVolume);
+
     }
 
     public void loadMusic(MusicAudio audioAlias, MusicAssets audioAssets) {
@@ -104,21 +104,6 @@ public class MusicManager {
         if (currentMusic != null) {
             currentMusic.setVolume(this.volume);
         }
-    }
-
-    // 切换到指定音乐
-    public void switchMusic(MusicAudio audioName) {
-        if (currentMusic != null && currentMusic.isPlaying()) {
-            currentMusic.stop();
-        }
-        play(audioName, true);
-    }
-
-    public void switchMusic(MusicAudio audioName, boolean loop) {
-        if (currentMusic != null && currentMusic.isPlaying()) {
-            currentMusic.stop();
-        }
-        play(audioName, loop);
     }
 
     public void dispose() {
