@@ -238,10 +238,6 @@ public class UserManager implements NetworkMessageObserver
             return false;
         }
     }
-    public void save()
-    {
-
-    }
 
     public UserInfo getActiveUser()
     {

@@ -70,12 +70,6 @@ public class Main extends Game
         musicManager.loadMusic(MusicManager.MusicAudio.MainBGM, MusicAssets.MainBGM);
         screenManager.setScreen(new WelcomeScene(this));
         //screenManager.setScreen(new SettingScene(this));
-
-            String s=RSEncoder.encoder("test123456TEST123456");
-            System.out.println(s);
-            System.out.println(RSDecoder.decoder(s));
-
-
     }
 
     @Override

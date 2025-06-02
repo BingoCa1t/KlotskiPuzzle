@@ -60,3 +60,40 @@
 
 
 ## 项目结构
+
+- assets: **资源管理**软件包  
+    1. `AssetsPathManager`: 资源管理器，负责在程序刚开始时读取所有图片资源到内存中
+    2. `ImageAssets`和`MusicAssets`: 枚举类，列举游戏中用到的所有资源
+- aigo2: **自走算法**软件包，使用BFS算法
+- archive: **存档管理**软件包  
+    1. `ArchiveManager`: 存档管理器，负责管理活动用户(activeUser)的存档，以`MapID`为唯一标识符
+    2. `LevelArchive`: 每一关卡的存档
+- logic: **逻辑**软件包
+    1. `ChessBoradControl`: 前后端控制器，负责控制前端的绘制和后端的逻辑
+    2. `ChessBoardArray`: 后端逻辑类，负责游戏的逻辑（移动、胜利）等
+    3. `LevelStatus`: 关卡状态，分为Closed、UpComing、Succeed、InProgress四种 
+    4. `MoveStep`: 记录每一步的移动类，记录每次移动的Origin和Destination
+    5. `Pos`: 记录坐标，有x、y、z三个字段（z暂时无用）
+- map: **地图管理**软件包
+    1. `MapDataManager`: 地图管理器，负责读取并管理地图数据，以`MapID`为唯一标识符
+    2. `MapData`: 地图数据类
+    3. `serialize`包: 序列化和反序列化器
+- user: **用户**软件包
+    1. `UserManager`: 用户管理类，负责注册、登录、获取存档等操作
+    2. `UserInfo`: 用户信息类
+- polygon: **自定义的组件，继承自Actor、Group**
+    1. `Chess`: 继承自`Actor`，负责棋子的绘制
+    2. `ChessBorad`: 继承自`Group`，负责管理整个棋盘的绘制
+- Scene: **各个场景**
+    1. `KlotskiScene`: 统一父类
+    2. `ScreenManager`: 场景管理器，负责切换、回退场景等操作 
+    3. `GameMainScene`: 游戏主界面
+    4. `WelcomeScene`: 欢迎界面
+    5. `LoginScene`: 用户登录界面
+    6. `RegisterScene`: 用户注册界面
+    7. `StartScene` : 用户登录之后的游戏开始界面
+    8. `LevelSelectScene`: 关卡选择界面
+    9. `PlayBackScene`: 回放界面
+    10. `WatchScene`: 观战列表界面
+    11. `SettingScene`: 设置界面
+
